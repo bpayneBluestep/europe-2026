@@ -2,7 +2,7 @@
    Bump CACHE_VERSION whenever you change any file. That is what makes both
    phones pick up the new version; without it they keep serving the old cache. */
 
-const CACHE_VERSION = "europe-2026-v13";
+const CACHE_VERSION = "europe-2026-v14";
 
 /* The app shell. These must all fetch successfully or the install is retried. */
 const CORE = [
@@ -60,7 +60,10 @@ const EXTRAS = [
   "./tickets/swisspass-tatiana.png",
   "./tickets/gpe-upgrade-brandon.png",
   "./tickets/gpe-upgrade-tatiana.png",
-  "./tickets/tgv.png",
+  "./tickets/tk9pwn-trenord-brandon.png",
+  "./tickets/tk9pwn-trenord-tatiana.png",
+  "./tickets/tgv-brandon.png",
+  "./tickets/tgv-tatiana.png",
 ];
 
 self.addEventListener("install", (event) => {

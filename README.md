@@ -31,30 +31,30 @@ Do steps 1–4 on **both** phones.
 | **Open** | Everything still to sort, the four Swiss excursion options, and photo credits. |
 | **SOS** | Floating red button, reachable from any screen. Tap-to-call emergency numbers. |
 
-## Adding the ticket QR codes
+## The ticket images
 
-This is the reason the app exists — the barcodes offline, one tap deep, instead of
-hunting through Gmail on hotel wifi.
+All twelve are saved in `tickets/` and cached offline by the service worker.
+Where each came from, in case any needs reprinting:
 
-Save each image into `tickets/` with **exactly** these filenames:
+| File | Source |
+|---|---|
+| `tk2n7n-brandon/tatiana.png` | Trenitalia self check-in link (Aztec, 400×400) |
+| `tk9pwn-brandon/tatiana.png` | same, Frecciarossa 9724 leg |
+| `tk9pwn-trenord-brandon/tatiana.png` | same, Trenord regional leg |
+| `swisspass-brandon/tatiana.png` | shop.sbb.ch order 151490866009 → Tickets as a PDF |
+| `gpe-upgrade-brandon/tatiana.png` | `Confirmations/Gotthard Panorama Express.pdf` |
+| `tgv-brandon/tatiana.png` | shop.sbb.ch order 151490866652 → Tickets as a PDF |
 
-```
-tickets/tk2n7n-brandon.png          Rome → Venice, Frecciarossa 9416
-tickets/tk2n7n-tatiana.png
-tickets/tk9pwn-brandon.png          Venice → Como (all legs, per passenger)
-tickets/tk9pwn-tatiana.png
-tickets/swisspass-brandon.png       Swiss Travel Pass — the 2 PNGs on the 13 Jul 01:39 SBB email
-tickets/swisspass-tatiana.png
-tickets/gpe-upgrade-brandon.png     first-class day upgrade
-tickets/gpe-upgrade-tatiana.png
-tickets/tgv.png                     Basel → Paris
-```
+Two things worth knowing if you go back to the source:
 
-PNG or JPG both work — if you save a JPG, change the extension in `data.js` to match.
-Any file you haven't added yet shows a grey "not saved yet" placeholder instead of a
-broken image, so partial is fine.
-
-Then follow **Updating** below.
+- **The Trenitalia self check-in link renders the regional barcodes too.** The
+  earlier notes had that down as unknown and planned to fall back on ticket codes
+  read to the conductor. Not needed — all four barcodes for TK9PWN are here.
+- **The SBB confirmation PDFs on disk are receipts, not tickets.** They carry no
+  barcode. What they do carry is the `shop.sbb.ch/customer/.../order?orderId=…`
+  link, and that page's **Tickets as a PDF** button gives the real thing. SBB
+  returns it as a `blob:` in a new tab rather than a download, and 403s a
+  HeadlessChrome user agent.
 
 ## Updating
 
