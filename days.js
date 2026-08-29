@@ -18,7 +18,7 @@ TRIP.days = [
   {
     img: "rome-pantheon",
     n: 2, iso: "2026-09-18", date: "Fri 18 Sep", city: "Rome", country: "Italy",
-    kind: "travel", title: "Land in Rome, settle in",
+    kind: "travel", title: "Paris → Rome",
     summary: "Arrive 2:25 PM. Nothing booked after that — keep it that way after an overnight flight.",
     high: 81, low: 63, rain: 0.27,
     timeline: [

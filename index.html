@@ -268,13 +268,23 @@
 
   /* Full-width, thumb-sized call to action rather than a small underlined
      link — a 15px link is a miss target on a phone. */
-  .wl .body a.src{display:flex;align-items:center;justify-content:center;gap:8px;
+  .wl .body a.src,.wm a.src{display:flex;align-items:center;justify-content:center;gap:8px;
     margin-top:12px;min-height:48px;padding:0 18px;border-radius:13px;
     background:var(--accent,var(--ink));color:#fff;font-size:15px;font-weight:600;
     letter-spacing:-.01em;text-decoration:none}
-  .wl .body a.src:active{filter:brightness(.9)}
-  .wl .body a.src svg{width:17px;height:17px;stroke:#fff;fill:none;
+  .wl .body a.src:active,.wm a.src:active{filter:brightness(.9)}
+  .wl .body a.src svg,.wm a.src svg{width:17px;height:17px;stroke:#fff;fill:none;
     stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 17px}
+
+  /* Compact suggestion inside a day accordion. */
+  .wm{margin-top:10px}
+  .wm b{display:block;font-size:15px;font-weight:600;letter-spacing:-.015em}
+  .wm .meta{font-size:12.5px;color:var(--faint);margin-top:3px}
+  .wm .note{background:none;padding:0;margin:6px 0 0;font-size:14px;color:var(--dim)}
+
+  /* Small label separating the parts of an accordion. */
+  .mini-h{font-size:11.5px;font-weight:600;letter-spacing:.04em;color:var(--faint);
+    text-transform:uppercase;margin:18px 0 2px}
 
   .wl .acts{position:absolute;top:11px;right:11px;display:flex;gap:2px}
   .wl .acts button{width:32px;height:32px;border-radius:999px;border:0;
@@ -581,6 +591,51 @@
       '<div class="go">' + svg("chevR") + '</div></button>';
   }
 
+  /* What to call a day.
+
+     Travel and plan days have a title worth reading — the route, or the thing
+     that is actually booked. Open days used to say "Open" or "Open — weather
+     picks", which told you nothing the date and city had not already said. They
+     now take their headline from what is on: the ideas either of you saved for
+     that day, or nothing. */
+  function dayHeadline(day){
+    if (day.kind !== "open" && day.title) return day.title;
+    var n = ideasFor(day).length;
+    if (n) return n === 1 ? "1 idea saved" : n + " ideas saved";
+    return "Nothing booked";
+  }
+
+  /* Everything that is on for a day, in one block — used inside the accordion
+     so the list answers "what are we doing" without opening the full page. */
+  function dayInner(day){
+    var h = "";
+    if (day.summary) h += '<p class="lead">' + esc(day.summary) + '</p>';
+    if (day.critical) h += note(day.critical, "alert", "Read this");
+    h += timelineBlock(day);
+
+    var rel = relatedTickets(day);
+    if (rel.length){
+      h += '<div class="mini-h">Tickets</div>';
+      rel.forEach(function(t){ h += ticketItem(t); });
+    }
+
+    if (day.checklist && day.checklist.length){
+      h += '<div class="mini-h">Before you go</div>';
+      h += '<ul class="check">';
+      day.checklist.forEach(function(c){ h += '<li>' + esc(c) + '</li>'; });
+      h += '</ul>';
+    }
+
+    var ideas = ideasFor(day);
+    if (ideas.length){
+      h += '<div class="mini-h">Suggested for this day</div>';
+      ideas.forEach(function(it){ h += wishMini(it); });
+    }
+
+    h += '<a class="btn-wide" data-go="#/day/' + day.n + '">Open day ' + day.n + '</a>';
+    return h;
+  }
+
   /* The Day-N accordion card, matching the tour-schedule pattern. */
   function dayAcc(day, open){
     var city = cityKey(day);
@@ -589,14 +644,13 @@
       '<summary><div class="thumb pic" style="' + skinSq(city, day.img) + '">' +
       day.n + '</div>' +
       '<div class="txt"><span class="label">' + esc(day.date) + '</span>' +
-      '<b>' + esc(day.title) + '</b><em>' + esc(day.city) + '</em></div>' +
+      '<b>' + esc(dayHeadline(day)) + '</b>' +
+      /* On a travel day the headline IS the route, so repeating it as the
+         city underneath just says the same thing twice. */
+      (dayHeadline(day) === day.city ? '' : '<em>' + esc(day.city) + '</em>') +
+      '</div>' +
       '<div class="chev">' + svg("chevD") + '</div></summary>' +
-      '<div class="inner">' +
-      (day.summary ? '<p class="lead">' + esc(day.summary) + '</p>' : '') +
-      (day.critical ? note(day.critical, "alert", "Read this") : "") +
-      timelineBlock(day) +
-      '<a class="btn-wide" data-go="#/day/' + day.n + '">Open day ' + day.n + '</a>' +
-      '</div></details>';
+      '<div class="inner">' + dayInner(day) + '</div></details>';
   }
 
   /* ---------- views ---------- */
@@ -653,8 +707,8 @@
     h += '<div class="hero photo" style="margin-top:18px;' +
          skin(cityKey(day), day.img) + '">' +
          '<span class="label">Today &middot; ' + esc(day.date) + '</span>' +
-         '<h1>' + esc(day.title) + '</h1>' +
-         '<p>' + esc(day.city) + '</p>' +
+         '<h1>' + esc(day.kind === "open" ? day.city : day.title) + '</h1>' +
+         '<p>' + esc(day.kind === "open" ? dayHeadline(day) : day.city) + '</p>' +
          '<button class="cta" data-go="#/day/' + day.n + '">' +
          '<span>Open the full day</span><i>' + svg("arrowR") + '</i></button></div>';
 
@@ -665,6 +719,12 @@
       h += '<div class="card">' + timelineBlock(day) + '</div>';
     } else if (day.summary){
       h += '<div class="card"><p class="lead">' + esc(day.summary) + '</p></div>';
+    }
+
+    var todayIdeas = ideasFor(day);
+    if (todayIdeas.length){
+      h += sect("Ideas for today", "All ideas", "#/wish");
+      todayIdeas.forEach(function(it){ h += wishRow(it); });
     }
 
     var rel = relatedTickets(day);
@@ -687,7 +747,7 @@
            '<div class="thumb' + (nx.kind === "open" ? "" : " dark") + '"' +
            ' style="font-size:19px;font-weight:700;color:' +
            (nx.kind === "open" ? "var(--ink)" : "#fff") + '">' + nx.n + '</div>' +
-           '<div class="txt"><b>' + esc(nx.title) + '</b><em>' + esc(nx.date) +
+           '<div class="txt"><b>' + esc(dayHeadline(nx)) + '</b><em>' + esc(nx.date) +
            ' &middot; ' + esc(nx.city) + '</em></div>' +
            '<div class="go">' + svg("chevR") + '</div></button>';
     }
@@ -747,10 +807,13 @@
        labels and rules all pick it up from --accent. */
     h += '<div style="' + skin(cityKey(day), null) + '">';
 
+    /* On an open day the city is the headline — there is no booking to name,
+       and repeating "Open" under the date said nothing. */
+    var openDay = day.kind === "open";
     h += '<div class="hero photo" style="' + skin(cityKey(day), day.img) + '">' +
          '<span class="label">Day ' + day.n + ' of 23</span>' +
-         '<h1>' + esc(day.title) + '</h1>' +
-         '<p>' + esc(day.date) + ' &middot; ' + esc(day.city) + '</p>' +
+         '<h1>' + esc(openDay ? day.city : day.title) + '</h1>' +
+         '<p>' + esc(day.date) + (openDay ? '' : ' \u00b7 ' + esc(day.city)) + '</p>' +
          (day.high != null ? '<p style="margin-top:10px">High ' + day.high +
            '&deg; &middot; Low ' + day.low + '&deg; &middot; Rain ' +
            Math.round(day.rain * 100) + '%</p>' : '') + '</div>';
@@ -1089,6 +1152,21 @@
     if (it.url) h += '<a class="src" href="' + escA(it.url) + '" target="_blank" ' +
                      'rel="noopener">' + svg("link") + esc(linkCta(it.url)) + '</a>';
     h += '</div>';
+    return h + '</div>';
+  }
+
+  /* A read-only version of a row, for the day accordion. No edit or delete:
+     those re-render, which would collapse the accordion mid-action. Editing
+     happens on the day page or the Want-to-do tab. */
+  function wishMini(it){
+    var city = it.city && TRIP.cities[it.city] ? it.city : null;
+    var accent = city ? cityColor(city) : "#212529";
+    var h = '<div class="wm" style="--accent:' + accent + '">';
+    h += '<b>' + esc(it.title) + '</b>';
+    h += '<div class="meta">' + byline(it.createdBy) + '</div>';
+    if (it.note) h += '<p class="note">' + esc(it.note) + '</p>';
+    if (it.url) h += '<a class="src" href="' + escA(it.url) + '" target="_blank" ' +
+                     'rel="noopener">' + svg("link") + esc(linkCta(it.url)) + '</a>';
     return h + '</div>';
   }
 

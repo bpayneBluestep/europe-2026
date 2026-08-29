@@ -135,6 +135,21 @@ so one of you editing the other's item does not reassign it.
 For the Shortcut, add a `by` key alongside `url` in the `item` dictionary and set
 it to that phone's owner. `by` and `createdBy` are both accepted.
 
+## What a day says it is
+
+Travel and plan days carry a real title — the route, or the thing that is
+booked. Open days used to be titled *Open* or *Open — weather picks*, which said
+nothing the date and city had not already said, so they now take their headline
+from what is actually on: *2 ideas saved*, or *Nothing booked*. On an open day's
+own page the city becomes the headline for the same reason.
+
+Opening a day card in the list shows the whole of that day without leaving it —
+the summary, anything critical, the timeline, tickets, the before-you-go
+checklist, and the wishlist items suggested for that day. Suggestions render
+read-only there: the edit and delete controls re-render the page, which would
+snap the accordion shut mid-action, so editing happens on the day page or the
+Want-to-do tab.
+
 ## Editing, and suggesting a day
 
 Every row has a pencil and a bin in its top-right corner. The pencil turns that
