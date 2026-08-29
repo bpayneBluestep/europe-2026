@@ -21,6 +21,7 @@ var Store = (function () {
 
   var LS_KEY = "europe2026.wishlist.v1";
   var LS_QUEUE = "europe2026.queue.v1";
+  var LS_WHO = "europe2026.who.v1";
 
   function configured() { return !!API.url; }
 
@@ -34,6 +35,19 @@ var Store = (function () {
   function lsSet(key, value) {
     try { localStorage.setItem(key, JSON.stringify(value)); return true; }
     catch (e) { return false; }
+  }
+
+  /* ---------- who is holding this phone ---------- */
+  /* A label the device claims, chosen once and stored locally. There is no
+     login and the endpoint is anonymous, so this answers "who typed this" and
+     nothing else — never treat it as permission. */
+  function who() {
+    var v = lsGet(LS_WHO, null);
+    return (typeof v === "string" && v) ? v : "";
+  }
+  function setWho(name) {
+    lsSet(LS_WHO, name || "");
+    return who();
   }
 
   function uid() {
@@ -107,6 +121,7 @@ var Store = (function () {
   function add(item) {
     item.id = item.id || uid();
     item.createdAt = item.createdAt || new Date().toISOString();
+    if (!item.createdBy) item.createdBy = who();
     var list = items();
     list.unshift(item);
     lsSet(LS_KEY, list);
@@ -150,5 +165,5 @@ var Store = (function () {
   }
 
   return { items: items, refresh: refresh, add: add, update: update,
-           remove: remove, status: status, uid: uid };
+           remove: remove, status: status, uid: uid, who: who, setWho: setWho };
 })();

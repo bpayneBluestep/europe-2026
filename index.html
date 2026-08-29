@@ -280,6 +280,30 @@
   .wl .kill svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.9;
     stroke-linecap:round;stroke-linejoin:round}
 
+  /* ---------- who ---------- */
+  /* Initial in a circle. Filled vs outlined rather than two colours, because
+     the five city accents already use most of the usable hue space. */
+  .avi{display:inline-grid;place-items:center;width:22px;height:22px;
+    border-radius:999px;font-size:11px;font-weight:700;letter-spacing:0;
+    background:var(--ink);color:#fff;flex:0 0 22px;line-height:1}
+  .avi.alt{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1.6px var(--ink)}
+  .avi.none{background:var(--sunk);color:var(--faint);box-shadow:none;font-weight:600}
+  .byline{display:inline-flex;align-items:center;gap:6px;vertical-align:middle}
+  .byline .avi{width:18px;height:18px;font-size:9.5px;flex:0 0 18px}
+
+  .who-pick{display:flex;gap:10px;margin-top:14px}
+  .who-pick button{flex:1;display:flex;flex-direction:column;align-items:center;
+    gap:9px;padding:18px 12px;border-radius:var(--r-lg);border:1px solid var(--line);
+    background:var(--card);font:inherit;cursor:pointer;color:var(--ink);
+    box-shadow:var(--shadow)}
+  .who-pick button b{font-size:15.5px;font-weight:600}
+  .who-pick .avi{width:44px;height:44px;font-size:19px;flex:0 0 44px}
+
+  .whoami{display:inline-flex;align-items:center;gap:7px;background:none;border:0;
+    font:inherit;font-size:14px;color:var(--dim);padding:0;cursor:pointer;
+    margin-top:5px}
+  .whoami u{text-decoration:underline;text-underline-offset:3px}
+
   .sync{font-size:12.5px;color:var(--faint);text-align:center;padding:14px 0 0}
   .sync b{color:var(--ink);font-weight:600}
   .empty{text-align:center;padding:34px 20px;color:var(--faint);font-size:14.5px}
@@ -402,6 +426,48 @@
     return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
   }
 
+  /* ---------- who is holding this phone ---------- */
+
+  function person(name){
+    var list = (TRIP.people || []);
+    for (var i = 0; i < list.length; i++){
+      if (list[i].name === name || list[i].id === name) return list[i];
+    }
+    return null;
+  }
+
+  /* Index in TRIP.people decides filled vs outlined, so a person keeps the
+     same mark everywhere regardless of who is looking. */
+  function avi(name, cls){
+    var p = person(name);
+    if (!p) return '<span class="avi none' + (cls ? " " + cls : "") + '">?</span>';
+    var alt = (TRIP.people.indexOf(p) % 2) === 1 ? " alt" : "";
+    return '<span class="avi' + alt + (cls ? " " + cls : "") + '">' +
+           esc(p.initial) + '</span>';
+  }
+
+  function byline(name){
+    var p = person(name);
+    return '<span class="byline">' + avi(name) +
+           (p ? esc(p.name) : "added before names were on") + '</span>';
+  }
+
+  /* The greeting, and the way to change your mind about who you are. */
+  function whoBlock(){
+    var me = Store.who();
+    if (!me){
+      var h = '<div style="margin-bottom:4px"><h1 class="greet">Who&rsquo;s on this phone?</h1>' +
+        '<p class="greet-sub">So the list can show who added what. ' +
+        'You can switch any time.</p></div><div class="who-pick">';
+      TRIP.people.forEach(function(p){
+        h += '<button data-who="' + esc(p.name) + '">' + avi(p.name) +
+             '<b>' + esc(p.name) + '</b></button>';
+      });
+      return h + '</div>';
+    }
+    return null;
+  }
+
   /* Group icon for a ticket, so the list reads at a glance. */
   function ticketIcon(t){
     return t.group === "Flights" ? "plane"
@@ -517,14 +583,28 @@
   /* ---------- views ---------- */
   var views = {};
 
+  /* The greeting line, plus the tappable "not you?" switch underneath. */
+  function todayHead(sub){
+    var me = Store.who();
+    return '<div style="margin-bottom:4px">' +
+      '<h1 class="greet">' + esc(greeting() + ", " + me) + '</h1>' +
+      '<p class="greet-sub">' + esc(sub) + '</p>' +
+      '<button class="whoami" data-who-switch="1">' + avi(me) +
+      '<span>Not ' + esc(me) + '? <u>Switch</u></span></button></div>';
+  }
+
   views.today = function(){
     var idx = currentIndex();
     var h = "";
 
+    /* Ask once, before anything else — the greeting and every byline need it. */
+    var pick = whoBlock();
+    if (pick) return pick;
+
     if (idx === null){
       var out = daysBetween(today(), d(TRIP.meta.start));
       if (out > 0){
-        h += pageHead(greeting() + ", Brandon", TRIP.meta.travellers);
+        h += todayHead(TRIP.meta.travellers);
         h += '<div class="hero photo" style="margin-top:18px;' +
              skin("Rome", "rome-colosseum") + '">' +
              '<span class="label">Days until you fly</span>' +
@@ -550,7 +630,7 @@
     }
 
     var day = TRIP.days[idx];
-    h += pageHead(greeting() + ", Brandon", "Day " + day.n + " of 23 · " + day.city);
+    h += todayHead("Day " + day.n + " of 23 · " + day.city);
     h += '<div class="hero photo" style="margin-top:18px;' +
          skin(cityKey(day), day.img) + '">' +
          '<span class="label">Today &middot; ' + esc(day.date) + '</span>' +
@@ -896,8 +976,11 @@
     h += '<button class="tick" data-wl-toggle="' + esc(it.id) +
          '" aria-label="Mark done">' + svg("check") + '</button>';
     h += '<div class="body"><b>' + esc(it.title) + '</b>';
-    h += '<div class="meta">' + (city ? dot(city) + esc(city) : "Anywhere") +
+    h += '<div class="meta">' + byline(it.createdBy) + ' &middot; ' +
+         (city ? dot(city) + esc(city) : "Anywhere") +
          (it.day ? ' &middot; day ' + esc(it.day) : "") + '</div>';
+    if (it.done && it.doneBy) h += '<div class="meta">Ticked off by ' +
+                                    esc(it.doneBy) + '</div>';
     if (it.note) h += '<p class="note">' + esc(it.note) + '</p>';
     if (it.url) h += '<a class="src" href="' + esc(it.url) + '" target="_blank" ' +
                      'rel="noopener">' + svg("link") + esc(linkLabel(it.url)) + '</a>';
@@ -907,11 +990,30 @@
     return h + '</div>';
   }
 
-  views.wish = function(){
-    var list = Store.items();
+  views.wish = function(filter){
+    var pick = whoBlock();
+    if (pick) return pick;
+
+    var all = Store.items();
     var st = Store.status();
+    var active = filter ? decodeURIComponent(filter) : "All";
 
     var h = pageHead("Want to do", "Anything either of you spots — it does not have to be scheduled");
+
+    /* Only worth showing once there is something to filter. */
+    if (all.length > 1){
+      h += '<div class="chips" style="margin-top:16px">';
+      ["All"].concat(TRIP.people.map(function(p){ return p.name; })).forEach(function(c){
+        h += '<button class="chip" aria-pressed="' + (c === active) +
+             '" data-go="#/wish/' + encodeURIComponent(c) + '">' +
+             (c === "All" ? "" : avi(c) + " ") + esc(c) + '</button>';
+      });
+      h += '</div>';
+    }
+
+    var list = all.filter(function(x){
+      return active === "All" || (x.createdBy || "") === active;
+    });
 
     h += '<div class="wl-form" style="margin-top:18px">' +
       '<label for="wlTitle">What is it</label>' +
@@ -936,8 +1038,10 @@
     var done = list.filter(function(x){ return x.done; });
 
     if (!list.length){
-      h += '<div class="card"><div class="empty">Nothing on the list yet.<br>' +
-           'Add the first thing either of you wants to see.</div></div>';
+      h += '<div class="card"><div class="empty">' +
+           (all.length ? 'Nothing from ' + esc(active) + ' yet.'
+                       : 'Nothing on the list yet.<br>Add the first thing either of you wants to see.') +
+           '</div></div>';
     }
 
     if (open.length){
@@ -950,7 +1054,8 @@
     }
 
     h += '<div class="sync">Saved <b>' + esc(st.mode) + '</b>' +
-         (st.pending ? ' &middot; ' + st.pending + ' waiting to sync' : '') + '</div>';
+         (st.pending ? ' &middot; ' + st.pending + ' waiting to sync' : '') +
+         ' &middot; adding as <b>' + esc(Store.who()) + '</b></div>';
     return h;
   };
 
@@ -1030,6 +1135,7 @@
     var html, tab = view;
     if (view === "day"){ html = views.day(arg); tab = "days"; }
     else if (view === "days"){ html = views.days(arg); }
+    else if (view === "wish"){ html = views.wish(arg); }
     else if (view === "ticket"){ html = views.ticket(arg); tab = "tickets"; }
     else if (views[view]){ html = views[view](); }
     else { html = views.today(); tab = "today"; }
@@ -1042,6 +1148,25 @@
   /* One delegated handler for navigation and for the wishlist controls, since
      both live in markup that gets replaced wholesale on every render. */
   document.addEventListener("click", function(e){
+    var pickWho = e.target.closest("[data-who]");
+    if (pickWho){
+      e.preventDefault();
+      Store.setWho(pickWho.getAttribute("data-who"));
+      route();
+      return;
+    }
+
+    /* Switch cycles rather than opening a dialog — there are two of you. */
+    var swap = e.target.closest("[data-who-switch]");
+    if (swap){
+      e.preventDefault();
+      var names = TRIP.people.map(function(p){ return p.name; });
+      var at = names.indexOf(Store.who());
+      Store.setWho(names[(at + 1) % names.length]);
+      route();
+      return;
+    }
+
     var add = e.target.closest("#wlAdd");
     if (add){
       e.preventDefault();
@@ -1063,7 +1188,7 @@
       e.preventDefault();
       var id = tog.getAttribute("data-wl-toggle");
       var cur = Store.items().filter(function(x){ return x.id === id; })[0];
-      if (cur) Store.update(id, { done: !cur.done });
+      if (cur) Store.update(id, { done: !cur.done, doneBy: !cur.done ? Store.who() : "" });
       route();
       return;
     }

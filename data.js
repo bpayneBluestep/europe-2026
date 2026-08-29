@@ -10,6 +10,14 @@ const TRIP = {
     end: "2026-10-09",
   },
 
+  /* ---------- WHO IS TRAVELLING ---------- */
+  /* Identity is a label this device claims, not a login — the endpoint is
+     anonymous. It only ever answers "who typed this", never "who may do this". */
+  people: [
+    { id: "brandon", name: "Brandon", initial: "B" },
+    { id: "tatiana", name: "Tatiana", initial: "T" },
+  ],
+
   /* ---------- CITY PALETTE ---------- */
   /* One rich accent per base, pulled from that city's photograph. */
   cities: {

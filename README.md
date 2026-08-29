@@ -111,6 +111,30 @@ Requests are sent with `Content-Type: text/plain` on purpose — it keeps the br
 from firing a CORS preflight. The endpoint must return
 `Access-Control-Allow-Origin` for `https://bpaynebluestep.github.io`.
 
+## Who added what
+
+There is no login — the endpoint is anonymous — so identity is a **label the
+device claims**, chosen once on first launch and kept in localStorage. It answers
+"who typed this" and nothing else; never treat it as permission.
+
+- First launch asks *Who's on this phone?* before anything else, because the
+  greeting and every byline need it.
+- The greeting on Today uses that name, with a *Not X? Switch* control under it.
+  With two travellers, Switch cycles rather than opening a dialog.
+- Every wishlist row carries a byline; filter chips narrow the list to one person.
+- People are configured in `TRIP.people` (`data.js`). Their mark is an initial in
+  a circle — **filled for the first person, outlined for the second** — because
+  the five city accents already use most of the usable hue space.
+- Items created before this existed show *added before names were on* rather than
+  a wrong name.
+
+Server-side, `createdBy` and `doneBy` are whitelisted through the field filter,
+and **update preserves the stored `createdBy`/`createdAt`** unless the caller
+supplies them — so one of you ticking the other's item does not reassign it.
+
+For the Shortcut, add a `by` key alongside `url` in the `item` dictionary and set
+it to that phone's owner. `by` and `createdBy` are both accepted.
+
 ## Sharing straight from TikTok
 
 **iPhone: use a Shortcut.** The Web Share Target API — the thing that puts a web
