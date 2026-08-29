@@ -157,17 +157,6 @@
   .qr .missing{font-size:13px;color:var(--faint);background:var(--bg);
     border:1px dashed var(--line);border-radius:10px;padding:14px;text-align:center}
 
-  /* money */
-  table{width:100%;border-collapse:collapse;font-size:14px}
-  td{padding:9px 0;border-top:1px solid var(--line);vertical-align:top}
-  td:last-child{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;
-    padding-left:10px}
-  tr:first-child td{border-top:0}
-  .totals{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center}
-  .totals div span{display:block;font-size:11px;color:var(--faint);
-    text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
-  .totals div b{font-size:17px;font-variant-numeric:tabular-nums}
-
   .hero{background:var(--accent);color:#fff;border-radius:var(--radius);
     padding:18px;margin-bottom:14px}
   .hero .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.1em;opacity:.7}
@@ -207,11 +196,6 @@
   /* ---------- helpers ---------- */
   var E = document.createElement("div");
   function esc(s){ E.textContent = s == null ? "" : String(s); return E.innerHTML; }
-  function money(n){
-    var neg = n < 0;
-    var s = Math.abs(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
-    return (neg ? "−$" : "$") + s;
-  }
   function el(id){ return document.getElementById(id); }
 
   /* Local-midnight date for an ISO yyyy-mm-dd, so day maths never drifts by timezone. */
@@ -396,7 +380,7 @@
         h += '<button class="day" data-go="#/ticket/' + t.id + '">' +
              '<div class="body"><div class="t">' + esc(t.title) + '</div>' +
              '<div class="c">' + esc(t.provider) + ' &middot; ' + esc(t.ref) + '</div></div>' +
-             '<div class="mark ' + (t.paid ? 'plan' : '') + '"></div></button>';
+             '<div class="mark plan"></div></button>';
       });
       h += '</div>';
     });
@@ -420,9 +404,6 @@
          '<div class="tiny" style="margin-top:3px">' + esc(t.provider) + '</div>' +
          '<div class="row" style="margin-top:11px"><div class="k">Reference</div>' +
          '<div class="v mono" style="font-weight:600">' + esc(t.ref) + '</div></div>' +
-         '<div class="row"><div class="k">Cost</div><div class="v">' + esc(t.cost) +
-         ' <span class="pill ' + (t.paid ? 'ok' : 'warn') + '">' +
-         (t.paid ? 'paid' : 'unpaid') + '</span></div></div>' +
          '</div>';
 
     if (t.warn) h += noteBlock(t.warn, "crit");
@@ -485,9 +466,6 @@
            esc(s.inDate) + ' &middot; ' + esc(s.inTime) + '</div></div>';
       h += '<div class="row"><div class="k">Check out</div><div class="v">' +
            esc(s.outDate) + ' &middot; ' + esc(s.outTime) + '</div></div>';
-      h += '<div class="row"><div class="k">Cost</div><div class="v">' + esc(s.cost) +
-           ' <span class="pill ' + (s.paid === 'paid' ? 'ok' : 'warn') + '">' +
-           esc(s.paid) + '</span></div></div>';
       if (s.host) h += '<div class="row"><div class="k">Host</div><div class="v">' +
                        esc(s.host) + '</div></div>';
       if (s.phone) h += '<div class="row"><div class="k">Phone</div><div class="v">' +
@@ -505,32 +483,20 @@
     return h;
   };
 
-  views.money = function(){
-    var total = 0;
-    TRIP.budget.forEach(function(b){ total += b.amt; });
-    var remaining = TRIP.meta.budget - total;
-
-    var h = '<div class="card totals">' +
-      '<div><span>Budget</span><b>' + money(TRIP.meta.budget) + '</b></div>' +
-      '<div><span>Committed</span><b>' + money(total) + '</b></div>' +
-      '<div><span>Left</span><b>' + money(remaining) + '</b></div>' +
-      '</div>';
-
-    h += '<h2>Where it has gone</h2><div class="card"><table><tbody>';
-    TRIP.budget.forEach(function(b){
-      h += '<tr><td>' + esc(b.item) +
-           '<div class="tiny">' + esc(b.cat) + ' &middot; ' + esc(b.status) + '</div></td>' +
-           '<td>' + money(b.amt) + '</td></tr>';
-    });
-    h += '</tbody></table></div>';
-
-    TRIP.budgetNotes.forEach(function(n){ h += noteBlock(n, "warn"); });
-
-    h += '<h2>Still open</h2><div class="card">';
+  views.open = function(){
+    var h = '<h2>Still to sort</h2><div class="card">';
     TRIP.open.forEach(function(o){
       h += '<details><summary>' + esc(o.what) +
            '</summary><div class="inner"><b>' + esc(o.when) + '</b><br>' +
            esc(o.why) + '</div></details>';
+    });
+    h += '</div>';
+
+    h += '<h2>Swiss excursions — pick four days</h2><div class="card">';
+    TRIP.excursions.forEach(function(x){
+      h += '<details><summary>' + esc(x.name) + '</summary><div class="inner">' +
+           esc(x.gist) + (x.detail ? '<br><br>' + esc(x.detail) : '') +
+           '</div></details>';
     });
     h += '</div>';
     return h;
@@ -583,7 +549,7 @@
     { id:"days",    label:"Days",    icon:'<rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/>' },
     { id:"tickets", label:"Tickets", icon:'<path d="M3.5 8.5A2 2 0 0 1 5.5 6.5h13a2 2 0 0 1 2 2v1a2.2 2.2 0 0 0 0 4.4v1.1a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2v-1.1a2.2 2.2 0 0 0 0-4.4z"/><path d="M14 7v10" stroke-dasharray="2 2.4"/>' },
     { id:"stays",   label:"Stays",   icon:'<path d="M4 20v-9.5L12 4l8 6.5V20"/><path d="M9.5 20v-5.5h5V20"/>' },
-    { id:"money",   label:"Money",   icon:'<rect x="3" y="6" width="18" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/>' },
+    { id:"open",    label:"Open",    icon:'<path d="M4 7.5 6 9.5 9.5 6"/><path d="M4 16 6 18l3.5-3.5"/><path d="M13 8h7M13 17h7"/>' },
   ];
 
   function renderTabs(active){

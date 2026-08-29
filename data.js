@@ -8,7 +8,6 @@ const TRIP = {
     travellers: "Brandon & Tatiana Payne",
     start: "2026-09-17",
     end: "2026-10-09",
-    budget: 20000,
   },
 
   /* ---------- EMERGENCY ---------- */
@@ -45,7 +44,7 @@ const TRIP = {
       addr: "Via dei Cappellari 4, 00186 Roma",
       inDate: "Fri 18 Sep", inTime: "3:00 PM",
       outDate: "Tue 22 Sep", outTime: "10:00 AM",
-      nights: 4, cost: "$1,441.72", paid: "paid",
+      nights: 4,
       host: "Daplace", phone: "",
       link: "https://www.airbnb.com/trips/v1/reservation-details/ro/RESERVATION2_CHECKIN/HM32T5Z5CD",
       notes: "Cappellari sits inside a ZTL restricted lane — expect a short walk from wherever the car can stop. Door code is in the Airbnb app; save it offline.",
@@ -56,10 +55,10 @@ const TRIP = {
       addr: "Calle Minelli 1887–1888, San Marco, 30124 Venezia",
       inDate: "Tue 22 Sep", inTime: "3:00 PM",
       outDate: "Fri 25 Sep", outTime: "—",
-      nights: 3, cost: "€1,095 / $1,270.20", paid: "PAY LATER",
+      nights: 3,
       host: "", phone: "+39 041 520 3329",
       link: "https://www.duodopalacehotel.com/",
-      notes: "€1,068 for the room is UNPAID — the card only guarantees it. Plus €27 city tax on departure. Room and Wi-Fi only, no breakfast. Free cancellation until 13:00 on 19 Sep. Ask about private dock access for the water-taxi arrival.",
+      notes: "The room is settled at the desk, not prepaid — the card only guarantees it, and there is a city tax on departure. Room and Wi-Fi only, no breakfast. Free cancellation until 13:00 on 19 Sep. Ask about private dock access for the water-taxi arrival.",
     },
     {
       id: "como", city: "Lake Como", country: "Italy",
@@ -67,7 +66,7 @@ const TRIP = {
       addr: "Via Regina 25, 22011 Griante CO",
       inDate: "Fri 25 Sep", inTime: "3:00 PM (self lockbox)",
       outDate: "Mon 28 Sep", outTime: "early — car at 07:00",
-      nights: 3, cost: "$1,537.35", paid: "paid",
+      nights: 3,
       host: "Irina · co-host Vincent", phone: "",
       link: "https://www.airbnb.com/trips/v1/reservation-details/ro/RESERVATION2_CHECKIN/HMAZ8FCH2H/g",
       notes: "Self check-in by lockbox — get the code from the Airbnb app and save it offline BEFORE you leave Venice. The boat dock at Tremezzo is a ten-minute walk south along the shore.",
@@ -78,7 +77,7 @@ const TRIP = {
       addr: "Höheweg 2, 3800 Interlaken",
       inDate: "Mon 28 Sep", inTime: "4:00 PM",
       outDate: "Sat 3 Oct", outTime: "10:00 AM",
-      nights: 5, cost: "$1,905.60", paid: "paid",
+      nights: 5,
       host: "Griwa Rent", phone: "",
       link: "https://www.airbnb.com/trips/v1/reservation-details/ro/RESERVATION2_CHECKIN/HMRZA2CJCW",
       notes: "On the main street, about 10 minutes' walk from Interlaken Ost. Longest stay of the trip.",
@@ -89,10 +88,10 @@ const TRIP = {
       addr: "1 Rue Augereau, 75007 Paris",
       inDate: "Sat 3 Oct", inTime: "3:00 PM",
       outDate: "Fri 9 Oct", outTime: "11:30 AM",
-      nights: 6, cost: "€2,926.40 / $3,394.62", paid: "deposit only",
+      nights: 6,
       host: "", phone: "+33 1 45 51 63 02",
       link: "https://www.hotel-paris-londres-eiffel.com/en/",
-      notes: "Night 1 (3→4 Oct) is the Poets room, €410. Nights 2–6 are the Eiffel-tower-view room on the 6th floor, €480/night. Balance of €2,825 is due AT THE HOTEL, plus €8.45pp per night city tax (€101.40). Breakfast optional: €20pp buffet, 7–10 AM. Nearest metro Ecole Militaire (Line 8), ~8 min. Two modification documents on file — confirm which booking is current at check-in.",
+      notes: "Night 1 (3→4 Oct) is the Poets room. Nights 2–6 are the Eiffel-tower-view room on the 6th floor. The balance is settled AT THE HOTEL, plus city tax. Breakfast is optional — buffet or continental, served 7–10 AM. Nearest metro Ecole Militaire (Line 8), ~8 min. Two modification documents on file — confirm which booking is current at check-in.",
     },
   ],
 
@@ -100,7 +99,7 @@ const TRIP = {
   tickets: [
     {
       id: "flights", group: "Flights", title: "Delta — both directions",
-      provider: "Delta Air Lines", ref: "GKS49A", cost: "$3,143.06 both", paid: true,
+      provider: "Delta Air Lines", ref: "GKS49A",
       lines: [
         ["DL 220", "Salt Lake City → Paris CDG · Thu 17 Sep 3:30 PM → Fri 18 Sep 9:30 AM · A330-900neo · arrives Terminal 2E"],
         ["Layover", "2h 45m at CDG — arrive 2E, depart 2F. Inter-terminal walk plus passport control; this is your entry into Schengen."],
@@ -116,7 +115,7 @@ const TRIP = {
     },
     {
       id: "tk2n7n", group: "Rail", title: "Rome → Venice · Tue 22 Sep",
-      provider: "Trenitalia", ref: "PNR TK2N7N", cost: "$113.45", paid: true,
+      provider: "Trenitalia", ref: "PNR TK2N7N",
       lines: [
         ["Frecciarossa 9416", "Roma Termini 10:35 → Venezia S. Lucia 14:34 · 3h 59m · Super Economy, Standard"],
         ["Get off at Santa Lucia", "NOT Mestre — Mestre is the stop before and it is on the mainland."],
@@ -135,7 +134,7 @@ const TRIP = {
     },
     {
       id: "tk9pwn", group: "Rail", title: "Venice → Lake Como · Fri 25 Sep",
-      provider: "Trenitalia", ref: "PNR TK9PWN", cost: "$95.35 (both trains)", paid: true,
+      provider: "Trenitalia", ref: "PNR TK9PWN",
       lines: [
         ["Frecciarossa 9724", "Venezia S. Lucia 10:48 → Milano Centrale 13:15 · 2h 27m"],
         ["Regionale 25520", "Milano Centrale 13:43 → Como S. Giovanni 14:23 · 40 min · 2nd class, no seat assignment"],
@@ -156,7 +155,7 @@ const TRIP = {
     },
     {
       id: "swisspass", group: "Rail", title: "Swiss Travel Pass ×2",
-      provider: "SBB", ref: "Order 151490866009", cost: "CHF 798 / $1,006", paid: true,
+      provider: "SBB", ref: "Order 151490866009",
       lines: [
         ["Valid", "Mon 28 Sep 00:00 → Sun 4 Oct 05:00 · 6 days · 2nd class"],
         ["Covers", "The GPE fare and the Lake Lucerne steamer on the 28th, Interlaken→Basel on 3 Oct, and all local Swiss transport in between."],
@@ -172,20 +171,20 @@ const TRIP = {
     },
     {
       id: "gpe", group: "Rail", title: "Gotthard Panorama Express · Mon 28 Sep",
-      provider: "SBB / GoPEx", ref: "Reservation 421839-1 · order 4800008796", cost: "CHF 148 / $186", paid: true,
+      provider: "SBB / GoPEx", ref: "Reservation 421839-1 · order 4800008796",
       lines: [
         ["Train 3092", "Lugano 09:18 → Flüelen 11:35 · Carriage 14, seats 71 & 72 · 1st-class panorama car"],
         ["Steamer", "Flüelen 12:00 → Luzern 14:47 · open seating, 1st-class deck"],
-        ["Class upgrade", "2 × Tagesklassenwechsel, CHF 50 each · order 151490869039 · Brandon Ticket-ID 705407089263 · Tatiana 713314984153"],
+        ["Class upgrade", "2 × Tagesklassenwechsel · order 151490869039 · Brandon Ticket-ID 705407089263 · Tatiana 713314984153"],
       ],
-      warn: "You must show THREE things stacked: the Swiss Travel Pass (the fare) + the CHF 50 first-class day upgrade (or seats 71–72 are not yours) + passport. The reservation letter is proof of seat, not a fare.",
+      warn: "You must show THREE things stacked: the Swiss Travel Pass (the fare) + the first-class day upgrade (or seats 71–72 are not yours) + passport. The reservation letter is proof of seat, not a fare.",
       notes: "BAGGAGE TRANSFER IS INCLUDED. Drop bags at the Lugano departure track at least 10 minutes before 09:18 — so by 09:08. 23 kg per piece, NO access en route. Collect at Luzern, Bahnhofquai Pier 1, where the steamer docks. Lunch is served on the boat — table reservation recommended at lakelucerne.ch/tischreservation.",
       account: "paynefamily522@gmail.com",
       images: ["tickets/gpe-upgrade-brandon.png", "tickets/gpe-upgrade-tatiana.png"],
     },
     {
       id: "tgv", group: "Rail", title: "Basel → Paris TGV · Sat 3 Oct",
-      provider: "SBB / TGV Lyria", ref: "Order 151490866652", cost: "CHF 152 / $190", paid: true,
+      provider: "SBB / TGV Lyria", ref: "Order 151490866652",
       lines: [
         ["TGV Lyria", "Basel SBB 12:34 → Paris Gare de Lyon 15:38 · 3h 04m · 2nd class, Semi Flex (exchangeable)"],
       ],
@@ -200,20 +199,20 @@ const TRIP = {
     },
     {
       id: "gpecar", group: "Ground", title: "Griante → Lugano car · Mon 28 Sep",
-      provider: "Lake Como Transfers", ref: "X7XZW8VIUV", cost: "€179 / $207.64", paid: true,
+      provider: "Lake Como Transfers", ref: "X7XZW8VIUV",
       lines: [
         ["Pick-up", "07:00 SHARP at Via Regina 25, Griante · Mercedes E-Class · drop Lugano Stazione FFS · ~1h–1h20"],
         ["Contact", "Jenny · WhatsApp / tel +39 349 3431906 · info@lakecomotransfers.com"],
       ],
       warn: "Ask the driver to route Menaggio–Porlezza, NOT Como–Chiasso — weekday cross-border commuter queues can be long. Passports out at the border.",
-      notes: "Paid 29 Aug via SumUp. Cancellation: full refund to 21 Sep, 50% to 26 Sep, none after.",
+      notes: "Cancellation: free until 21 Sep, partial until 26 Sep, not cancellable after that.",
     },
     {
       id: "disney", group: "Activities", title: "Disneyland Paris · Tue 6 Oct",
-      provider: "Disneyland Paris", ref: "35722312", cost: "$598.48", paid: true,
+      provider: "Disneyland Paris", ref: "35722312",
       lines: [
-        ["Tickets", "Dated 1 Day / 2 Park — both parks · 2 adults · $136.12 each"],
-        ["Premier Access Ultimate", "Both parks · $163.12 each · unlimited skip-the-line"],
+        ["Tickets", "Dated 1 Day / 2 Park — both parks · 2 adults"],
+        ["Premier Access Ultimate", "Both parks · unlimited skip-the-line"],
         ["Valid", "6 October 2026 only · cancellable until 3 October"],
       ],
       warn: "The confirmation email will NOT get you in. Your QR codes — tickets and Premier Access both — live in the Disneyland Paris app under 'My Tickets & Passes'. Install it, log in on both phones, and load them offline before the day. Bring photo ID for both of you.",
@@ -221,7 +220,7 @@ const TRIP = {
     },
     {
       id: "boat", group: "Activities", title: "Lake Como boat rental · Sun 27 Sep",
-      provider: "Nautic Planet", ref: "#2863", cost: "€260 / $302", paid: true,
+      provider: "Nautic Planet", ref: "#2863",
       lines: [
         ["Boat", "Motorboat 'Bellagio' · 4 hours · 2 people"],
         ["Departs", "Tremezzo · 11:00 AM, back 3:00 PM · arrive by 10:45"],
@@ -231,7 +230,7 @@ const TRIP = {
     },
     {
       id: "cooking", group: "Activities", title: "Venice cooking class · Thu 24 Sep",
-      provider: "GetYourGuide", ref: "GYGN6BYFG5ZX · PIN q2f4T@wD", cost: "$221.92", paid: true,
+      provider: "GetYourGuide", ref: "GYGN6BYFG5ZX · PIN q2f4T@wD",
       lines: [
         ["When", "4:00 PM, 3 hours, 2 adults, in English — be there 3:50 PM or the slot is forfeit"],
         ["Where", "Taverna San Trovaso · Calle Contarini Corfù 1016, 30123 Venezia (Dorsoduro) — over the Accademia bridge, ~15 min from the hotel"],
@@ -241,7 +240,7 @@ const TRIP = {
     },
     {
       id: "cafehomme", group: "Dining", title: "Café de l'Homme · Wed 7 Oct",
-      provider: "OpenTable", ref: "in-app", cost: "pay at restaurant", paid: false,
+      provider: "OpenTable", ref: "in-app",
       lines: [
         ["When", "8:00 PM · 2 people · indoor, standard seating"],
         ["Where", "17 Place du Trocadéro, 75016 Paris — in the Palais de Chaillot, straight across the Seine from the Eiffel Tower"],
@@ -250,7 +249,7 @@ const TRIP = {
     },
     {
       id: "vecioforno", group: "Dining", title: "Al Vecio Forno · Wed 23 Sep",
-      provider: "—", ref: "none issued", cost: "pay at restaurant", paid: false,
+      provider: "—", ref: "none issued",
       lines: [["When", "7:30 PM · party of 2, under 'Payne'"]],
       warn: "No written confirmation exists. Call to reconfirm a day or two ahead. Address and phone still need filling in.",
     },
@@ -265,45 +264,14 @@ const TRIP = {
     { label: "SkyMiles", value: "Brandon 9900655664 · Silver" },
   ],
 
-  /* ---------- BUDGET ---------- */
-  budget: [
-    { item: "Paris — Hotel de Londres Eiffel (incl. €101.40 city tax)", cat: "Lodging", amt: 3394.62, status: "deposit only" },
-    { item: "Flights — both", cat: "Air", amt: 3143.00, status: "paid" },
-    { item: "Flights — Guzman Christmas gift", cat: "Offset", amt: -3143.00, status: "credit" },
-    { item: "Interlaken — Airbnb", cat: "Lodging", amt: 1905.60, status: "paid" },
-    { item: "Lake Como — Airbnb", cat: "Lodging", amt: 1537.35, status: "paid" },
-    { item: "Rome — Airbnb", cat: "Lodging", amt: 1441.72, status: "paid" },
-    { item: "Venice — Duodo Palace (incl. €27 city tax)", cat: "Lodging", amt: 1270.20, status: "pay later" },
-    { item: "Swiss Travel Pass ×2 (CHF 798)", cat: "Rail", amt: 1006.00, status: "paid" },
-    { item: "Various Amazon purchases (camera)", cat: "Other", amt: 711.00, status: "paid" },
-    { item: "Swiss excursions (×2, pass-discounted)", cat: "Activities", amt: 700.00, status: "to book" },
-    { item: "Disneyland Paris", cat: "Activities", amt: 598.48, status: "paid" },
-    { item: "Lake Como boat rental", cat: "Activities", amt: 302.00, status: "paid" },
-    { item: "Venice cooking class", cat: "Activities", amt: 221.92, status: "paid" },
-    { item: "Griante → Lugano car (28 Sep)", cat: "Ground", amt: 207.64, status: "paid" },
-    { item: "Como → Griante car (25 Sep, quoted €179)", cat: "Ground", amt: 207.64, status: "quoted" },
-    { item: "Basel → Paris TGV (CHF 152)", cat: "Rail", amt: 190.00, status: "paid" },
-    { item: "GPE reservation + 1st-class upgrade (CHF 148)", cat: "Rail", amt: 186.00, status: "paid" },
-    { item: "Venice water transfers (private in / vaporetto out)", cat: "Ground", amt: 127.00, status: "day-of" },
-    { item: "Paris → CDG taxi", cat: "Ground", amt: 116.00, status: "to book" },
-    { item: "Rome → Venice train (€97.80)", cat: "Rail", amt: 113.45, status: "paid" },
-    { item: "Venice → Como trains (€82.20)", cat: "Rail", amt: 95.35, status: "paid" },
-    { item: "FCO → Rome transfer", cat: "Ground", amt: 75.00, status: "day-of" },
-    { item: "Local station taxis (Rome→Termini, Paris→hotel)", cat: "Ground", amt: 52.00, status: "day-of" },
-  ],
-  budgetNotes: [
-    "Owed at the hotels: ~$4,090 — Venice in full, the Paris balance, and both city taxes. Carry a card with room on it.",
-    "NOT in this budget at all: food for 23 days, museum entries, shopping and gifts. At roughly $200/day for two that is another ~$4,600.",
-  ],
-
   /* ---------- OPEN ITEMS ---------- */
   open: [
     { what: "Colosseum standard tickets", when: "keep checking", why: "coopculture.it — timed entry for 20 Sep. The 30-day guided-tour window came and went. Returns reappear, so check more than once." },
-    { what: "Como → Griante car", when: "before Venice", why: "Reply to Jenny with the 25 Sep arrival (train lands Como S. Giovanni 14:23). Quoted €179. Or just take the rank outside the station for ~€90–130 — nothing downstream depends on it." },
-    { what: "Cooking class cancellation window", when: "23 Sep, 4:00 PM", why: "Last moment for a full $221.92 refund." },
-    { what: "Disney cancellation window", when: "3 Oct", why: "Last day to cancel for a refund." },
+    { what: "Como → Griante car", when: "before Venice", why: "Either reply to Jenny with the 25 Sep arrival (train lands Como S. Giovanni 14:23), or just take the rank outside the station. Nothing downstream depends on it — check-in is self-service at 3pm." },
+    { what: "Cooking class cancellation window", when: "23 Sep, 4:00 PM", why: "Last moment to cancel it." },
+    { what: "Disney cancellation window", when: "3 Oct", why: "Last day it can be cancelled." },
     { what: "Paris → CDG taxi", when: "ask reception 8 Oct", why: "The one ground leg not to wing. Hailing in the 7th at 6:30 AM is unreliable and app rides cancel." },
-    { what: "Swiss excursions", when: "29 Sep – 2 Oct", why: "$700 budgeted, nothing assigned to a date. Book a day ahead off the forecast." },
+    { what: "Swiss excursions", when: "29 Sep – 2 Oct", why: "Four open days, four things, nothing assigned to a date. Book a day ahead off the forecast." },
     { what: "Steamer lunch table", when: "before 28 Sep", why: "lakelucerne.ch/tischreservation — optional but recommended." },
     { what: "Tatiana's seat numbers", when: "anytime", why: "Flight record GKS49A is shared; her three seat assignments were never written down." },
     { what: "Door / lockbox codes", when: "before each arrival", why: "Rome, Como and Interlaken all need codes out of the Airbnb app, saved offline." },
@@ -317,7 +285,7 @@ const TRIP = {
     {
       name: "Grindelwald & First",
       gist: "Gondola to 2,168 m, Cliff Walk, then back down by zipline, mountain cart and trottibike without riding the gondola once.",
-      detail: "~8:30 train to Grindelwald (35 min, on the pass) · ~9:20 gondola · ~10:00 Cliff Walk · ~11:15 First Flyer, then Glider, Mountain Cart, Trottibike · ~1:30 lunch in the village. Buy the Adventure Package at the base station — cheaper than piecemeal. THREE TRAPS: each activity has a last-run time earlier than the gondola's, so treat the earliest as your turnaround; the kart and trottibike shut on a wet track and the Flyer shuts in high wind, so the chain can close on a day the gondola runs fine; the order is fixed top-to-bottom and you cannot come back for a stage. Budget CHF 250–350 for two. Most weather-fragile of the four — give it the best forecast.",
+      detail: "~8:30 train to Grindelwald (35 min, on the pass) · ~9:20 gondola · ~10:00 Cliff Walk · ~11:15 First Flyer, then Glider, Mountain Cart, Trottibike · ~1:30 lunch in the village. Buy the Adventure Package at the base station — it is the official bundle of gondola plus all four activities. THREE TRAPS: each activity has a last-run time earlier than the gondola's, so treat the earliest as your turnaround; the kart and trottibike shut on a wet track and the Flyer shuts in high wind, so the chain can close on a day the gondola runs fine; the order is fixed top-to-bottom and you cannot come back for a stage. Most weather-fragile of the four — give it the best forecast.",
     },
     {
       name: "E-bikes, Lauterbrunnen valley",

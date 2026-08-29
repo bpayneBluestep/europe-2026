@@ -26,8 +26,8 @@ Do steps 1–4 on **both** phones.
 | **Today** | Auto-selects the current day. Before departure it counts down and shows day 1. |
 | **Days** | All 23 days. Red dot = travel day, blue = something booked, grey = open. |
 | **Tickets** | Every PNR, seat, ticket ID, change code and confirmation, grouped by type. |
-| **Stays** | The five properties — addresses, check-in times, what's still owed. |
-| **Money** | Budget vs. committed, computed live from the data. Plus every open item. |
+| **Stays** | The five properties — addresses, check-in times, host details, Maps links. |
+| **Open** | Everything still to sort, and the four Swiss excursion options. |
 | **SOS** | Floating red button, reachable from any screen. Tap-to-call emergency numbers. |
 
 ## Adding the ticket QR codes
@@ -44,7 +44,7 @@ tickets/tk9pwn-brandon.png          Venice → Como (all legs, per passenger)
 tickets/tk9pwn-tatiana.png
 tickets/swisspass-brandon.png       Swiss Travel Pass — the 2 PNGs on the 13 Jul 01:39 SBB email
 tickets/swisspass-tatiana.png
-tickets/gpe-upgrade-brandon.png     CHF 50 first-class day upgrade
+tickets/gpe-upgrade-brandon.png     first-class day upgrade
 tickets/gpe-upgrade-tatiana.png
 tickets/tgv.png                     Basel → Paris
 ```
@@ -57,7 +57,7 @@ Then follow **Updating** below.
 
 ## Updating
 
-1. Edit `data.js` (tickets, stays, budget, open items) or `days.js` (the 23 days).
+1. Edit `data.js` (tickets, stays, open items) or `days.js` (the 23 days).
 2. **Bump `CACHE_VERSION` in `sw.js`** — `europe-2026-v1` → `v2`, and so on.
    Skip this and both phones keep serving the old cached copy.
 3. Commit and push. GitHub Pages redeploys in about a minute.
@@ -68,7 +68,7 @@ Then follow **Updating** below.
 
 ```
 index.html    the whole app — styles, views, router, service-worker registration
-data.js       tickets, stays, budget, accounts, emergency numbers, excursions
+data.js       tickets, stays, open items, accounts, emergency numbers, excursions
 days.js       the 23 days, with timelines for the five travel days
 sw.js         offline cache. CACHE_VERSION is the thing you have to remember to bump
 manifest.webmanifest
