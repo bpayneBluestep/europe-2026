@@ -253,31 +253,45 @@
   .wl-form label{display:block;font-size:11.5px;font-weight:600;letter-spacing:.04em;
     color:var(--faint);text-transform:uppercase;margin:0 0 5px 2px}
 
-  .wl{display:flex;gap:13px;align-items:flex-start;background:var(--card);
-    border-radius:var(--r-lg);padding:15px;margin-bottom:10px;box-shadow:var(--shadow)}
-  .wl.done{opacity:.5}
-  .wl .tick{flex:0 0 24px;height:24px;border-radius:8px;border:1.7px solid #d5d8dc;
-    background:none;cursor:pointer;display:grid;place-items:center;padding:0;
-    margin-top:1px}
-  .wl.done .tick{background:var(--accent,var(--ink));border-color:var(--accent,var(--ink))}
-  .wl .tick svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2.6;
-    stroke-linecap:round;stroke-linejoin:round;opacity:0}
-  .wl.done .tick svg{opacity:1}
-  .wl .body{flex:1;min-width:0}
+  /* A saved item. The two controls float top-right so the link button below
+     can run the full width of the card — it is the thing you actually reach
+     for, usually one-handed on a moving train. */
+  .wl{position:relative;background:var(--card);border-radius:var(--r-lg);
+    padding:15px;margin-bottom:10px;box-shadow:var(--shadow)}
+  .wl .body{min-width:0}
   .wl .body b{display:block;font-size:15.5px;font-weight:600;letter-spacing:-.015em;
-    line-height:1.32}
-  .wl.done .body b{text-decoration:line-through}
-  .wl .body .meta{font-size:12.5px;color:var(--faint);margin-top:4px}
+    line-height:1.32;padding-right:74px}
+  .wl .body .meta{font-size:12.5px;color:var(--faint);margin-top:4px;
+    padding-right:74px}
   .wl .body .note{background:none;padding:0;margin:6px 0 0;font-size:14px;
     color:var(--dim)}
-  .wl .body a.src{display:inline-flex;align-items:center;gap:5px;margin-top:8px;
-    font-size:13px;font-weight:600;color:var(--accent,var(--ink));
-    text-decoration:underline;text-underline-offset:3px;word-break:break-all}
-  .wl .body a.src svg{width:15px;height:15px;stroke:currentColor;fill:none;
-    stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:0 0 15px}
-  .wl .kill{flex:0 0 30px;height:30px;border-radius:999px;border:0;background:none;
-    color:var(--faint);cursor:pointer;display:grid;place-items:center;padding:0}
-  .wl .kill svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.9;
+
+  /* Full-width, thumb-sized call to action rather than a small underlined
+     link — a 15px link is a miss target on a phone. */
+  .wl .body a.src{display:flex;align-items:center;justify-content:center;gap:8px;
+    margin-top:12px;min-height:48px;padding:0 18px;border-radius:13px;
+    background:var(--accent,var(--ink));color:#fff;font-size:15px;font-weight:600;
+    letter-spacing:-.01em;text-decoration:none}
+  .wl .body a.src:active{filter:brightness(.9)}
+  .wl .body a.src svg{width:17px;height:17px;stroke:#fff;fill:none;
+    stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 17px}
+
+  .wl .acts{position:absolute;top:11px;right:11px;display:flex;gap:2px}
+  .wl .acts button{width:32px;height:32px;border-radius:999px;border:0;
+    background:none;color:var(--faint);cursor:pointer;display:grid;
+    place-items:center;padding:0}
+  .wl .acts button svg{width:17px;height:17px;stroke:currentColor;fill:none;
+    stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+  /* The row of buttons under the edit form. */
+  .wl-form .row{display:flex;gap:9px;margin-top:4px}
+  .wl-form .row button{flex:1;min-height:46px;border-radius:13px;border:0;
+    font:inherit;font-size:15px;font-weight:600;cursor:pointer;
+    background:var(--ink);color:#fff}
+  .wl-form .row button.ghost{background:var(--bg);color:var(--dim);
+    border:1px solid var(--line)}
+  #wlOpen{display:flex;align-items:center;justify-content:center;gap:8px}
+  #wlOpen svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2.2;
     stroke-linecap:round;stroke-linejoin:round}
 
   /* ---------- who ---------- */
@@ -378,6 +392,10 @@
   /* ---------- helpers ---------- */
   var E = document.createElement("div");
   function esc(s){ E.textContent = s == null ? "" : String(s); return E.innerHTML; }
+  /* esc() escapes &, < and > but not quotes, which is fine for text nodes and
+     wrong for an attribute value. Anything user-typed that lands in an
+     attribute goes through this instead. */
+  function escA(s){ return esc(s).replace(/"/g, "&quot;"); }
   function el(id){ return document.getElementById(id); }
 
   var ICON = {
@@ -399,6 +417,7 @@
     camera:  '<path d="M3.5 8.6a2 2 0 0 1 2-2h1.9l1.3-2.1h6.6l1.3 2.1h1.9a2 2 0 0 1 2 2v8.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.8" r="3.4"/>',
     heart:   '<path d="M12 20s-7.4-4.6-7.4-9.6A4.2 4.2 0 0 1 12 7.6a4.2 4.2 0 0 1 7.4 2.8c0 5-7.4 9.6-7.4 9.6z"/>',
     check:   '<path d="M4.5 12.5 9.5 17.5 19.5 6.5"/>',
+    pencil:  '<path d="M4 20h4.2L19 9.2a2.1 2.1 0 0 0 0-3l-1.2-1.2a2.1 2.1 0 0 0-3 0L4 15.8z"/><path d="M13.6 6.4 17.6 10.4"/>',
     trash:   '<path d="M4.5 6.6h15M9.6 6.6V4.8h4.8v1.8M6.6 6.6l.9 12.2a1.7 1.7 0 0 0 1.7 1.6h5.6a1.7 1.7 0 0 0 1.7-1.6l.9-12.2"/>',
     link:    '<path d="M10.2 13.8a3.6 3.6 0 0 0 5.4.4l2.6-2.6a3.6 3.6 0 0 0-5.1-5.1l-1.5 1.5"/><path d="M13.8 10.2a3.6 3.6 0 0 0-5.4-.4l-2.6 2.6a3.6 3.6 0 0 0 5.1 5.1l1.5-1.5"/>',
     plus:    '<path d="M12 5.2v13.6M5.2 12h13.6"/>'
@@ -744,6 +763,14 @@
       h += '<div class="card">' + timelineBlock(day) + '</div>';
     }
 
+    /* Anything either of you suggested for this day. A suggestion, not a
+       booking — it sits below the actual moves for that reason. */
+    var ideas = ideasFor(day);
+    if (ideas.length){
+      h += sect("Ideas for this day", "All ideas", "#/wish");
+      ideas.forEach(function(it){ h += wishRow(it); });
+    }
+
     if (day.notes && day.notes.length){
       h += sect("Notes", null, null);
       h += '<div class="card">';
@@ -956,38 +983,120 @@
   /* ---------- wishlist ---------- */
 
   /* Pull a usable label out of a pasted link so a bare TikTok URL still reads
-     as something in the list. */
-  function linkLabel(url){
+     as something in the list. Phrased as an action, because it is a button. */
+  function linkCta(url){
     try {
       var h = new URL(url).hostname.replace(/^www\./, "");
-      if (h.indexOf("tiktok") !== -1)    return "TikTok";
-      if (h.indexOf("instagram") !== -1) return "Instagram";
-      if (h.indexOf("youtu") !== -1)     return "YouTube";
-      if (h.indexOf("maps.") === 0 || h.indexOf("google") !== -1) return "Maps";
-      return h;
-    } catch (e) { return "Link"; }
+      if (h.indexOf("tiktok") !== -1)    return "Watch on TikTok";
+      if (h.indexOf("instagram") !== -1) return "Watch on Instagram";
+      if (h.indexOf("youtu") !== -1)     return "Watch on YouTube";
+      if (h.indexOf("maps") !== -1 || h.indexOf("google") !== -1 ||
+          h.indexOf("goo.gl") !== -1) return "Open in Maps";
+      return "Open " + h;
+    } catch (e) { return "Open link"; }
+  }
+
+  /* ---------- suggesting a day ---------- */
+
+  /* Which days a thing could plausibly happen on. A city narrows it to that
+     city's days; "Other" (no city) leaves every day open, because a phrase to
+     learn or a thing to buy is not tied to a place. */
+  function daysForCity(city){
+    return TRIP.days.filter(function(d){
+      return !city || cityKey(d) === city;
+    });
+  }
+
+  function dayOptions(city, selected){
+    var h = '<option value="">No day yet</option>';
+    daysForCity(city).forEach(function(d){
+      h += '<option value="' + d.n + '"' +
+           (String(selected || "") === String(d.n) ? " selected" : "") + '>' +
+           'Day ' + d.n + ' — ' + esc(d.date) + ' — ' + esc(d.city) +
+           '</option>';
+    });
+    return h;
+  }
+
+  /* A suggestion is a hint, not a booking — the wording stays soft on purpose. */
+  function dayHint(n){
+    var d = null;
+    TRIP.days.forEach(function(x){ if (String(x.n) === String(n)) d = x; });
+    return d ? 'Day ' + d.n + ' &middot; ' + esc(d.date) : "";
+  }
+
+  /* Which item, if any, is currently open for editing. Cleared on navigation
+     so a half-finished edit cannot survive a route change. */
+  var editingId = null;
+
+  /* The add form starts collapsed. It is five fields tall, and the list is
+     what you open this tab to read — adding is the rarer act. */
+  var addOpen = false;
+
+  /* ---------- the add / edit form ----------
+     One function for both, because they are the same fields. Passing an item
+     makes it an edit; passing nothing makes it the add form at the top of the
+     list. The two use different id prefixes so both can exist at once. */
+  function wishForm(it){
+    var e = !!it, p = e ? "ed" : "wl", v = it || {};
+    var city = v.city || "";
+    var h = '<div class="wl-form"' + (e ? ' style="margin-bottom:14px"' : '') + '>';
+    h += '<label for="' + p + 'Title">What is it</label>' +
+      '<input id="' + p + 'Title" type="text" value="' + escA(v.title || "") + '" ' +
+        'placeholder="Trevi Fountain at dawn" autocomplete="off" enterkeyhint="done">';
+    h += '<label for="' + p + 'Url">Link — paste a TikTok, Reel or map pin</label>' +
+      '<input id="' + p + 'Url" type="url" value="' + escA(v.url || "") + '" ' +
+        'placeholder="https://" autocomplete="off" inputmode="url" enterkeyhint="done">';
+    h += '<label for="' + p + 'City">Where</label>' +
+      '<select id="' + p + 'City" data-city-sel="' + p + 'Day">' +
+        '<option value="">Other — not tied to a place</option>' +
+        Object.keys(TRIP.cities).map(function(c){
+          return '<option value="' + escA(c) + '"' +
+                 (c === city ? " selected" : "") + '>' + esc(c) + '</option>';
+        }).join("") +
+      '</select>';
+    h += '<label for="' + p + 'Day">Suggest a day</label>' +
+      '<select id="' + p + 'Day">' + dayOptions(city, v.day) + '</select>';
+    h += '<label for="' + p + 'Note">Note</label>' +
+      '<textarea id="' + p + 'Note" placeholder="Optional — why, or what to know">' +
+      esc(v.note || "") + '</textarea>';
+    if (e){
+      h += '<div class="row">' +
+        '<button class="ghost" id="edCancel">Cancel</button>' +
+        '<button id="edSave" data-id="' + escA(v.id) + '">Save</button></div>';
+    } else {
+      h += '<button class="btn-wide" id="wlAdd" style="margin-top:4px">Add it</button>';
+    }
+    return h + '</div>';
   }
 
   function wishRow(it){
+    if (it.id === editingId) return wishForm(it);
+
     var city = it.city && TRIP.cities[it.city] ? it.city : null;
     var accent = city ? cityColor(city) : "#212529";
-    var h = '<div class="wl' + (it.done ? " done" : "") +
-            '" style="--accent:' + accent + '">';
-    h += '<button class="tick" data-wl-toggle="' + esc(it.id) +
-         '" aria-label="Mark done">' + svg("check") + '</button>';
+    var h = '<div class="wl" style="--accent:' + accent + '">';
+    h += '<div class="acts">' +
+      '<button data-wl-edit="' + escA(it.id) + '" aria-label="Edit">' +
+        svg("pencil") + '</button>' +
+      '<button data-wl-del="' + escA(it.id) + '" aria-label="Delete">' +
+        svg("trash") + '</button></div>';
     h += '<div class="body"><b>' + esc(it.title) + '</b>';
     h += '<div class="meta">' + byline(it.createdBy) + ' &middot; ' +
          (city ? dot(city) + esc(city) : "Other") +
-         (it.day ? ' &middot; day ' + esc(it.day) : "") + '</div>';
-    if (it.done && it.doneBy) h += '<div class="meta">Ticked off by ' +
-                                    esc(it.doneBy) + '</div>';
+         (it.day && dayHint(it.day) ? ' &middot; ' + dayHint(it.day) : "") + '</div>';
     if (it.note) h += '<p class="note">' + esc(it.note) + '</p>';
-    if (it.url) h += '<a class="src" href="' + esc(it.url) + '" target="_blank" ' +
-                     'rel="noopener">' + svg("link") + esc(linkLabel(it.url)) + '</a>';
+    if (it.url) h += '<a class="src" href="' + escA(it.url) + '" target="_blank" ' +
+                     'rel="noopener">' + svg("link") + esc(linkCta(it.url)) + '</a>';
     h += '</div>';
-    h += '<button class="kill" data-wl-del="' + esc(it.id) +
-         '" aria-label="Delete">' + svg("trash") + '</button>';
     return h + '</div>';
+  }
+
+  /* Things suggested for one day, shown on that day's page. */
+  function ideasFor(day){
+    return Store.items().filter(function(x){
+      return String(x.day || "") === String(day.n);
+    });
   }
 
   views.wish = function(filter){
@@ -1015,42 +1124,23 @@
       return active === "All" || (x.createdBy || "") === active;
     });
 
-    h += '<div class="wl-form" style="margin-top:18px">' +
-      '<label for="wlTitle">What is it</label>' +
-      '<input id="wlTitle" type="text" placeholder="Trevi Fountain at dawn" ' +
-        'autocomplete="off" enterkeyhint="done">' +
-      '<label for="wlUrl">Link — paste a TikTok, Reel or map pin</label>' +
-      '<input id="wlUrl" type="url" placeholder="https://" autocomplete="off" ' +
-        'inputmode="url" enterkeyhint="done">' +
-      '<label for="wlCity">Where</label>' +
-      '<select id="wlCity">' +
-        '<option value="">Other — not tied to a place</option>' +
-        Object.keys(TRIP.cities).map(function(c){
-          return '<option value="' + esc(c) + '">' + esc(c) + '</option>';
-        }).join("") +
-      '</select>' +
-      '<label for="wlNote">Note</label>' +
-      '<textarea id="wlNote" placeholder="Optional — why, or what to know"></textarea>' +
-      '<button class="btn-wide" id="wlAdd" style="margin-top:4px">Add it</button>' +
-      '</div>';
-
-    var open = list.filter(function(x){ return !x.done; });
-    var done = list.filter(function(x){ return x.done; });
+    h += '<div style="margin-top:18px">';
+    if (addOpen){
+      h += wishForm(null);
+    } else {
+      h += '<button class="btn-wide" id="wlOpen">' + svg("plus") +
+           ' Add something</button>';
+    }
+    h += '</div>';
 
     if (!list.length){
       h += '<div class="card"><div class="empty">' +
            (all.length ? 'Nothing from ' + esc(active) + ' yet.'
                        : 'Nothing on the list yet.<br>Add the first thing either of you wants to see.') +
            '</div></div>';
-    }
-
-    if (open.length){
+    } else {
       h += sect("On the list", null, null);
-      open.forEach(function(it){ h += wishRow(it); });
-    }
-    if (done.length){
-      h += sect("Done", null, null);
-      done.forEach(function(it){ h += wishRow(it); });
+      list.forEach(function(it){ h += wishRow(it); });
     }
 
     h += '<div class="sync">Saved <b>' + esc(st.mode) + '</b>' +
@@ -1145,6 +1235,24 @@
     window.scrollTo(0, 0);
   }
 
+  /* Re-draw in place. route() jumps to the top, which is right for navigation
+     and wrong for editing the eleventh item on a long list. */
+  function rerender(){
+    var y = window.scrollY;
+    route();
+    window.scrollTo(0, y);
+  }
+
+  /* Changing the city rewrites the day picker beside it, so the days offered
+     are only that city's. Done in place rather than by re-rendering, because a
+     re-render would throw away whatever is half-typed in the other fields. */
+  document.addEventListener("change", function(e){
+    var sel = e.target.closest("[data-city-sel]");
+    if (!sel) return;
+    var days = el(sel.getAttribute("data-city-sel"));
+    if (days) days.innerHTML = dayOptions(sel.value, days.value);
+  });
+
   /* One delegated handler for navigation and for the wishlist controls, since
      both live in markup that gets replaced wholesale on every render. */
   document.addEventListener("click", function(e){
@@ -1167,6 +1275,16 @@
       return;
     }
 
+    var opn = e.target.closest("#wlOpen");
+    if (opn){
+      e.preventDefault();
+      addOpen = true;
+      rerender();
+      var f = el("wlTitle");
+      if (f) f.focus();
+      return;
+    }
+
     var add = e.target.closest("#wlAdd");
     if (add){
       e.preventDefault();
@@ -1176,20 +1294,44 @@
         title: title,
         url:   el("wlUrl").value.trim(),
         city:  el("wlCity").value,
+        day:   el("wlDay").value,
         note:  el("wlNote").value.trim(),
-        done:  false,
       });
+      addOpen = false;
       route();
       return;
     }
 
-    var tog = e.target.closest("[data-wl-toggle]");
-    if (tog){
+    var ed = e.target.closest("[data-wl-edit]");
+    if (ed){
       e.preventDefault();
-      var id = tog.getAttribute("data-wl-toggle");
-      var cur = Store.items().filter(function(x){ return x.id === id; })[0];
-      if (cur) Store.update(id, { done: !cur.done, doneBy: !cur.done ? Store.who() : "" });
-      route();
+      editingId = ed.getAttribute("data-wl-edit");
+      rerender();
+      return;
+    }
+
+    var cancel = e.target.closest("#edCancel");
+    if (cancel){
+      e.preventDefault();
+      editingId = null;
+      rerender();
+      return;
+    }
+
+    var save = e.target.closest("#edSave");
+    if (save){
+      e.preventDefault();
+      var t = el("edTitle").value.trim();
+      if (!t){ el("edTitle").focus(); return; }
+      Store.update(save.getAttribute("data-id"), {
+        title: t,
+        url:   el("edUrl").value.trim(),
+        city:  el("edCity").value,
+        day:   el("edDay").value,
+        note:  el("edNote").value.trim(),
+      });
+      editingId = null;
+      rerender();
       return;
     }
 
@@ -1197,7 +1339,8 @@
     if (del){
       e.preventDefault();
       Store.remove(del.getAttribute("data-wl-del"));
-      route();
+      editingId = null;
+      rerender();
       return;
     }
 
@@ -1251,7 +1394,9 @@
     return true;
   }
 
-  window.addEventListener("hashchange", route);
+  window.addEventListener("hashchange", function(){
+    editingId = null; addOpen = false; route();
+  });
   consumeShare();
   route();
 
@@ -1259,7 +1404,12 @@
      to the foreground — that is when the other phone's additions arrive. */
   function sync(){
     Store.refresh().then(function(){
-      if ((location.hash || "").indexOf("#/wish") === 0) route();
+      /* Never redraw over a half-finished edit. Day pages list suggestions
+         too, so they refresh on the same signal. */
+      var at = location.hash || "";
+      if (!editingId && (at.indexOf("#/wish") === 0 || at.indexOf("#/day") === 0)) {
+        rerender();
+      }
     });
   }
   sync();

@@ -27,7 +27,7 @@ Do steps 1–4 on **both** phones.
 | **Days** | All 23 days. Red dot = travel day, blue = something booked, grey = open. |
 | **Tickets** | Every PNR, seat, ticket ID, change code and confirmation, grouped by type. |
 | **Stays** | The five properties — addresses, check-in times, host details, Maps links. |
-| **Want to do** | Shared wishlist. Add anything with an optional link (paste a TikTok), tag a city, tick it off. |
+| **Want to do** | Shared wishlist. Add anything with an optional link (paste a TikTok), tag a city, suggest a day. Edit or delete any row. |
 | **Open** | Everything still to sort, the four Swiss excursion options, and photo credits. |
 | **SOS** | Floating red button, reachable from any screen. Tap-to-call emergency numbers. |
 
@@ -101,7 +101,7 @@ Failed writes go into a queue that is flushed on the next successful refresh.
 The endpoint contract, all on one URL:
 
 ```
-GET   ->  { items: [ { id, title, url, city, note, done, createdAt } ] }
+GET   ->  { items: [ { id, title, url, city, day, note, createdAt, createdBy } ] }
 POST  { action: "add",    item: {...} }
 POST  { action: "update", id, item: {...} }
 POST  { action: "delete", id }
@@ -128,12 +128,41 @@ device claims**, chosen once on first launch and kept in localStorage. It answer
 - Items created before this existed show *added before names were on* rather than
   a wrong name.
 
-Server-side, `createdBy` and `doneBy` are whitelisted through the field filter,
-and **update preserves the stored `createdBy`/`createdAt`** unless the caller
-supplies them — so one of you ticking the other's item does not reassign it.
+Server-side, `createdBy` is whitelisted through the field filter, and **update
+preserves the stored `createdBy`/`createdAt`** unless the caller supplies them —
+so one of you editing the other's item does not reassign it.
 
 For the Shortcut, add a `by` key alongside `url` in the `item` dictionary and set
 it to that phone's owner. `by` and `createdBy` are both accepted.
+
+## Editing, and suggesting a day
+
+Every row has a pencil and a bin in its top-right corner. The pencil turns that
+row into the same form used for adding, pre-filled; Save writes it, Cancel drops
+it. Only one row is editable at a time, and navigating away discards a
+half-finished edit rather than carrying it to another screen.
+
+**Suggest a day** is the fourth field. It lists only the days that belong to the
+item's city — pick Venice and it offers days 7–9 — so the choice is small enough
+to make with a thumb. Changing the city rewrites the day list in place, without
+disturbing anything already typed in the other fields. Items with no city
+("Other") can be suggested for any day.
+
+A suggested item then appears under **Ideas for this day** on that day's page,
+below the actual moves. That placement is the point: it is a suggestion, not a
+booking. Nothing about it changes the itinerary in `days.js`, and the day picker
+is stored as `item.day` — just the day number as a string.
+
+**There is no tick-off.** The list is a store of things you liked, not a chore
+list, so items have no done state and nothing gets struck through. The `done`
+field still exists in the endpoint's whitelist and is simply never written.
+
+The link is a full-width button reading *Watch on TikTok*, *Open in Maps* and so
+on — 48px tall, tinted with the city's accent. It was a 13px underlined link,
+which is a miss target on a moving train.
+
+The add form starts collapsed behind an **Add something** button, because the
+list is what you open the tab to read.
 
 ## Sharing straight from TikTok
 
