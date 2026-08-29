@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Europe 2026</title>
+<meta name="description" content="Offline trip companion — Rome, Venice, Lake Como, Interlaken, Paris.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1b3a5c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Europe 26">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<style>
+  :root{
+    --bg:#f6f4ef; --card:#fffdf9; --ink:#1c1a17; --dim:#6a635a; --faint:#948b7e;
+    --line:#e2dcd1; --accent:#1b3a5c; --accent-soft:#e8eef4;
+    --warn:#8a3b12; --warn-bg:#fdf0e6; --crit:#8f1d1d; --crit-bg:#fdeaea;
+    --ok:#20603a; --ok-bg:#e7f2ea;
+    --radius:14px;
+    --tab-h:calc(56px + env(safe-area-inset-bottom));
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#14161a; --card:#1c1f25; --ink:#eceae6; --dim:#a09a91;
+      --faint:#7d766c; --line:#2c313a; --accent:#7fb3e0; --accent-soft:#1e2a36;
+      --warn:#e8a877; --warn-bg:#2e2118; --crit:#f0908c; --crit-bg:#331b1b;
+      --ok:#7fc79b; --ok-bg:#18291f;
+    }
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    padding-bottom:var(--tab-h);
+    -webkit-text-size-adjust:100%;
+    overscroll-behavior-y:none;
+  }
+  a{color:var(--accent)}
+
+  /* header */
+  header{
+    position:sticky; top:0; z-index:20; background:var(--accent); color:#fff;
+    padding:calc(10px + env(safe-area-inset-top)) 16px 10px;
+    display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+  }
+  header h1{font-size:15px;margin:0;font-weight:650;letter-spacing:.02em}
+  header .sub{font-size:12px;opacity:.75}
+
+  main{padding:14px 14px 24px; max-width:720px; margin:0 auto}
+
+  /* tab bar */
+  nav{
+    position:fixed; left:0; right:0; bottom:0; z-index:30;
+    display:grid; grid-template-columns:repeat(5,1fr);
+    background:var(--card); border-top:1px solid var(--line);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  nav button{
+    appearance:none; border:0; background:none; color:var(--faint);
+    font:inherit; font-size:10.5px; letter-spacing:.02em;
+    padding:7px 2px 8px; cursor:pointer; display:flex; flex-direction:column;
+    align-items:center; gap:3px;
+  }
+  nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7;
+    stroke-linecap:round;stroke-linejoin:round}
+  nav button[aria-current="true"]{color:var(--accent);font-weight:600}
+
+  /* building blocks */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px;margin:0 0 12px}
+  .card.tight{padding:12px 14px}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);
+    margin:22px 0 9px;font-weight:650}
+  h2:first-child{margin-top:2px}
+  h3{font-size:17px;margin:0 0 4px;line-height:1.3}
+  p{margin:0 0 9px}
+  p:last-child{margin-bottom:0}
+  .muted{color:var(--dim);font-size:14px}
+  .tiny{font-size:12.5px;color:var(--faint)}
+  .mono{font-variant-numeric:tabular-nums;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+  .pill{display:inline-block;font-size:11px;font-weight:650;letter-spacing:.05em;
+    text-transform:uppercase;padding:3px 8px;border-radius:99px;
+    background:var(--accent-soft);color:var(--accent)}
+  .pill.warn{background:var(--warn-bg);color:var(--warn)}
+  .pill.crit{background:var(--crit-bg);color:var(--crit)}
+  .pill.ok{background:var(--ok-bg);color:var(--ok)}
+
+  .note{border-radius:10px;padding:11px 13px;font-size:14px;margin:10px 0 0;
+    background:var(--accent-soft)}
+  .note.warn{background:var(--warn-bg);color:var(--warn)}
+  .note.crit{background:var(--crit-bg);color:var(--crit);font-weight:500}
+  .note b{font-weight:700}
+
+  /* rows */
+  .row{display:flex;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+  .row:first-child{border-top:0;padding-top:2px}
+  .row .k{flex:0 0 82px;font-size:12.5px;color:var(--faint);font-weight:600;
+    padding-top:2px}
+  .row .v{flex:1;min-width:0;font-size:14.5px}
+  .row .v .sub{font-size:13.5px;color:var(--dim);margin-top:3px}
+
+  /* day list */
+  .daylist{display:flex;flex-direction:column;gap:8px}
+  .day{display:flex;gap:12px;align-items:flex-start;background:var(--card);
+    border:1px solid var(--line);border-radius:12px;padding:12px 13px;
+    cursor:pointer;text-align:left;width:100%;font:inherit;color:inherit}
+  .day .n{flex:0 0 40px;text-align:center}
+  .day .n b{display:block;font-size:19px;line-height:1;font-variant-numeric:tabular-nums}
+  .day .n span{font-size:10px;color:var(--faint);text-transform:uppercase;
+    letter-spacing:.06em}
+  .day .body{flex:1;min-width:0}
+  .day .body .t{font-weight:600;font-size:15px}
+  .day .body .c{font-size:12.5px;color:var(--faint);margin-top:2px}
+  .day .mark{flex:0 0 auto;align-self:center;width:8px;height:8px;border-radius:99px;
+    background:var(--line)}
+  .day .mark.travel{background:var(--crit)}
+  .day .mark.plan{background:var(--accent)}
+  .day.is-today{border-color:var(--accent);box-shadow:0 0 0 1.5px var(--accent)}
+
+  /* timeline */
+  .tl{margin:2px 0 0;padding:0;list-style:none}
+  .tl li{display:flex;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+  .tl li:first-child{border-top:0}
+  .tl .t{flex:0 0 68px;font-size:13px;font-weight:650;color:var(--accent);
+    font-variant-numeric:tabular-nums;padding-top:1px}
+  .tl .w{flex:1;min-width:0}
+  .tl .w b{display:block;font-size:14.5px;font-weight:600}
+  .tl .w span{display:block;font-size:13.5px;color:var(--dim);margin-top:3px}
+
+  ul.check{list-style:none;margin:0;padding:0}
+  ul.check li{display:flex;gap:9px;padding:7px 0;font-size:14px;
+    border-top:1px solid var(--line)}
+  ul.check li:first-child{border-top:0}
+  ul.check li::before{content:"";flex:0 0 15px;height:15px;margin-top:3px;
+    border:1.6px solid var(--faint);border-radius:4px}
+
+  /* buttons / links */
+  .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
+  .btn{display:inline-block;padding:9px 13px;border-radius:9px;font-size:13.5px;
+    font-weight:600;text-decoration:none;background:var(--accent-soft);
+    color:var(--accent);border:1px solid transparent}
+  .btn.ghost{background:transparent;border-color:var(--line);color:var(--dim)}
+
+  .back{background:none;border:0;color:var(--accent);font:inherit;font-size:14px;
+    font-weight:600;padding:0 0 10px;cursor:pointer;display:inline-flex;gap:5px;
+    align-items:center}
+
+  /* ticket images */
+  .qr{margin-top:11px}
+  .qr img{width:100%;max-width:300px;border-radius:10px;border:1px solid var(--line);
+    background:#fff;display:block;margin:0 auto 8px}
+  .qr .missing{font-size:13px;color:var(--faint);background:var(--bg);
+    border:1px dashed var(--line);border-radius:10px;padding:14px;text-align:center}
+
+  /* money */
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  td{padding:9px 0;border-top:1px solid var(--line);vertical-align:top}
+  td:last-child{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;
+    padding-left:10px}
+  tr:first-child td{border-top:0}
+  .totals{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center}
+  .totals div span{display:block;font-size:11px;color:var(--faint);
+    text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+  .totals div b{font-size:17px;font-variant-numeric:tabular-nums}
+
+  .hero{background:var(--accent);color:#fff;border-radius:var(--radius);
+    padding:18px;margin-bottom:14px}
+  .hero .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.1em;opacity:.7}
+  .hero h2{color:#fff;opacity:1;font-size:23px;text-transform:none;letter-spacing:0;
+    margin:5px 0 4px;font-weight:650}
+  .hero p{opacity:.85;font-size:14px;margin:0}
+  .hero .big{font-size:40px;font-weight:700;line-height:1.1;margin:6px 0 2px;
+    font-variant-numeric:tabular-nums}
+
+  .wx{display:flex;gap:14px;font-size:13px;color:var(--dim);margin-top:9px}
+  details{border-top:1px solid var(--line);padding:11px 0}
+  details:first-of-type{border-top:0}
+  summary{cursor:pointer;font-weight:600;font-size:15px;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:" ›";color:var(--faint);float:right}
+  details[open] summary::after{content:" ⌄"}
+  details .inner{font-size:14px;color:var(--dim);padding-top:9px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1 id="hTitle">Europe 2026</h1>
+  <div class="sub" id="hSub"></div>
+</header>
+
+<main id="app"></main>
+
+<nav id="tabs"></nav>
+
+<script src="data.js"></script>
+<script src="days.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- helpers ---------- */
+  var E = document.createElement("div");
+  function esc(s){ E.textContent = s == null ? "" : String(s); return E.innerHTML; }
+  function money(n){
+    var neg = n < 0;
+    var s = Math.abs(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+    return (neg ? "−$" : "$") + s;
+  }
+  function el(id){ return document.getElementById(id); }
+
+  /* Local-midnight date for an ISO yyyy-mm-dd, so day maths never drifts by timezone. */
+  function d(iso){ var p = iso.split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
+  function today(){ var n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
+  function daysBetween(a,b){ return Math.round((b - a) / 86400000); }
+
+  /* Which trip day is it? Returns index into TRIP.days, or null if outside the trip. */
+  function currentIndex(){
+    var t = today();
+    for (var i = 0; i < TRIP.days.length; i++){
+      if (daysBetween(d(TRIP.days[i].iso), t) === 0) return i;
+    }
+    return null;
+  }
+
+  /* ---------- shared renderers ---------- */
+  function noteBlock(text, cls){
+    return '<div class="note ' + (cls||"") + '">' + esc(text) + '</div>';
+  }
+
+  function weatherLine(day){
+    if (day.high == null) return "";
+    return '<div class="wx">' +
+      '<span>High ' + day.high + '&deg;F</span>' +
+      '<span>Low ' + day.low + '&deg;F</span>' +
+      '<span>Rain ' + Math.round(day.rain * 100) + '%</span>' +
+    '</div>';
+  }
+
+  function timelineBlock(day){
+    if (!day.timeline || !day.timeline.length) return "";
+    var h = '<h2>The moves</h2><div class="card"><ul class="tl">';
+    day.timeline.forEach(function(s){
+      h += '<li><div class="t">' + esc(s.t) + '</div><div class="w"><b>' +
+           esc(s.what) + '</b>' +
+           (s.detail ? '<span>' + esc(s.detail) + '</span>' : '') +
+           '</div></li>';
+    });
+    return h + '</ul></div>';
+  }
+
+  function checklistBlock(day){
+    if (!day.checklist || !day.checklist.length) return "";
+    var h = '<h2>Before you go</h2><div class="card"><ul class="check">';
+    day.checklist.forEach(function(c){ h += '<li>' + esc(c) + '</li>'; });
+    return h + '</ul></div>';
+  }
+
+  /* Tickets and stays that belong to a given day, matched by date text. */
+  function relatedTickets(day){
+    var key = day.date.replace(/^\w+ /, "");           /* "22 Sep" */
+    return TRIP.tickets.filter(function(t){
+      return (t.title.indexOf(key) !== -1);
+    });
+  }
+
+  function dayBody(day){
+    var h = "";
+
+    h += '<div class="card">';
+    h += '<div class="tiny">Day ' + day.n + ' &middot; ' + esc(day.date) + '</div>';
+    h += '<h3 style="margin-top:4px">' + esc(day.title) + '</h3>';
+    h += '<div class="tiny" style="margin-top:2px">' + esc(day.city) + '</div>';
+    if (day.summary) h += '<p class="muted" style="margin-top:9px">' + esc(day.summary) + '</p>';
+    h += weatherLine(day);
+    h += '</div>';
+
+    if (day.critical) h += noteBlock(day.critical, "crit");
+
+    h += timelineBlock(day);
+
+    if (day.notes && day.notes.length){
+      h += '<h2>Notes</h2><div class="card">';
+      day.notes.forEach(function(n){ h += '<p class="muted">' + esc(n) + '</p>'; });
+      h += '</div>';
+    }
+
+    if (day.excursionDay){
+      h += '<h2>Pick one — weather decides</h2><div class="card">';
+      TRIP.excursions.forEach(function(x){
+        h += '<details><summary>' + esc(x.name) + '</summary><div class="inner">' +
+             esc(x.gist) + (x.detail ? '<br><br>' + esc(x.detail) : '') +
+             '</div></details>';
+      });
+      h += '</div>';
+    }
+
+    var rel = relatedTickets(day);
+    if (rel.length){
+      h += '<h2>Tickets for today</h2>';
+      rel.forEach(function(t){
+        h += '<button class="day" data-go="#/ticket/' + t.id + '">' +
+             '<div class="body"><div class="t">' + esc(t.title) + '</div>' +
+             '<div class="c">' + esc(t.ref) + '</div></div>' +
+             '<div class="mark plan"></div></button>';
+      });
+    }
+
+    h += checklistBlock(day);
+    return h;
+  }
+
+  /* ---------- views ---------- */
+  var views = {};
+
+  views.today = function(){
+    var idx = currentIndex();
+    var h = "";
+
+    if (idx === null){
+      var start = d(TRIP.meta.start), end = d(TRIP.meta.end), t = today();
+      var out = daysBetween(t, start);
+      if (out > 0){
+        h += '<div class="hero"><div class="lbl">Days until you fly</div>' +
+             '<div class="big">' + out + '</div>' +
+             '<p>Departing ' + esc(TRIP.days[0].date) + ' &middot; ' +
+             esc(TRIP.meta.travellers) + '</p></div>';
+        h += '<h2>First up</h2>' + dayBody(TRIP.days[0]);
+      } else if (daysBetween(end, t) > 0){
+        h += '<div class="hero"><div class="lbl">Trip complete</div>' +
+             '<h2>Welcome home</h2><p>23 days, five cities.</p></div>';
+        h += '<h2>The whole trip</h2>' + dayListHtml();
+      }
+      return h;
+    }
+
+    var day = TRIP.days[idx];
+    h += '<div class="hero"><div class="lbl">Today &middot; day ' + day.n + ' of 23</div>' +
+         '<h2>' + esc(day.title) + '</h2>' +
+         '<p>' + esc(day.date) + ' &middot; ' + esc(day.city) + '</p></div>';
+    h += dayBody(day);
+
+    if (idx + 1 < TRIP.days.length){
+      var nx = TRIP.days[idx + 1];
+      h += '<h2>Tomorrow</h2>' +
+           '<button class="day" data-go="#/day/' + nx.n + '">' +
+           '<div class="n"><b>' + nx.n + '</b><span>' + esc(nx.date.split(" ")[0]) + '</span></div>' +
+           '<div class="body"><div class="t">' + esc(nx.title) + '</div>' +
+           '<div class="c">' + esc(nx.city) + '</div></div>' +
+           '<div class="mark ' + nx.kind + '"></div></button>';
+    }
+    return h;
+  };
+
+  function dayListHtml(){
+    var idx = currentIndex();
+    var h = '<div class="daylist">';
+    TRIP.days.forEach(function(day, i){
+      h += '<button class="day' + (i === idx ? ' is-today' : '') +
+           '" data-go="#/day/' + day.n + '">' +
+           '<div class="n"><b>' + day.n + '</b><span>' + esc(day.date.split(" ")[0]) + '</span></div>' +
+           '<div class="body"><div class="t">' + esc(day.title) + '</div>' +
+           '<div class="c">' + esc(day.date) + ' &middot; ' + esc(day.city) + '</div></div>' +
+           '<div class="mark ' + day.kind + '"></div></button>';
+    });
+    return h + '</div>';
+  }
+
+  views.days = function(){
+    return '<h2>All 23 days</h2>' + dayListHtml() +
+      '<p class="tiny" style="margin-top:12px">Red dot = travel day. Blue = something booked. Grey = open.</p>';
+  };
+
+  views.day = function(n){
+    var day = null;
+    TRIP.days.forEach(function(x){ if (x.n === +n) day = x; });
+    if (!day) return '<p class="muted">Day not found.</p>';
+    return '<button class="back" data-go="#/days">&lsaquo; All days</button>' + dayBody(day);
+  };
+
+  views.tickets = function(){
+    var groups = [], seen = {};
+    TRIP.tickets.forEach(function(t){
+      if (!seen[t.group]){ seen[t.group] = []; groups.push(t.group); }
+      seen[t.group].push(t);
+    });
+    var h = "";
+    groups.forEach(function(g){
+      h += '<h2>' + esc(g) + '</h2><div class="daylist">';
+      seen[g].forEach(function(t){
+        h += '<button class="day" data-go="#/ticket/' + t.id + '">' +
+             '<div class="body"><div class="t">' + esc(t.title) + '</div>' +
+             '<div class="c">' + esc(t.provider) + ' &middot; ' + esc(t.ref) + '</div></div>' +
+             '<div class="mark ' + (t.paid ? 'plan' : '') + '"></div></button>';
+      });
+      h += '</div>';
+    });
+    h += '<h2>Accounts these live under</h2><div class="card">';
+    TRIP.accounts.forEach(function(a){
+      h += '<div class="row"><div class="k">' + esc(a.label) + '</div>' +
+           '<div class="v">' + esc(a.value) + '</div></div>';
+    });
+    h += '</div>';
+    return h;
+  };
+
+  views.ticket = function(id){
+    var t = null;
+    TRIP.tickets.forEach(function(x){ if (x.id === id) t = x; });
+    if (!t) return '<p class="muted">Ticket not found.</p>';
+
+    var h = '<button class="back" data-go="#/tickets">&lsaquo; All tickets</button>';
+
+    h += '<div class="card"><h3>' + esc(t.title) + '</h3>' +
+         '<div class="tiny" style="margin-top:3px">' + esc(t.provider) + '</div>' +
+         '<div class="row" style="margin-top:11px"><div class="k">Reference</div>' +
+         '<div class="v mono" style="font-weight:600">' + esc(t.ref) + '</div></div>' +
+         '<div class="row"><div class="k">Cost</div><div class="v">' + esc(t.cost) +
+         ' <span class="pill ' + (t.paid ? 'ok' : 'warn') + '">' +
+         (t.paid ? 'paid' : 'unpaid') + '</span></div></div>' +
+         '</div>';
+
+    if (t.warn) h += noteBlock(t.warn, "crit");
+
+    if (t.lines && t.lines.length){
+      h += '<div class="card">';
+      t.lines.forEach(function(l){
+        h += '<div class="row"><div class="k">' + esc(l[0]) + '</div>' +
+             '<div class="v">' + esc(l[1]) + '</div></div>';
+      });
+      h += '</div>';
+    }
+
+    if (t.people && t.people.length){
+      h += '<h2>Who sits where</h2><div class="card">';
+      t.people.forEach(function(p){
+        h += '<div class="row"><div class="k">' + esc(p.who) + '</div>' +
+             '<div class="v mono" style="font-size:13.5px">' + esc(p.detail) + '</div></div>';
+      });
+      h += '</div>';
+    }
+
+    if (t.images && t.images.length){
+      h += '<h2>Ticket images</h2><div class="card qr">';
+      t.images.forEach(function(src){
+        h += '<img src="' + esc(src) + '" alt="ticket" loading="lazy" ' +
+             'onerror="this.insertAdjacentHTML(\'afterend\',' +
+             '\'<div class=&quot;missing&quot;>Not saved yet &mdash; drop the file at ' +
+             esc(src) + '</div>\');this.remove()">';
+      });
+      h += '</div>';
+    }
+
+    if (t.links && t.links.length){
+      h += '<div class="btns">';
+      t.links.forEach(function(l){
+        h += '<a class="btn" href="' + esc(l.url) + '" target="_blank" rel="noopener">' +
+             esc(l.label) + '</a>';
+      });
+      h += '</div><p class="tiny" style="margin-top:8px">These need a signal. ' +
+           'Open them in Safari, not inside another app’s browser.</p>';
+    }
+
+    if (t.notes) h += noteBlock(t.notes, "");
+    if (t.account) h += '<p class="tiny" style="margin-top:10px">Bought under ' +
+                        esc(t.account) + '</p>';
+    return h;
+  };
+
+  views.stays = function(){
+    var h = "";
+    TRIP.stays.forEach(function(s){
+      h += '<h2>' + esc(s.city) + '</h2><div class="card">';
+      h += '<h3>' + esc(s.name) + '</h3>';
+      h += '<div class="row" style="margin-top:10px"><div class="k">Address</div>' +
+           '<div class="v">' + esc(s.addr) + '</div></div>';
+      h += '<div class="row"><div class="k">Confirmation</div>' +
+           '<div class="v mono" style="font-weight:600">' + esc(s.conf) + '</div></div>';
+      h += '<div class="row"><div class="k">Check in</div><div class="v">' +
+           esc(s.inDate) + ' &middot; ' + esc(s.inTime) + '</div></div>';
+      h += '<div class="row"><div class="k">Check out</div><div class="v">' +
+           esc(s.outDate) + ' &middot; ' + esc(s.outTime) + '</div></div>';
+      h += '<div class="row"><div class="k">Cost</div><div class="v">' + esc(s.cost) +
+           ' <span class="pill ' + (s.paid === 'paid' ? 'ok' : 'warn') + '">' +
+           esc(s.paid) + '</span></div></div>';
+      if (s.host) h += '<div class="row"><div class="k">Host</div><div class="v">' +
+                       esc(s.host) + '</div></div>';
+      if (s.phone) h += '<div class="row"><div class="k">Phone</div><div class="v">' +
+                        '<a href="tel:' + esc(s.phone.replace(/\s/g,"")) + '">' +
+                        esc(s.phone) + '</a></div></div>';
+      h += '</div>';
+      if (s.notes) h += noteBlock(s.notes, "");
+      h += '<div class="btns">' +
+           '<a class="btn" target="_blank" rel="noopener" href="https://maps.apple.com/?q=' +
+           encodeURIComponent(s.addr) + '">Open in Maps</a>' +
+           (s.link ? '<a class="btn ghost" target="_blank" rel="noopener" href="' +
+            esc(s.link) + '">Booking</a>' : '') +
+           '</div>';
+    });
+    return h;
+  };
+
+  views.money = function(){
+    var total = 0;
+    TRIP.budget.forEach(function(b){ total += b.amt; });
+    var remaining = TRIP.meta.budget - total;
+
+    var h = '<div class="card totals">' +
+      '<div><span>Budget</span><b>' + money(TRIP.meta.budget) + '</b></div>' +
+      '<div><span>Committed</span><b>' + money(total) + '</b></div>' +
+      '<div><span>Left</span><b>' + money(remaining) + '</b></div>' +
+      '</div>';
+
+    h += '<h2>Where it has gone</h2><div class="card"><table><tbody>';
+    TRIP.budget.forEach(function(b){
+      h += '<tr><td>' + esc(b.item) +
+           '<div class="tiny">' + esc(b.cat) + ' &middot; ' + esc(b.status) + '</div></td>' +
+           '<td>' + money(b.amt) + '</td></tr>';
+    });
+    h += '</tbody></table></div>';
+
+    TRIP.budgetNotes.forEach(function(n){ h += noteBlock(n, "warn"); });
+
+    h += '<h2>Still open</h2><div class="card">';
+    TRIP.open.forEach(function(o){
+      h += '<details><summary>' + esc(o.what) +
+           '</summary><div class="inner"><b>' + esc(o.when) + '</b><br>' +
+           esc(o.why) + '</div></details>';
+    });
+    h += '</div>';
+    return h;
+  };
+
+  views.sos = function(){
+    var em = TRIP.emergency;
+    var h = '<div class="hero" style="text-align:center">' +
+      '<div class="lbl">Anywhere in Europe</div>' +
+      '<div class="big"><a href="tel:112" style="color:#fff;text-decoration:none">112</a></div>' +
+      '<p>' + esc(em.universal.note) + '</p></div>';
+
+    em.byCountry.forEach(function(c){
+      h += '<h2>' + esc(c.country) + '</h2><div class="card tight">';
+      c.items.forEach(function(it){
+        h += '<div class="row"><div class="k">' + esc(it[0]) + '</div>' +
+             '<div class="v"><a href="tel:' + esc(it[1]) + '" class="mono" ' +
+             'style="font-weight:650;font-size:16px">' + esc(it[1]) + '</a></div></div>';
+      });
+      h += '</div>';
+    });
+
+    h += '<h2>Numbers you may actually need</h2><div class="card tight">';
+    em.keyNumbers.forEach(function(k){
+      h += '<div class="row"><div class="k">' + esc(k.label) + '</div>' +
+           '<div class="v"><a href="tel:' + esc(k.value.replace(/\s/g,"")) + '">' +
+           esc(k.value) + '</a></div></div>';
+    });
+    h += '</div>';
+
+    h += '<h2>Us</h2><div class="card tight">';
+    em.us.forEach(function(u){
+      h += '<div class="row"><div class="k">' + esc(u.label) + '</div>' +
+           '<div class="v">' + (u.value ? '<a href="tel:' +
+           esc(u.value.replace(/\s/g,"")) + '">' + esc(u.value) + '</a>' :
+           '<span class="tiny">not filled in</span>') + '</div></div>';
+    });
+    h += '</div>';
+
+    h += noteBlock(em.warn, "warn");
+    h += '<p class="tiny" style="margin-top:14px">Embassy numbers are deliberately not ' +
+         'listed — a wrong emergency number is worse than none. Fill them from ' +
+         'travel.state.gov before you go.</p>';
+    return h;
+  };
+
+  /* ---------- tab bar ---------- */
+  var TABS = [
+    { id:"today",   label:"Today",   icon:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9h13v-9"/>' },
+    { id:"days",    label:"Days",    icon:'<rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/>' },
+    { id:"tickets", label:"Tickets", icon:'<path d="M3.5 8.5A2 2 0 0 1 5.5 6.5h13a2 2 0 0 1 2 2v1a2.2 2.2 0 0 0 0 4.4v1.1a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2v-1.1a2.2 2.2 0 0 0 0-4.4z"/><path d="M14 7v10" stroke-dasharray="2 2.4"/>' },
+    { id:"stays",   label:"Stays",   icon:'<path d="M4 20v-9.5L12 4l8 6.5V20"/><path d="M9.5 20v-5.5h5V20"/>' },
+    { id:"money",   label:"Money",   icon:'<rect x="3" y="6" width="18" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/>' },
+  ];
+
+  function renderTabs(active){
+    var h = "";
+    TABS.forEach(function(t){
+      h += '<button data-go="#/' + t.id + '" aria-current="' + (t.id === active) + '">' +
+           '<svg viewBox="0 0 24 24">' + t.icon + '</svg>' + t.label + '</button>';
+    });
+    el("tabs").innerHTML = h;
+  }
+
+  /* ---------- router ---------- */
+  function route(){
+    var hash = location.hash || "#/today";
+    var parts = hash.replace(/^#\//, "").split("/");
+    var view = parts[0] || "today";
+    var arg = parts[1];
+
+    var html, tab = view;
+    if (view === "day"){ html = views.day(arg); tab = "days"; }
+    else if (view === "ticket"){ html = views.ticket(arg); tab = "tickets"; }
+    else if (views[view]){ html = views[view](); }
+    else { html = views.today(); tab = "today"; }
+
+    el("app").innerHTML = html;
+    renderTabs(tab);
+    window.scrollTo(0, 0);
+
+    /* header */
+    var idx = currentIndex();
+    if (idx !== null){
+      el("hTitle").textContent = TRIP.days[idx].city;
+      el("hSub").textContent = "Day " + TRIP.days[idx].n + " of 23";
+    } else {
+      var out = daysBetween(today(), d(TRIP.meta.start));
+      el("hTitle").textContent = "Europe 2026";
+      el("hSub").textContent = out > 0 ? out + " days out" : "";
+    }
+  }
+
+  /* One delegated handler for every internal navigation. */
+  document.addEventListener("click", function(e){
+    var target = e.target.closest("[data-go]");
+    if (!target) return;
+    e.preventDefault();
+    location.hash = target.getAttribute("data-go");
+  });
+
+  window.addEventListener("hashchange", route);
+  route();
+
+  /* An SOS button that is reachable from anywhere. */
+  var sos = document.createElement("button");
+  sos.textContent = "SOS";
+  sos.setAttribute("data-go", "#/sos");
+  sos.style.cssText = "position:fixed;right:12px;bottom:calc(var(--tab-h) + 12px);" +
+    "z-index:25;border:0;border-radius:99px;width:46px;height:46px;font:inherit;" +
+    "font-size:12px;font-weight:700;letter-spacing:.04em;background:var(--crit);" +
+    "color:#fff;box-shadow:0 3px 14px rgba(0,0,0,.28);cursor:pointer";
+  document.body.appendChild(sos);
+
+  /* ---------- service worker ---------- */
+  if ("serviceWorker" in navigator){
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("sw.js").catch(function(){ /* offline is best-effort */ });
+    });
+  }
+})();
+</script>
+</body>
+</html>

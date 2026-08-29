@@ -1,0 +1,4 @@
+_harness*.js
+_app.tmp.js
+.DS_Store
+Thumbs.db
