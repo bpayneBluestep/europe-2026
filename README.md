@@ -147,7 +147,7 @@ directly to the endpoint without the app being open. Build it once:
    **URLs** only
 3. Add action **Ask for Input** — type **Text**, prompt `Name it?`
 4. Add action **List** — items, one per line: `Rome`, `Venice`, `Lake Como`,
-   `Interlaken`, `Paris`, `Anywhere`
+   `Interlaken`, `Paris`, `Other`
 5. Add action **Choose from List** — prompt `Which city?`
 6. Add action **Get Contents of URL**
    - URL: `https://beh.bluestep.net/b/tripdata`
@@ -162,9 +162,11 @@ Order matters — the three prompting actions must sit **above** Get Contents of
 or their variables do not exist yet when it runs.
 
 `title` and `city` are both optional. Leave the name prompt blank and the endpoint
-derives one; pick `Anywhere` and the item stores an empty city, which the app
-renders as *Anywhere*. A city string the app does not recognise degrades to the
-same thing rather than breaking, so a typo is harmless.
+derives one; pick `Other` and the item stores an empty city, which the app
+renders as *Other* — the bucket for anything not tied to a place (a packing
+idea, a phrase to learn, a thing to buy). A city string the app does not
+recognise degrades to the same thing rather than breaking, so a typo is
+harmless.
 
 Why the city prompt is worth the extra tap: TikTok's share button hands out a
 short link (`tiktok.com/t/ZP8v…`) with no `@handle` and no caption in it, so the

@@ -977,7 +977,7 @@
          '" aria-label="Mark done">' + svg("check") + '</button>';
     h += '<div class="body"><b>' + esc(it.title) + '</b>';
     h += '<div class="meta">' + byline(it.createdBy) + ' &middot; ' +
-         (city ? dot(city) + esc(city) : "Anywhere") +
+         (city ? dot(city) + esc(city) : "Other") +
          (it.day ? ' &middot; day ' + esc(it.day) : "") + '</div>';
     if (it.done && it.doneBy) h += '<div class="meta">Ticked off by ' +
                                     esc(it.doneBy) + '</div>';
@@ -1024,7 +1024,7 @@
         'inputmode="url" enterkeyhint="done">' +
       '<label for="wlCity">Where</label>' +
       '<select id="wlCity">' +
-        '<option value="">Anywhere / not sure</option>' +
+        '<option value="">Other — not tied to a place</option>' +
         Object.keys(TRIP.cities).map(function(c){
           return '<option value="' + esc(c) + '">' + esc(c) + '</option>';
         }).join("") +
