@@ -1,4 +1,5 @@
-_harness*.js
-_app.tmp.js
+_*
+.playwright-mcp/
+*.tmp.js
 .DS_Store
 Thumbs.db

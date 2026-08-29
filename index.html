@@ -6,186 +6,245 @@
 <title>Europe 2026</title>
 <meta name="description" content="Offline trip companion — Rome, Venice, Lake Como, Interlaken, Paris.">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#1b3a5c">
+<meta name="theme-color" content="#f5f6f7">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Europe 26">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
 <style>
+  /* Instrument Sans, self-hosted so the app still renders offline. */
+  @font-face{
+    font-family:'Instrument Sans'; font-style:normal; font-weight:400 700;
+    font-display:swap; src:url(fonts/instrument-sans-latin.woff2) format('woff2');
+    unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,
+      U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,
+      U+FEFF,U+FFFD;
+  }
+  @font-face{
+    font-family:'Instrument Sans'; font-style:normal; font-weight:400 700;
+    font-display:swap; src:url(fonts/instrument-sans-latin-ext.woff2) format('woff2');
+    unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,
+      U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,
+      U+2113,U+2C60-2C7F,U+A720-A7FF;
+  }
+
   :root{
-    --bg:#f6f4ef; --card:#fffdf9; --ink:#1c1a17; --dim:#6a635a; --faint:#948b7e;
-    --line:#e2dcd1; --accent:#1b3a5c; --accent-soft:#e8eef4;
-    --warn:#8a3b12; --warn-bg:#fdf0e6; --crit:#8f1d1d; --crit-bg:#fdeaea;
-    --ok:#20603a; --ok-bg:#e7f2ea;
-    --radius:14px;
-    --tab-h:calc(56px + env(safe-area-inset-bottom));
+    --ink:#212529;
+    --bg:#f5f6f7;
+    --card:#ffffff;
+    --dim:#6c727a;
+    --faint:#9aa0a6;
+    --line:#ecedef;
+    --sunk:#eceef0;
+    --alert:#b42318;
+    --alert-bg:#fef3f2;
+    --r-lg:24px;
+    --r-md:18px;
+    --r-sm:13px;
+    --shadow:0 1px 2px rgba(33,37,41,.04), 0 8px 24px rgba(33,37,41,.05);
+    --nav-h:calc(72px + env(safe-area-inset-bottom));
   }
-  @media (prefers-color-scheme: dark){
-    :root{
-      --bg:#14161a; --card:#1c1f25; --ink:#eceae6; --dim:#a09a91;
-      --faint:#7d766c; --line:#2c313a; --accent:#7fb3e0; --accent-soft:#1e2a36;
-      --warn:#e8a877; --warn-bg:#2e2118; --crit:#f0908c; --crit-bg:#331b1b;
-      --ok:#7fc79b; --ok-bg:#18291f;
-    }
-  }
+
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
   body{
     background:var(--bg); color:var(--ink);
-    font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-    padding-bottom:var(--tab-h);
-    -webkit-text-size-adjust:100%;
-    overscroll-behavior-y:none;
+    font-family:'Instrument Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    font-size:15px; line-height:1.5; letter-spacing:-.005em;
+    padding-bottom:var(--nav-h);
+    -webkit-text-size-adjust:100%; overscroll-behavior-y:none;
   }
-  a{color:var(--accent)}
+  a{color:inherit}
+  ::-webkit-scrollbar{display:none}
 
-  /* header */
-  header{
-    position:sticky; top:0; z-index:20; background:var(--accent); color:#fff;
-    padding:calc(10px + env(safe-area-inset-top)) 16px 10px;
-    display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+  main{
+    max-width:560px; margin:0 auto;
+    padding:calc(18px + env(safe-area-inset-top)) 20px 28px;
   }
-  header h1{font-size:15px;margin:0;font-weight:650;letter-spacing:.02em}
-  header .sub{font-size:12px;opacity:.75}
 
-  main{padding:14px 14px 24px; max-width:720px; margin:0 auto}
+  /* ---------- type ---------- */
+  .greet{font-size:26px;font-weight:700;letter-spacing:-.025em;line-height:1.15;margin:0}
+  .greet-sub{font-size:14px;color:var(--dim);margin:5px 0 0}
+  .sect{display:flex;align-items:baseline;justify-content:space-between;
+    margin:26px 0 12px;gap:12px}
+  .sect h2{font-size:19px;font-weight:700;letter-spacing:-.02em;margin:0}
+  .sect a,.sect button.link{font-size:13.5px;color:var(--ink);text-decoration:underline;
+    text-underline-offset:3px;background:none;border:0;font:inherit;padding:0;cursor:pointer}
+  .lead{font-size:15px;color:var(--dim);margin:0 0 10px}
+  .lead:last-child{margin-bottom:0}
+  .label{font-size:11.5px;font-weight:600;letter-spacing:.04em;color:var(--faint);
+    text-transform:uppercase}
+  .mono{font-variant-numeric:tabular-nums;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:-.02em}
 
-  /* tab bar */
+  /* ---------- cards ---------- */
+  .card{background:var(--card);border-radius:var(--r-lg);padding:18px;
+    margin-bottom:12px;box-shadow:var(--shadow)}
+  .card.pad-sm{padding:15px 17px}
+  .card:last-child{margin-bottom:0}
+
+  .hero{background:var(--ink);color:#fff;border-radius:var(--r-lg);padding:22px;
+    margin-bottom:14px}
+  .hero .label{color:rgba(255,255,255,.55)}
+  .hero h1{font-size:27px;font-weight:700;letter-spacing:-.028em;line-height:1.16;
+    margin:9px 0 6px}
+  .hero p{font-size:14px;color:rgba(255,255,255,.7);margin:0}
+  .hero .cta{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    margin-top:20px;background:rgba(255,255,255,.1);border-radius:999px;
+    padding:7px 8px 7px 20px;border:0;width:100%;font:inherit;color:#fff;cursor:pointer;
+    text-align:left}
+  .hero .cta span{font-size:14.5px;font-weight:600}
+  .hero .cta i{flex:0 0 36px;height:36px;border-radius:999px;background:#fff;
+    display:grid;place-items:center;font-style:normal}
+  .hero .cta i svg{width:17px;height:17px;stroke:var(--ink);fill:none;stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round}
+  .hero .count{font-size:52px;font-weight:700;letter-spacing:-.04em;line-height:1;
+    margin:10px 0 4px;font-variant-numeric:tabular-nums}
+
+  /* ---------- circular buttons ---------- */
+  .circ{width:42px;height:42px;border-radius:999px;background:var(--card);border:0;
+    display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow);
+    flex:0 0 42px;padding:0;color:var(--ink)}
+  .circ svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.9;
+    stroke-linecap:round;stroke-linejoin:round}
+
+  /* ---------- detail header ---------- */
+  .dhead{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+  .dhead .mid{flex:1;min-width:0;text-align:center}
+  .dhead .mid b{display:block;font-size:16.5px;font-weight:700;letter-spacing:-.02em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dhead .mid span{display:block;font-size:12.5px;color:var(--dim);margin-top:1px}
+  .dhead .spacer{flex:0 0 42px}
+
+  /* ---------- chips ---------- */
+  .chips{display:flex;gap:8px;overflow-x:auto;margin:0 -20px 16px;padding:2px 20px 4px;
+    scrollbar-width:none}
+  .chip{flex:0 0 auto;border:1px solid var(--line);background:var(--card);
+    color:var(--ink);border-radius:999px;padding:9px 17px;font:inherit;font-size:13.5px;
+    font-weight:500;cursor:pointer;white-space:nowrap}
+  .chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink);
+    font-weight:600}
+
+  /* ---------- accordion / list rows ---------- */
+  .acc{background:var(--card);border-radius:var(--r-lg);margin-bottom:10px;
+    box-shadow:var(--shadow);overflow:hidden}
+  .acc>summary{display:flex;align-items:center;gap:14px;padding:14px;cursor:pointer;
+    list-style:none}
+  .acc>summary::-webkit-details-marker{display:none}
+  .acc .thumb{flex:0 0 54px;height:54px;border-radius:var(--r-sm);background:var(--ink);
+    color:#fff;display:grid;place-items:center;font-size:19px;font-weight:700;
+    letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .acc .thumb.soft{background:var(--sunk);color:var(--ink)}
+  .acc .txt{flex:1;min-width:0}
+  .acc .txt .label{display:block;margin-bottom:2px}
+  .acc .txt b{display:block;font-size:15.5px;font-weight:600;letter-spacing:-.015em;
+    line-height:1.3}
+  .acc .txt em{display:block;font-style:normal;font-size:12.5px;color:var(--faint);
+    margin-top:2px}
+  .acc .chev{flex:0 0 20px;color:var(--faint);transition:transform .18s ease}
+  .acc .chev svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.9;
+    stroke-linecap:round;stroke-linejoin:round;display:block}
+  .acc[open] .chev{transform:rotate(180deg)}
+  .acc .inner{padding:0 18px 18px}
+
+  /* tappable list card (no accordion) */
+  .item{display:flex;align-items:center;gap:14px;width:100%;text-align:left;
+    background:var(--card);border:0;border-radius:var(--r-lg);padding:14px;
+    margin-bottom:10px;box-shadow:var(--shadow);font:inherit;color:inherit;cursor:pointer}
+  .item .thumb{flex:0 0 54px;height:54px;border-radius:var(--r-sm);background:var(--sunk);
+    display:grid;place-items:center}
+  .item .thumb svg{width:21px;height:21px;stroke:var(--ink);fill:none;stroke-width:1.7;
+    stroke-linecap:round;stroke-linejoin:round}
+  .item .thumb.dark{background:var(--ink)}
+  .item .thumb.dark svg{stroke:#fff}
+  .item .txt{flex:1;min-width:0}
+  .item .txt b{display:block;font-size:15.5px;font-weight:600;letter-spacing:-.015em;
+    line-height:1.3}
+  .item .txt em{display:block;font-style:normal;font-size:12.5px;color:var(--faint);
+    margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .item .go{flex:0 0 20px;color:var(--faint)}
+  .item .go svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.9;
+    stroke-linecap:round;stroke-linejoin:round;display:block}
+
+  /* ---------- timeline (Morning / Afternoon / Evening pattern) ---------- */
+  .tl{list-style:none;margin:0;padding:0}
+  .tl li{padding:13px 0;border-top:1px solid var(--line)}
+  .tl li:first-child{border-top:0;padding-top:2px}
+  .tl .t{font-size:11.5px;font-weight:600;letter-spacing:.04em;color:var(--faint);
+    text-transform:uppercase;font-variant-numeric:tabular-nums}
+  .tl b{display:block;font-size:15.5px;font-weight:600;letter-spacing:-.015em;
+    margin-top:4px;line-height:1.32}
+  .tl span{display:block;font-size:14px;color:var(--dim);margin-top:5px;line-height:1.45}
+
+  /* ---------- key/value rows ---------- */
+  .kv{padding:12px 0;border-top:1px solid var(--line)}
+  .kv:first-child{border-top:0;padding-top:0}
+  .kv .k{font-size:11.5px;font-weight:600;letter-spacing:.04em;color:var(--faint);
+    text-transform:uppercase}
+  .kv .v{font-size:15px;margin-top:4px;line-height:1.4;word-break:break-word}
+  .kv .v a{text-decoration:underline;text-underline-offset:3px}
+
+  /* ---------- notes ---------- */
+  .note{border-radius:var(--r-md);padding:15px 17px;font-size:14.5px;line-height:1.5;
+    margin-bottom:12px;background:var(--sunk);color:var(--ink)}
+  .note.alert{background:var(--alert-bg);color:var(--alert);font-weight:500}
+  .note .label{display:block;margin-bottom:6px}
+  .note.alert .label{color:var(--alert);opacity:.7}
+
+  /* ---------- checklist ---------- */
+  .check{list-style:none;margin:0;padding:0}
+  .check li{display:flex;gap:12px;align-items:flex-start;padding:11px 0;
+    border-top:1px solid var(--line);font-size:14.5px}
+  .check li:first-child{border-top:0;padding-top:0}
+  .check li::before{content:"";flex:0 0 19px;height:19px;margin-top:1px;
+    border:1.6px solid #d5d8dc;border-radius:6px}
+
+  /* ---------- buttons ---------- */
+  .btns{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
+  .btn{display:inline-flex;align-items:center;gap:7px;padding:12px 20px;
+    border-radius:999px;font-size:14px;font-weight:600;text-decoration:none;
+    background:var(--ink);color:#fff;border:0;cursor:pointer;font-family:inherit}
+  .btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+  .btn-wide{display:block;width:100%;text-align:center;padding:17px;border-radius:999px;
+    background:var(--ink);color:#fff;font-size:15.5px;font-weight:600;
+    text-decoration:none;margin-top:18px}
+
+  /* ---------- QR images ---------- */
+  .qr img{width:100%;max-width:290px;border-radius:var(--r-md);background:#fff;
+    display:block;margin:0 auto 10px;border:1px solid var(--line)}
+  .qr .missing{font-size:13.5px;color:var(--faint);background:var(--sunk);
+    border-radius:var(--r-md);padding:16px;text-align:center;margin-bottom:10px}
+
+  /* ---------- floating nav pill ---------- */
   nav{
-    position:fixed; left:0; right:0; bottom:0; z-index:30;
-    display:grid; grid-template-columns:repeat(5,1fr);
-    background:var(--card); border-top:1px solid var(--line);
-    padding-bottom:env(safe-area-inset-bottom);
+    position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;justify-content:center;
+    padding:0 20px calc(14px + env(safe-area-inset-bottom));pointer-events:none;
+  }
+  nav .pill{
+    pointer-events:auto;display:flex;gap:4px;background:var(--ink);border-radius:999px;
+    padding:7px;box-shadow:0 6px 24px rgba(33,37,41,.22);
   }
   nav button{
-    appearance:none; border:0; background:none; color:var(--faint);
-    font:inherit; font-size:10.5px; letter-spacing:.02em;
-    padding:7px 2px 8px; cursor:pointer; display:flex; flex-direction:column;
-    align-items:center; gap:3px;
+    appearance:none;border:0;background:none;width:50px;height:50px;border-radius:999px;
+    display:grid;place-items:center;cursor:pointer;color:rgba(255,255,255,.62);padding:0;
+    transition:background .16s ease,color .16s ease;
   }
-  nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7;
+  nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.75;
     stroke-linecap:round;stroke-linejoin:round}
-  nav button[aria-current="true"]{color:var(--accent);font-weight:600}
+  nav button[aria-current="true"]{background:#fff;color:var(--ink)}
 
-  /* building blocks */
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-    padding:14px;margin:0 0 12px}
-  .card.tight{padding:12px 14px}
-  h2{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);
-    margin:22px 0 9px;font-weight:650}
-  h2:first-child{margin-top:2px}
-  h3{font-size:17px;margin:0 0 4px;line-height:1.3}
-  p{margin:0 0 9px}
-  p:last-child{margin-bottom:0}
-  .muted{color:var(--dim);font-size:14px}
-  .tiny{font-size:12.5px;color:var(--faint)}
-  .mono{font-variant-numeric:tabular-nums;
-    font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-
-  .pill{display:inline-block;font-size:11px;font-weight:650;letter-spacing:.05em;
-    text-transform:uppercase;padding:3px 8px;border-radius:99px;
-    background:var(--accent-soft);color:var(--accent)}
-  .pill.warn{background:var(--warn-bg);color:var(--warn)}
-  .pill.crit{background:var(--crit-bg);color:var(--crit)}
-  .pill.ok{background:var(--ok-bg);color:var(--ok)}
-
-  .note{border-radius:10px;padding:11px 13px;font-size:14px;margin:10px 0 0;
-    background:var(--accent-soft)}
-  .note.warn{background:var(--warn-bg);color:var(--warn)}
-  .note.crit{background:var(--crit-bg);color:var(--crit);font-weight:500}
-  .note b{font-weight:700}
-
-  /* rows */
-  .row{display:flex;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
-  .row:first-child{border-top:0;padding-top:2px}
-  .row .k{flex:0 0 82px;font-size:12.5px;color:var(--faint);font-weight:600;
-    padding-top:2px}
-  .row .v{flex:1;min-width:0;font-size:14.5px}
-  .row .v .sub{font-size:13.5px;color:var(--dim);margin-top:3px}
-
-  /* day list */
-  .daylist{display:flex;flex-direction:column;gap:8px}
-  .day{display:flex;gap:12px;align-items:flex-start;background:var(--card);
-    border:1px solid var(--line);border-radius:12px;padding:12px 13px;
-    cursor:pointer;text-align:left;width:100%;font:inherit;color:inherit}
-  .day .n{flex:0 0 40px;text-align:center}
-  .day .n b{display:block;font-size:19px;line-height:1;font-variant-numeric:tabular-nums}
-  .day .n span{font-size:10px;color:var(--faint);text-transform:uppercase;
-    letter-spacing:.06em}
-  .day .body{flex:1;min-width:0}
-  .day .body .t{font-weight:600;font-size:15px}
-  .day .body .c{font-size:12.5px;color:var(--faint);margin-top:2px}
-  .day .mark{flex:0 0 auto;align-self:center;width:8px;height:8px;border-radius:99px;
-    background:var(--line)}
-  .day .mark.travel{background:var(--crit)}
-  .day .mark.plan{background:var(--accent)}
-  .day.is-today{border-color:var(--accent);box-shadow:0 0 0 1.5px var(--accent)}
-
-  /* timeline */
-  .tl{margin:2px 0 0;padding:0;list-style:none}
-  .tl li{display:flex;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
-  .tl li:first-child{border-top:0}
-  .tl .t{flex:0 0 68px;font-size:13px;font-weight:650;color:var(--accent);
-    font-variant-numeric:tabular-nums;padding-top:1px}
-  .tl .w{flex:1;min-width:0}
-  .tl .w b{display:block;font-size:14.5px;font-weight:600}
-  .tl .w span{display:block;font-size:13.5px;color:var(--dim);margin-top:3px}
-
-  ul.check{list-style:none;margin:0;padding:0}
-  ul.check li{display:flex;gap:9px;padding:7px 0;font-size:14px;
-    border-top:1px solid var(--line)}
-  ul.check li:first-child{border-top:0}
-  ul.check li::before{content:"";flex:0 0 15px;height:15px;margin-top:3px;
-    border:1.6px solid var(--faint);border-radius:4px}
-
-  /* buttons / links */
-  .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
-  .btn{display:inline-block;padding:9px 13px;border-radius:9px;font-size:13.5px;
-    font-weight:600;text-decoration:none;background:var(--accent-soft);
-    color:var(--accent);border:1px solid transparent}
-  .btn.ghost{background:transparent;border-color:var(--line);color:var(--dim)}
-
-  .back{background:none;border:0;color:var(--accent);font:inherit;font-size:14px;
-    font-weight:600;padding:0 0 10px;cursor:pointer;display:inline-flex;gap:5px;
-    align-items:center}
-
-  /* ticket images */
-  .qr{margin-top:11px}
-  .qr img{width:100%;max-width:300px;border-radius:10px;border:1px solid var(--line);
-    background:#fff;display:block;margin:0 auto 8px}
-  .qr .missing{font-size:13px;color:var(--faint);background:var(--bg);
-    border:1px dashed var(--line);border-radius:10px;padding:14px;text-align:center}
-
-  .hero{background:var(--accent);color:#fff;border-radius:var(--radius);
-    padding:18px;margin-bottom:14px}
-  .hero .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.1em;opacity:.7}
-  .hero h2{color:#fff;opacity:1;font-size:23px;text-transform:none;letter-spacing:0;
-    margin:5px 0 4px;font-weight:650}
-  .hero p{opacity:.85;font-size:14px;margin:0}
-  .hero .big{font-size:40px;font-weight:700;line-height:1.1;margin:6px 0 2px;
-    font-variant-numeric:tabular-nums}
-
-  .wx{display:flex;gap:14px;font-size:13px;color:var(--dim);margin-top:9px}
-  details{border-top:1px solid var(--line);padding:11px 0}
-  details:first-of-type{border-top:0}
-  summary{cursor:pointer;font-weight:600;font-size:15px;list-style:none}
-  summary::-webkit-details-marker{display:none}
-  summary::after{content:" ›";color:var(--faint);float:right}
-  details[open] summary::after{content:" ⌄"}
-  details .inner{font-size:14px;color:var(--dim);padding-top:9px}
+  /* SOS — always reachable, sits just above the nav pill */
+  .sos{position:fixed;right:20px;bottom:calc(var(--nav-h) + 8px);z-index:39;
+    width:50px;height:50px;border-radius:999px;border:0;background:var(--card);
+    color:var(--alert);font:inherit;font-size:11.5px;font-weight:700;letter-spacing:.05em;
+    box-shadow:0 4px 18px rgba(33,37,41,.16);cursor:pointer}
 </style>
 </head>
 <body>
 
-<header>
-  <h1 id="hTitle">Europe 2026</h1>
-  <div class="sub" id="hSub"></div>
-</header>
-
 <main id="app"></main>
-
-<nav id="tabs"></nav>
+<nav><div class="pill" id="tabs"></div></nav>
 
 <script src="data.js"></script>
 <script src="days.js"></script>
@@ -198,12 +257,33 @@
   function esc(s){ E.textContent = s == null ? "" : String(s); return E.innerHTML; }
   function el(id){ return document.getElementById(id); }
 
-  /* Local-midnight date for an ISO yyyy-mm-dd, so day maths never drifts by timezone. */
+  var ICON = {
+    home:    '<path d="M3.2 11.4 12 4l8.8 7.4"/><path d="M5.6 10.2V20h12.8v-9.8"/>',
+    cal:     '<rect x="3.5" y="5.2" width="17" height="15.3" rx="3.4"/><path d="M8 3.2v3.6M16 3.2v3.6M3.5 10.2h17"/>',
+    ticket:  '<path d="M3.4 8.8a2.2 2.2 0 0 1 2.2-2.2h12.8a2.2 2.2 0 0 1 2.2 2.2v.9a2.3 2.3 0 0 0 0 4.6v.9a2.2 2.2 0 0 1-2.2 2.2H5.6a2.2 2.2 0 0 1-2.2-2.2v-.9a2.3 2.3 0 0 0 0-4.6z"/><path d="M14.2 7v10" stroke-dasharray="2 2.6"/>',
+    bed:     '<path d="M3.5 19v-9M3.5 14h17v5M20.5 14v-2.6a2.4 2.4 0 0 0-2.4-2.4H11V14"/><circle cx="7.2" cy="11.4" r="1.9"/>',
+    checks:  '<path d="M3.5 7.6 5.4 9.5 8.9 6"/><path d="M3.5 16.1 5.4 18l3.5-3.5"/><path d="M12.5 8h8M12.5 17h8"/>',
+    chevD:   '<path d="M6 9.5 12 15.5 18 9.5"/>',
+    chevR:   '<path d="M9.5 5.5 16 12l-6.5 6.5"/>',
+    chevL:   '<path d="M14.5 5.5 8 12l6.5 6.5"/>',
+    arrowR:  '<path d="M4.5 12h15M13.5 6l6 6-6 6"/>',
+    pin:     '<path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>',
+    plane:   '<path d="M10.4 3.6a1.6 1.6 0 0 1 3.2 0V9l7.4 4.3v2.3l-7.4-2.3v4l2.6 2v1.7L12 20l-4.2 1v-1.7l2.6-2v-4L3 15.6v-2.3L10.4 9z"/>',
+    train:   '<rect x="5" y="3.6" width="14" height="13" rx="3.4"/><path d="M5 11h14M8.5 20.4 6.6 16.6M15.5 20.4l1.9-3.8"/><circle cx="8.8" cy="13.8" r=".9"/><circle cx="15.2" cy="13.8" r=".9"/>',
+    car:     '<path d="M4 16.4v2.2h2.6v-2.2M17.4 16.4v2.2H20v-2.2"/><path d="M3.6 16.4v-4l1.9-4.6A2 2 0 0 1 7.4 6.6h9.2a2 2 0 0 1 1.9 1.2l1.9 4.6v4z"/><path d="M3.6 12.4h16.8"/><circle cx="7.4" cy="14.4" r=".9"/><circle cx="16.6" cy="14.4" r=".9"/>',
+    star:    '<path d="M12 3.8l2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8z"/>',
+    fork:    '<path d="M6.5 3v6.5a2.5 2.5 0 0 0 5 0V3M9 9.5V21"/><path d="M17 21V3c-2 .8-2.8 3-2.8 5.6 0 1.8.9 2.8 2.8 3"/>'
+  };
+  function svg(name, cls){
+    return '<svg viewBox="0 0 24 24"' + (cls ? ' class="' + cls + '"' : '') + '>' +
+           ICON[name] + '</svg>';
+  }
+
+  /* Local-midnight date, so day maths never drifts by timezone. */
   function d(iso){ var p = iso.split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
   function today(){ var n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
   function daysBetween(a,b){ return Math.round((b - a) / 86400000); }
 
-  /* Which trip day is it? Returns index into TRIP.days, or null if outside the trip. */
   function currentIndex(){
     var t = today();
     for (var i = 0; i < TRIP.days.length; i++){
@@ -212,91 +292,82 @@
     return null;
   }
 
-  /* ---------- shared renderers ---------- */
-  function noteBlock(text, cls){
-    return '<div class="note ' + (cls||"") + '">' + esc(text) + '</div>';
+  function greeting(){
+    var h = new Date().getHours();
+    return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
   }
 
-  function weatherLine(day){
-    if (day.high == null) return "";
-    return '<div class="wx">' +
-      '<span>High ' + day.high + '&deg;F</span>' +
-      '<span>Low ' + day.low + '&deg;F</span>' +
-      '<span>Rain ' + Math.round(day.rain * 100) + '%</span>' +
-    '</div>';
+  /* Group icon for a ticket, so the list reads at a glance. */
+  function ticketIcon(t){
+    return t.group === "Flights" ? "plane"
+         : t.group === "Rail" ? "train"
+         : t.group === "Ground" ? "car"
+         : t.group === "Dining" ? "fork" : "star";
+  }
+
+  /* ---------- shared blocks ---------- */
+  function pageHead(title, sub){
+    return '<div style="margin-bottom:4px"><h1 class="greet">' + esc(title) + '</h1>' +
+           (sub ? '<p class="greet-sub">' + esc(sub) + '</p>' : '') + '</div>';
+  }
+
+  function detailHead(back, title, sub){
+    return '<div class="dhead">' +
+      '<button class="circ" data-go="' + back + '" aria-label="Back">' + svg("chevL") + '</button>' +
+      '<div class="mid"><b>' + esc(title) + '</b>' +
+      (sub ? '<span>' + esc(sub) + '</span>' : '') + '</div>' +
+      '<div class="spacer"></div></div>';
+  }
+
+  function sect(title, linkLabel, linkGo){
+    return '<div class="sect"><h2>' + esc(title) + '</h2>' +
+      (linkLabel ? '<button class="link" data-go="' + linkGo + '">' +
+        esc(linkLabel) + '</button>' : '') + '</div>';
+  }
+
+  function note(text, kind, label){
+    return '<div class="note' + (kind ? ' ' + kind : '') + '">' +
+      (label ? '<span class="label">' + esc(label) + '</span>' : '') +
+      esc(text) + '</div>';
   }
 
   function timelineBlock(day){
     if (!day.timeline || !day.timeline.length) return "";
-    var h = '<h2>The moves</h2><div class="card"><ul class="tl">';
+    var h = '<ul class="tl">';
     day.timeline.forEach(function(s){
-      h += '<li><div class="t">' + esc(s.t) + '</div><div class="w"><b>' +
-           esc(s.what) + '</b>' +
-           (s.detail ? '<span>' + esc(s.detail) + '</span>' : '') +
-           '</div></li>';
+      h += '<li><div class="t">' + esc(s.t) + '</div><b>' + esc(s.what) + '</b>' +
+           (s.detail ? '<span>' + esc(s.detail) + '</span>' : '') + '</li>';
     });
-    return h + '</ul></div>';
+    return h + '</ul>';
   }
 
-  function checklistBlock(day){
-    if (!day.checklist || !day.checklist.length) return "";
-    var h = '<h2>Before you go</h2><div class="card"><ul class="check">';
-    day.checklist.forEach(function(c){ h += '<li>' + esc(c) + '</li>'; });
-    return h + '</ul></div>';
-  }
-
-  /* Tickets and stays that belong to a given day, matched by date text. */
   function relatedTickets(day){
-    var key = day.date.replace(/^\w+ /, "");           /* "22 Sep" */
-    return TRIP.tickets.filter(function(t){
-      return (t.title.indexOf(key) !== -1);
-    });
+    var key = day.date.replace(/^\w+ /, "");
+    return TRIP.tickets.filter(function(t){ return t.title.indexOf(key) !== -1; });
   }
 
-  function dayBody(day){
-    var h = "";
+  function ticketItem(t){
+    return '<button class="item" data-go="#/ticket/' + t.id + '">' +
+      '<div class="thumb dark">' + svg(ticketIcon(t)) + '</div>' +
+      '<div class="txt"><b>' + esc(t.title) + '</b><em>' + esc(t.provider) +
+      ' &middot; ' + esc(t.ref) + '</em></div>' +
+      '<div class="go">' + svg("chevR") + '</div></button>';
+  }
 
-    h += '<div class="card">';
-    h += '<div class="tiny">Day ' + day.n + ' &middot; ' + esc(day.date) + '</div>';
-    h += '<h3 style="margin-top:4px">' + esc(day.title) + '</h3>';
-    h += '<div class="tiny" style="margin-top:2px">' + esc(day.city) + '</div>';
-    if (day.summary) h += '<p class="muted" style="margin-top:9px">' + esc(day.summary) + '</p>';
-    h += weatherLine(day);
-    h += '</div>';
-
-    if (day.critical) h += noteBlock(day.critical, "crit");
-
-    h += timelineBlock(day);
-
-    if (day.notes && day.notes.length){
-      h += '<h2>Notes</h2><div class="card">';
-      day.notes.forEach(function(n){ h += '<p class="muted">' + esc(n) + '</p>'; });
-      h += '</div>';
-    }
-
-    if (day.excursionDay){
-      h += '<h2>Pick one — weather decides</h2><div class="card">';
-      TRIP.excursions.forEach(function(x){
-        h += '<details><summary>' + esc(x.name) + '</summary><div class="inner">' +
-             esc(x.gist) + (x.detail ? '<br><br>' + esc(x.detail) : '') +
-             '</div></details>';
-      });
-      h += '</div>';
-    }
-
-    var rel = relatedTickets(day);
-    if (rel.length){
-      h += '<h2>Tickets for today</h2>';
-      rel.forEach(function(t){
-        h += '<button class="day" data-go="#/ticket/' + t.id + '">' +
-             '<div class="body"><div class="t">' + esc(t.title) + '</div>' +
-             '<div class="c">' + esc(t.ref) + '</div></div>' +
-             '<div class="mark plan"></div></button>';
-      });
-    }
-
-    h += checklistBlock(day);
-    return h;
+  /* The Day-N accordion card, matching the tour-schedule pattern. */
+  function dayAcc(day, open){
+    return '<details class="acc"' + (open ? ' open' : '') + '>' +
+      '<summary><div class="thumb' + (day.kind === "open" ? " soft" : "") + '">' +
+      day.n + '</div>' +
+      '<div class="txt"><span class="label">' + esc(day.date) + '</span>' +
+      '<b>' + esc(day.title) + '</b><em>' + esc(day.city) + '</em></div>' +
+      '<div class="chev">' + svg("chevD") + '</div></summary>' +
+      '<div class="inner">' +
+      (day.summary ? '<p class="lead">' + esc(day.summary) + '</p>' : '') +
+      (day.critical ? note(day.critical, "alert", "Read this") : "") +
+      timelineBlock(day) +
+      '<a class="btn-wide" data-go="#/day/' + day.n + '">Open day ' + day.n + '</a>' +
+      '</div></details>';
   }
 
   /* ---------- views ---------- */
@@ -307,64 +378,193 @@
     var h = "";
 
     if (idx === null){
-      var start = d(TRIP.meta.start), end = d(TRIP.meta.end), t = today();
-      var out = daysBetween(t, start);
+      var out = daysBetween(today(), d(TRIP.meta.start));
       if (out > 0){
-        h += '<div class="hero"><div class="lbl">Days until you fly</div>' +
-             '<div class="big">' + out + '</div>' +
-             '<p>Departing ' + esc(TRIP.days[0].date) + ' &middot; ' +
-             esc(TRIP.meta.travellers) + '</p></div>';
-        h += '<h2>First up</h2>' + dayBody(TRIP.days[0]);
-      } else if (daysBetween(end, t) > 0){
-        h += '<div class="hero"><div class="lbl">Trip complete</div>' +
-             '<h2>Welcome home</h2><p>23 days, five cities.</p></div>';
-        h += '<h2>The whole trip</h2>' + dayListHtml();
+        h += pageHead(greeting() + ", Brandon", TRIP.meta.travellers);
+        h += '<div class="hero" style="margin-top:18px">' +
+             '<span class="label">Days until you fly</span>' +
+             '<div class="count">' + out + '</div>' +
+             '<p>Departing ' + esc(TRIP.days[0].date) + ' &middot; Rome first</p>' +
+             '<button class="cta" data-go="#/day/1"><span>See day one</span><i>' +
+             svg("arrowR") + '</i></button></div>';
+        h += sect("The route", "All days", "#/days");
+        h += routeStrip();
+        h += sect("Still to sort", "See all", "#/open");
+        TRIP.open.slice(0, 3).forEach(function(o){
+          h += '<button class="item" data-go="#/open"><div class="thumb">' +
+               svg("checks") + '</div><div class="txt"><b>' + esc(o.what) +
+               '</b><em>' + esc(o.when) + '</em></div><div class="go">' +
+               svg("chevR") + '</div></button>';
+        });
+        return h;
       }
+      h += pageHead("Welcome home", "23 days, five cities");
+      h += sect("The whole trip", null, null);
+      TRIP.days.forEach(function(day){ h += dayAcc(day, false); });
       return h;
     }
 
     var day = TRIP.days[idx];
-    h += '<div class="hero"><div class="lbl">Today &middot; day ' + day.n + ' of 23</div>' +
-         '<h2>' + esc(day.title) + '</h2>' +
-         '<p>' + esc(day.date) + ' &middot; ' + esc(day.city) + '</p></div>';
-    h += dayBody(day);
+    h += pageHead(greeting() + ", Brandon", "Day " + day.n + " of 23 · " + day.city);
+    h += '<div class="hero" style="margin-top:18px">' +
+         '<span class="label">Today &middot; ' + esc(day.date) + '</span>' +
+         '<h1>' + esc(day.title) + '</h1>' +
+         '<p>' + esc(day.city) + '</p>' +
+         '<button class="cta" data-go="#/day/' + day.n + '">' +
+         '<span>Open the full day</span><i>' + svg("arrowR") + '</i></button></div>';
+
+    if (day.critical) h += note(day.critical, "alert", "Read this");
+
+    if (day.timeline && day.timeline.length){
+      h += sect("Today's schedule", null, null);
+      h += '<div class="card">' + timelineBlock(day) + '</div>';
+    } else if (day.summary){
+      h += '<div class="card"><p class="lead">' + esc(day.summary) + '</p></div>';
+    }
+
+    var rel = relatedTickets(day);
+    if (rel.length){
+      h += sect("Tickets for today", "All", "#/tickets");
+      rel.forEach(function(t){ h += ticketItem(t); });
+    }
+
+    if (day.checklist && day.checklist.length){
+      h += sect("Before you go", null, null);
+      h += '<div class="card"><ul class="check">';
+      day.checklist.forEach(function(c){ h += '<li>' + esc(c) + '</li>'; });
+      h += '</ul></div>';
+    }
 
     if (idx + 1 < TRIP.days.length){
       var nx = TRIP.days[idx + 1];
-      h += '<h2>Tomorrow</h2>' +
-           '<button class="day" data-go="#/day/' + nx.n + '">' +
-           '<div class="n"><b>' + nx.n + '</b><span>' + esc(nx.date.split(" ")[0]) + '</span></div>' +
-           '<div class="body"><div class="t">' + esc(nx.title) + '</div>' +
-           '<div class="c">' + esc(nx.city) + '</div></div>' +
-           '<div class="mark ' + nx.kind + '"></div></button>';
+      h += sect("Tomorrow", null, null);
+      h += '<button class="item" data-go="#/day/' + nx.n + '">' +
+           '<div class="thumb' + (nx.kind === "open" ? "" : " dark") + '"' +
+           ' style="font-size:19px;font-weight:700;color:' +
+           (nx.kind === "open" ? "var(--ink)" : "#fff") + '">' + nx.n + '</div>' +
+           '<div class="txt"><b>' + esc(nx.title) + '</b><em>' + esc(nx.date) +
+           ' &middot; ' + esc(nx.city) + '</em></div>' +
+           '<div class="go">' + svg("chevR") + '</div></button>';
     }
     return h;
   };
 
-  function dayListHtml(){
-    var idx = currentIndex();
-    var h = '<div class="daylist">';
-    TRIP.days.forEach(function(day, i){
-      h += '<button class="day' + (i === idx ? ' is-today' : '') +
-           '" data-go="#/day/' + day.n + '">' +
-           '<div class="n"><b>' + day.n + '</b><span>' + esc(day.date.split(" ")[0]) + '</span></div>' +
-           '<div class="body"><div class="t">' + esc(day.title) + '</div>' +
-           '<div class="c">' + esc(day.date) + ' &middot; ' + esc(day.city) + '</div></div>' +
-           '<div class="mark ' + day.kind + '"></div></button>';
+  /* Five bases as a compact strip on the pre-trip home. */
+  function routeStrip(){
+    var h = '<div class="card">';
+    TRIP.stays.forEach(function(s, i){
+      h += '<div class="kv"><div class="k">' + esc(s.inDate) + ' &rarr; ' +
+           esc(s.outDate) + '</div><div class="v"><b>' + esc(s.city) + '</b> &middot; ' +
+           s.nights + ' nights</div></div>';
     });
     return h + '</div>';
   }
 
-  views.days = function(){
-    return '<h2>All 23 days</h2>' + dayListHtml() +
-      '<p class="tiny" style="margin-top:12px">Red dot = travel day. Blue = something booked. Grey = open.</p>';
+  /* City filter chips on the Days view. */
+  function cityKey(day){
+    var c = day.city;
+    if (c.indexOf("Salt Lake") === 0) return "Home";
+    if (c.indexOf("Paris") === 0 && c.indexOf("home") !== -1) return "Home";
+    if (c.indexOf("Rome") === 0) return "Rome";
+    if (c.indexOf("Venice") === 0) return "Venice";
+    if (c.indexOf("Lake Como") === 0) return "Lake Como";
+    if (c.indexOf("Interlaken") === 0) return "Interlaken";
+    return "Paris";
+  }
+
+  views.days = function(filter){
+    var cities = ["All", "Rome", "Venice", "Lake Como", "Interlaken", "Paris"];
+    var active = filter ? decodeURIComponent(filter) : "All";
+    var idx = currentIndex();
+
+    var h = pageHead("The trip", "23 days · five cities");
+    h += '<div class="chips" style="margin-top:16px">';
+    cities.forEach(function(c){
+      h += '<button class="chip" aria-pressed="' + (c === active) +
+           '" data-go="#/days/' + encodeURIComponent(c) + '">' + esc(c) + '</button>';
+    });
+    h += '</div>';
+
+    var shown = TRIP.days.filter(function(day){
+      return active === "All" || cityKey(day) === active;
+    });
+    if (!shown.length) return h + '<div class="card"><p class="lead">Nothing here.</p></div>';
+
+    shown.forEach(function(day, i){
+      h += dayAcc(day, shown.length <= 6 && i === 0 ? false : false);
+      if (idx !== null && TRIP.days[idx] === day){
+        /* mark today's card visually via the thumb already; nothing extra needed */
+      }
+    });
+    return h;
   };
 
   views.day = function(n){
-    var day = null;
-    TRIP.days.forEach(function(x){ if (x.n === +n) day = x; });
-    if (!day) return '<p class="muted">Day not found.</p>';
-    return '<button class="back" data-go="#/days">&lsaquo; All days</button>' + dayBody(day);
+    var day = null, i = -1;
+    TRIP.days.forEach(function(x, k){ if (x.n === +n){ day = x; i = k; } });
+    if (!day) return pageHead("Not found", "");
+
+    /* Header carries the where/when; the hero below carries the what, so the
+       two don't say the same thing twice. */
+    var h = detailHead("#/days", day.city, day.date);
+
+    h += '<div class="hero"><span class="label">Day ' + day.n + ' of 23</span>' +
+         '<h1>' + esc(day.title) + '</h1>' +
+         '<p>' + esc(day.date) + ' &middot; ' + esc(day.city) + '</p>' +
+         (day.high != null ? '<p style="margin-top:10px">High ' + day.high +
+           '&deg; &middot; Low ' + day.low + '&deg; &middot; Rain ' +
+           Math.round(day.rain * 100) + '%</p>' : '') + '</div>';
+
+    if (day.summary) h += '<div class="card"><p class="lead">' + esc(day.summary) + '</p></div>';
+    if (day.critical) h += note(day.critical, "alert", "Read this");
+
+    if (day.timeline && day.timeline.length){
+      h += sect("The moves", null, null);
+      h += '<div class="card">' + timelineBlock(day) + '</div>';
+    }
+
+    if (day.notes && day.notes.length){
+      h += sect("Notes", null, null);
+      h += '<div class="card">';
+      day.notes.forEach(function(nn, k){
+        h += '<div class="kv"><div class="v">' + esc(nn) + '</div></div>';
+      });
+      h += '</div>';
+    }
+
+    if (day.excursionDay){
+      h += sect("Pick one", "All options", "#/open");
+      TRIP.excursions.forEach(function(x){
+        h += '<details class="acc"><summary>' +
+             '<div class="thumb soft">' + svg("pin") + '</div>' +
+             '<div class="txt"><b>' + esc(x.name) + '</b><em>Weather decides</em></div>' +
+             '<div class="chev">' + svg("chevD") + '</div></summary>' +
+             '<div class="inner"><p class="lead">' + esc(x.gist) + '</p>' +
+             (x.detail ? '<p class="lead">' + esc(x.detail) + '</p>' : '') +
+             '</div></details>';
+      });
+    }
+
+    var rel = relatedTickets(day);
+    if (rel.length){
+      h += sect("Tickets", "All", "#/tickets");
+      rel.forEach(function(t){ h += ticketItem(t); });
+    }
+
+    if (day.checklist && day.checklist.length){
+      h += sect("Before you go", null, null);
+      h += '<div class="card"><ul class="check">';
+      day.checklist.forEach(function(c){ h += '<li>' + esc(c) + '</li>'; });
+      h += '</ul></div>';
+    }
+
+    h += '<div class="btns" style="margin-top:20px">';
+    if (i > 0) h += '<button class="btn ghost" data-go="#/day/' + TRIP.days[i-1].n +
+                    '">' + svg("chevL") + 'Day ' + TRIP.days[i-1].n + '</button>';
+    if (i < TRIP.days.length - 1) h += '<button class="btn" data-go="#/day/' +
+                    TRIP.days[i+1].n + '">Day ' + TRIP.days[i+1].n + svg("chevR") + '</button>';
+    h += '</div>';
+    return h;
   };
 
   views.tickets = function(){
@@ -373,61 +573,59 @@
       if (!seen[t.group]){ seen[t.group] = []; groups.push(t.group); }
       seen[t.group].push(t);
     });
-    var h = "";
+
+    var h = pageHead("Tickets", "Every reference in one place");
     groups.forEach(function(g){
-      h += '<h2>' + esc(g) + '</h2><div class="daylist">';
-      seen[g].forEach(function(t){
-        h += '<button class="day" data-go="#/ticket/' + t.id + '">' +
-             '<div class="body"><div class="t">' + esc(t.title) + '</div>' +
-             '<div class="c">' + esc(t.provider) + ' &middot; ' + esc(t.ref) + '</div></div>' +
-             '<div class="mark plan"></div></button>';
-      });
-      h += '</div>';
+      h += sect(g, null, null);
+      seen[g].forEach(function(t){ h += ticketItem(t); });
     });
-    h += '<h2>Accounts these live under</h2><div class="card">';
+
+    h += sect("Accounts these live under", null, null);
+    h += '<div class="card">';
     TRIP.accounts.forEach(function(a){
-      h += '<div class="row"><div class="k">' + esc(a.label) + '</div>' +
+      h += '<div class="kv"><div class="k">' + esc(a.label) + '</div>' +
            '<div class="v">' + esc(a.value) + '</div></div>';
     });
-    h += '</div>';
-    return h;
+    return h + '</div>';
   };
 
   views.ticket = function(id){
     var t = null;
     TRIP.tickets.forEach(function(x){ if (x.id === id) t = x; });
-    if (!t) return '<p class="muted">Ticket not found.</p>';
+    if (!t) return pageHead("Not found", "");
 
-    var h = '<button class="back" data-go="#/tickets">&lsaquo; All tickets</button>';
+    /* Provider up top, the booking itself in the hero — no repeated title. */
+    var h = detailHead("#/tickets", t.provider, t.group);
 
-    h += '<div class="card"><h3>' + esc(t.title) + '</h3>' +
-         '<div class="tiny" style="margin-top:3px">' + esc(t.provider) + '</div>' +
-         '<div class="row" style="margin-top:11px"><div class="k">Reference</div>' +
-         '<div class="v mono" style="font-weight:600">' + esc(t.ref) + '</div></div>' +
-         '</div>';
+    h += '<div class="hero"><span class="label">' + esc(t.group) + '</span>' +
+         '<h1>' + esc(t.title) + '</h1>' +
+         '<p class="mono" style="font-size:15px;color:#fff;margin-top:8px">' +
+         esc(t.ref) + '</p></div>';
 
-    if (t.warn) h += noteBlock(t.warn, "crit");
+    if (t.warn) h += note(t.warn, "alert", "Read this");
 
     if (t.lines && t.lines.length){
       h += '<div class="card">';
       t.lines.forEach(function(l){
-        h += '<div class="row"><div class="k">' + esc(l[0]) + '</div>' +
+        h += '<div class="kv"><div class="k">' + esc(l[0]) + '</div>' +
              '<div class="v">' + esc(l[1]) + '</div></div>';
       });
       h += '</div>';
     }
 
     if (t.people && t.people.length){
-      h += '<h2>Who sits where</h2><div class="card">';
+      h += sect("Who sits where", null, null);
+      h += '<div class="card">';
       t.people.forEach(function(p){
-        h += '<div class="row"><div class="k">' + esc(p.who) + '</div>' +
-             '<div class="v mono" style="font-size:13.5px">' + esc(p.detail) + '</div></div>';
+        h += '<div class="kv"><div class="k">' + esc(p.who) + '</div>' +
+             '<div class="v mono" style="font-size:14px">' + esc(p.detail) + '</div></div>';
       });
       h += '</div>';
     }
 
     if (t.images && t.images.length){
-      h += '<h2>Ticket images</h2><div class="card qr">';
+      h += sect("Ticket images", null, null);
+      h += '<div class="card qr">';
       t.images.forEach(function(src){
         h += '<img src="' + esc(src) + '" alt="ticket" loading="lazy" ' +
              'onerror="this.insertAdjacentHTML(\'afterend\',' +
@@ -437,126 +635,143 @@
       h += '</div>';
     }
 
+    if (t.notes) h += note(t.notes, "", "Notes");
+
     if (t.links && t.links.length){
-      h += '<div class="btns">';
       t.links.forEach(function(l){
-        h += '<a class="btn" href="' + esc(l.url) + '" target="_blank" rel="noopener">' +
-             esc(l.label) + '</a>';
+        h += '<a class="btn-wide" href="' + esc(l.url) + '" target="_blank" ' +
+             'rel="noopener">' + esc(l.label) + '</a>';
       });
-      h += '</div><p class="tiny" style="margin-top:8px">These need a signal. ' +
-           'Open them in Safari, not inside another app’s browser.</p>';
+      h += '<p class="lead" style="font-size:13px;margin-top:10px;text-align:center">' +
+           'These need a signal. Open them in Safari, not inside another app&rsquo;s browser.</p>';
     }
 
-    if (t.notes) h += noteBlock(t.notes, "");
-    if (t.account) h += '<p class="tiny" style="margin-top:10px">Bought under ' +
+    if (t.account) h += '<p class="lead" style="font-size:13px;margin-top:16px">Bought under ' +
                         esc(t.account) + '</p>';
     return h;
   };
 
   views.stays = function(){
-    var h = "";
+    var h = pageHead("Stays", "Five bases, 21 nights");
     TRIP.stays.forEach(function(s){
-      h += '<h2>' + esc(s.city) + '</h2><div class="card">';
-      h += '<h3>' + esc(s.name) + '</h3>';
-      h += '<div class="row" style="margin-top:10px"><div class="k">Address</div>' +
-           '<div class="v">' + esc(s.addr) + '</div></div>';
-      h += '<div class="row"><div class="k">Confirmation</div>' +
+      h += sect(s.city, null, null);
+      h += '<div class="card">';
+      h += '<h3 style="font-size:19px;font-weight:700;letter-spacing:-.02em;margin:0 0 4px">' +
+           esc(s.name) + '</h3>';
+      h += '<p class="lead" style="font-size:13.5px">' + esc(s.country) + ' &middot; ' +
+           s.nights + ' nights</p>';
+      h += '<div class="kv"><div class="k">Address</div><div class="v">' +
+           esc(s.addr) + '</div></div>';
+      h += '<div class="kv"><div class="k">Confirmation</div>' +
            '<div class="v mono" style="font-weight:600">' + esc(s.conf) + '</div></div>';
-      h += '<div class="row"><div class="k">Check in</div><div class="v">' +
+      h += '<div class="kv"><div class="k">Check in</div><div class="v">' +
            esc(s.inDate) + ' &middot; ' + esc(s.inTime) + '</div></div>';
-      h += '<div class="row"><div class="k">Check out</div><div class="v">' +
+      h += '<div class="kv"><div class="k">Check out</div><div class="v">' +
            esc(s.outDate) + ' &middot; ' + esc(s.outTime) + '</div></div>';
-      if (s.host) h += '<div class="row"><div class="k">Host</div><div class="v">' +
+      if (s.host) h += '<div class="kv"><div class="k">Host</div><div class="v">' +
                        esc(s.host) + '</div></div>';
-      if (s.phone) h += '<div class="row"><div class="k">Phone</div><div class="v">' +
+      if (s.phone) h += '<div class="kv"><div class="k">Phone</div><div class="v">' +
                         '<a href="tel:' + esc(s.phone.replace(/\s/g,"")) + '">' +
                         esc(s.phone) + '</a></div></div>';
       h += '</div>';
-      if (s.notes) h += noteBlock(s.notes, "");
+      if (s.notes) h += note(s.notes, "", "Notes");
       h += '<div class="btns">' +
            '<a class="btn" target="_blank" rel="noopener" href="https://maps.apple.com/?q=' +
-           encodeURIComponent(s.addr) + '">Open in Maps</a>' +
+           encodeURIComponent(s.addr) + '">' + svg("pin") + 'Open in Maps</a>' +
            (s.link ? '<a class="btn ghost" target="_blank" rel="noopener" href="' +
-            esc(s.link) + '">Booking</a>' : '') +
-           '</div>';
+             esc(s.link) + '">Booking</a>' : '') + '</div>';
     });
     return h;
   };
 
   views.open = function(){
-    var h = '<h2>Still to sort</h2><div class="card">';
-    TRIP.open.forEach(function(o){
-      h += '<details><summary>' + esc(o.what) +
-           '</summary><div class="inner"><b>' + esc(o.when) + '</b><br>' +
-           esc(o.why) + '</div></details>';
-    });
-    h += '</div>';
+    var h = pageHead("Still open", "Everything not yet nailed down");
 
-    h += '<h2>Swiss excursions — pick four days</h2><div class="card">';
+    h += sect("To sort", null, null);
+    TRIP.open.forEach(function(o){
+      h += '<details class="acc"><summary>' +
+           '<div class="thumb soft">' + svg("checks") + '</div>' +
+           '<div class="txt"><b>' + esc(o.what) + '</b><em>' + esc(o.when) + '</em></div>' +
+           '<div class="chev">' + svg("chevD") + '</div></summary>' +
+           '<div class="inner"><p class="lead">' + esc(o.why) + '</p></div></details>';
+    });
+
+    h += sect("Swiss excursions", null, null);
+    h += '<p class="lead" style="margin-top:-4px;margin-bottom:12px">Four open days, ' +
+         'four options. Check the webcams the night before and decide over breakfast.</p>';
     TRIP.excursions.forEach(function(x){
-      h += '<details><summary>' + esc(x.name) + '</summary><div class="inner">' +
-           esc(x.gist) + (x.detail ? '<br><br>' + esc(x.detail) : '') +
+      h += '<details class="acc"><summary>' +
+           '<div class="thumb soft">' + svg("pin") + '</div>' +
+           '<div class="txt"><b>' + esc(x.name) + '</b><em>Weather decides</em></div>' +
+           '<div class="chev">' + svg("chevD") + '</div></summary>' +
+           '<div class="inner"><p class="lead">' + esc(x.gist) + '</p>' +
+           (x.detail ? '<p class="lead">' + esc(x.detail) + '</p>' : '') +
            '</div></details>';
     });
-    h += '</div>';
     return h;
   };
 
   views.sos = function(){
     var em = TRIP.emergency;
-    var h = '<div class="hero" style="text-align:center">' +
-      '<div class="lbl">Anywhere in Europe</div>' +
-      '<div class="big"><a href="tel:112" style="color:#fff;text-decoration:none">112</a></div>' +
-      '<p>' + esc(em.universal.note) + '</p></div>';
+    var h = detailHead("#/today", "Emergency", "Tap any number to call");
+
+    h += '<a class="hero" href="tel:112" style="display:block;text-decoration:none">' +
+         '<span class="label">Anywhere in Europe</span>' +
+         '<div class="count">112</div>' +
+         '<p>' + esc(em.universal.note) + '</p></a>';
 
     em.byCountry.forEach(function(c){
-      h += '<h2>' + esc(c.country) + '</h2><div class="card tight">';
+      h += sect(c.country, null, null);
+      h += '<div class="card pad-sm">';
       c.items.forEach(function(it){
-        h += '<div class="row"><div class="k">' + esc(it[0]) + '</div>' +
-             '<div class="v"><a href="tel:' + esc(it[1]) + '" class="mono" ' +
-             'style="font-weight:650;font-size:16px">' + esc(it[1]) + '</a></div></div>';
+        h += '<div class="kv"><div class="k">' + esc(it[0]) + '</div>' +
+             '<div class="v"><a href="tel:' + esc(it[1]) +
+             '" class="mono" style="font-size:19px;font-weight:700;text-decoration:none">' +
+             esc(it[1]) + '</a></div></div>';
       });
       h += '</div>';
     });
 
-    h += '<h2>Numbers you may actually need</h2><div class="card tight">';
+    h += sect("Numbers you may need", null, null);
+    h += '<div class="card pad-sm">';
     em.keyNumbers.forEach(function(k){
-      h += '<div class="row"><div class="k">' + esc(k.label) + '</div>' +
+      h += '<div class="kv"><div class="k">' + esc(k.label) + '</div>' +
            '<div class="v"><a href="tel:' + esc(k.value.replace(/\s/g,"")) + '">' +
            esc(k.value) + '</a></div></div>';
     });
     h += '</div>';
 
-    h += '<h2>Us</h2><div class="card tight">';
+    h += sect("Us", null, null);
+    h += '<div class="card pad-sm">';
     em.us.forEach(function(u){
-      h += '<div class="row"><div class="k">' + esc(u.label) + '</div>' +
-           '<div class="v">' + (u.value ? '<a href="tel:' +
-           esc(u.value.replace(/\s/g,"")) + '">' + esc(u.value) + '</a>' :
-           '<span class="tiny">not filled in</span>') + '</div></div>';
+      h += '<div class="kv"><div class="k">' + esc(u.label) + '</div><div class="v">' +
+           (u.value ? '<a href="tel:' + esc(u.value.replace(/\s/g,"")) + '">' +
+             esc(u.value) + '</a>' : '<span style="color:var(--faint)">not filled in</span>') +
+           '</div></div>';
     });
     h += '</div>';
 
-    h += noteBlock(em.warn, "warn");
-    h += '<p class="tiny" style="margin-top:14px">Embassy numbers are deliberately not ' +
-         'listed — a wrong emergency number is worse than none. Fill them from ' +
+    h += note(em.warn, "alert", "Before you fly");
+    h += '<p class="lead" style="font-size:13px">Embassy numbers are deliberately not ' +
+         'listed &mdash; a wrong emergency number is worse than none. Fill them from ' +
          'travel.state.gov before you go.</p>';
     return h;
   };
 
-  /* ---------- tab bar ---------- */
+  /* ---------- nav ---------- */
   var TABS = [
-    { id:"today",   label:"Today",   icon:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9h13v-9"/>' },
-    { id:"days",    label:"Days",    icon:'<rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/>' },
-    { id:"tickets", label:"Tickets", icon:'<path d="M3.5 8.5A2 2 0 0 1 5.5 6.5h13a2 2 0 0 1 2 2v1a2.2 2.2 0 0 0 0 4.4v1.1a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2v-1.1a2.2 2.2 0 0 0 0-4.4z"/><path d="M14 7v10" stroke-dasharray="2 2.4"/>' },
-    { id:"stays",   label:"Stays",   icon:'<path d="M4 20v-9.5L12 4l8 6.5V20"/><path d="M9.5 20v-5.5h5V20"/>' },
-    { id:"open",    label:"Open",    icon:'<path d="M4 7.5 6 9.5 9.5 6"/><path d="M4 16 6 18l3.5-3.5"/><path d="M13 8h7M13 17h7"/>' },
+    { id:"today",   icon:"home",   label:"Today" },
+    { id:"days",    icon:"cal",    label:"Days" },
+    { id:"tickets", icon:"ticket", label:"Tickets" },
+    { id:"stays",   icon:"bed",    label:"Stays" },
+    { id:"open",    icon:"checks", label:"Open" },
   ];
 
   function renderTabs(active){
     var h = "";
     TABS.forEach(function(t){
-      h += '<button data-go="#/' + t.id + '" aria-current="' + (t.id === active) + '">' +
-           '<svg viewBox="0 0 24 24">' + t.icon + '</svg>' + t.label + '</button>';
+      h += '<button data-go="#/' + t.id + '" aria-current="' + (t.id === active) +
+           '" aria-label="' + t.label + '">' + svg(t.icon) + '</button>';
     });
     el("tabs").innerHTML = h;
   }
@@ -570,6 +785,7 @@
 
     var html, tab = view;
     if (view === "day"){ html = views.day(arg); tab = "days"; }
+    else if (view === "days"){ html = views.days(arg); }
     else if (view === "ticket"){ html = views.ticket(arg); tab = "tickets"; }
     else if (views[view]){ html = views[view](); }
     else { html = views.today(); tab = "today"; }
@@ -577,20 +793,10 @@
     el("app").innerHTML = html;
     renderTabs(tab);
     window.scrollTo(0, 0);
-
-    /* header */
-    var idx = currentIndex();
-    if (idx !== null){
-      el("hTitle").textContent = TRIP.days[idx].city;
-      el("hSub").textContent = "Day " + TRIP.days[idx].n + " of 23";
-    } else {
-      var out = daysBetween(today(), d(TRIP.meta.start));
-      el("hTitle").textContent = "Europe 2026";
-      el("hSub").textContent = out > 0 ? out + " days out" : "";
-    }
   }
 
-  /* One delegated handler for every internal navigation. */
+  /* One delegated handler for every internal navigation. Anchors that carry
+     data-go are internal too, so stop them following their href. */
   document.addEventListener("click", function(e){
     var target = e.target.closest("[data-go]");
     if (!target) return;
@@ -601,17 +807,13 @@
   window.addEventListener("hashchange", route);
   route();
 
-  /* An SOS button that is reachable from anywhere. */
   var sos = document.createElement("button");
+  sos.className = "sos";
   sos.textContent = "SOS";
   sos.setAttribute("data-go", "#/sos");
-  sos.style.cssText = "position:fixed;right:12px;bottom:calc(var(--tab-h) + 12px);" +
-    "z-index:25;border:0;border-radius:99px;width:46px;height:46px;font:inherit;" +
-    "font-size:12px;font-weight:700;letter-spacing:.04em;background:var(--crit);" +
-    "color:#fff;box-shadow:0 3px 14px rgba(0,0,0,.28);cursor:pointer";
+  sos.setAttribute("aria-label", "Emergency numbers");
   document.body.appendChild(sos);
 
-  /* ---------- service worker ---------- */
   if ("serviceWorker" in navigator){
     window.addEventListener("load", function(){
       navigator.serviceWorker.register("sw.js").catch(function(){ /* offline is best-effort */ });

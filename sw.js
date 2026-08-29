@@ -2,7 +2,7 @@
    Bump CACHE_VERSION whenever you change any file. That is what makes both
    phones pick up the new version; without it they keep serving the old cache. */
 
-const CACHE_VERSION = "europe-2026-v2";
+const CACHE_VERSION = "europe-2026-v3";
 
 /* The app shell. These must all fetch successfully or the install is retried. */
 const CORE = [
@@ -14,6 +14,8 @@ const CORE = [
   "./icon-192.png",
   "./icon-512.png",
   "./icon-180.png",
+  "./fonts/instrument-sans-latin.woff2",
+  "./fonts/instrument-sans-latin-ext.woff2",
 ];
 
 /* Ticket images. Cached best-effort — a missing one must not break the install. */

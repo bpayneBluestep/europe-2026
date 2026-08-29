@@ -64,6 +64,16 @@ Then follow **Updating** below.
 4. On each phone: open the app with a signal, close it fully (swipe up from the app
    switcher), reopen. The new version is in.
 
+## Design
+
+Instrument Sans on `#212529` / `#f5f6f7` / `#ffffff`, white cards on a light-grey
+field, a floating dark nav pill, and accordion day cards. Deliberately light-only —
+the palette is the design, and a dark variant would fight it.
+
+The font is **self-hosted** in `fonts/` (both Latin subsets, ~41KB) rather than
+pulled from Google Fonts, because a cross-origin font request is the one thing that
+would fail in airplane mode.
+
 ## Structure
 
 ```
@@ -71,6 +81,7 @@ index.html    the whole app — styles, views, router, service-worker registrati
 data.js       tickets, stays, open items, accounts, emergency numbers, excursions
 days.js       the 23 days, with timelines for the five travel days
 sw.js         offline cache. CACHE_VERSION is the thing you have to remember to bump
+fonts/        Instrument Sans, self-hosted so it renders offline
 manifest.webmanifest
 tickets/      QR images — see above
 ```
