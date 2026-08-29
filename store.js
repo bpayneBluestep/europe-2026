@@ -9,11 +9,10 @@
  */
 
 var API = {
-  /* Set this to the BlueStep endpoint once it exists, e.g.
-     "https://beh.bluestep.net/b/tripdata". Empty = local-only mode. */
-  url: "",
-  /* Shared secret sent as ?k= and checked by the endpoint. Not real security —
-     it only keeps a guessed URL from being trivially writable. */
+  /* The BlueStep endpoint. Empty string = local-only mode. */
+  url: "https://beh.bluestep.net/b/tripdata",
+  /* Optional shared secret, sent as ?k= — the endpoint does not require one,
+     by explicit choice. Set it in both places to turn it on. */
   key: "",
 };
 
@@ -58,6 +57,11 @@ var Store = (function () {
     return fetch(endpoint(""), opts).then(function (r) {
       if (!r.ok) throw new Error("HTTP " + r.status);
       return r.json();
+    }).then(function (data) {
+      /* The endpoint always answers 200 and reports failure in the envelope,
+         so a rejected write has to be caught here rather than by r.ok. */
+      if (data && data.success === false) throw new Error(data.error || "rejected");
+      return data;
     });
   }
 
