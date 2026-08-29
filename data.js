@@ -10,6 +10,87 @@ const TRIP = {
     end: "2026-10-09",
   },
 
+  /* ---------- CITY PALETTE ---------- */
+  /* One rich accent per base, pulled from that city's photograph. */
+  cities: {
+    "Home":       { color: "#8a5a2b", img: "slc" },
+    "Rome":       { color: "#b4552d", img: "rome-colosseum" },
+    "Venice":     { color: "#1c6b74", img: "venice-canal" },
+    "Lake Como":  { color: "#2f6b4f", img: "como-lake" },
+    "Interlaken": { color: "#1f5f9e", img: "interlaken-valley" },
+    "Paris":      { color: "#5b4b8a", img: "paris-eiffel" },
+  },
+
+  /* ---------- PHOTO CREDITS ---------- */
+  /* Wikimedia Commons. CC BY / CC BY-SA require attribution — keep this shown. */
+  credits: {
+    "slc": {
+      "artist": "Iansmh98",
+      "license": "CC BY-SA 4.0",
+      "source": "https://commons.wikimedia.org/wiki/File%3ASalt_Lake_City_skyline_%282020%29_from_Ensign_Peak.jpg"
+    },
+    "rome-colosseum": {
+      "artist": "Wilfredor",
+      "license": "CC0",
+      "source": "https://commons.wikimedia.org/wiki/File%3AColosseum_of_Rome_and_Roman_forum.jpg"
+    },
+    "rome-trevi": {
+      "artist": "Wilfredor",
+      "license": "CC0",
+      "source": "https://commons.wikimedia.org/wiki/File%3AFontaine_Trevi_-_Rome.jpg"
+    },
+    "rome-pantheon": {
+      "artist": "Nicholas Hartmann",
+      "license": "CC BY-SA 4.0",
+      "source": "https://commons.wikimedia.org/wiki/File%3ARome_Pantheon_facade_and_Piazza_della_Rotonda.jpg"
+    },
+    "venice-canal": {
+      "artist": "This Photo was taken by Wolfgang Moroder.  \n\nFeel free to use my photos, but please mention me as th",
+      "license": "CC BY-SA 3.0",
+      "source": "https://commons.wikimedia.org/wiki/File%3ACanal_Grande_Chiesa_della_Salute_e_Dogana_dal_ponte_dell_Accademia.jpg"
+    },
+    "venice-gondola": {
+      "artist": "Jörg Bittner (Unna)",
+      "license": "CC BY-SA 3.0",
+      "source": "https://commons.wikimedia.org/wiki/File%3AVenezia-Venice-Venedig-JBU05.JPG"
+    },
+    "como-lake": {
+      "artist": "Maurizio Moro5153",
+      "license": "CC BY-SA 4.0",
+      "source": "https://commons.wikimedia.org/wiki/File%3ABellagio_da_Tremezzo.jpg"
+    },
+    "swiss-lucerne": {
+      "artist": "Asurnipal",
+      "license": "CC BY-SA 4.0",
+      "source": "https://commons.wikimedia.org/wiki/File%3ALuzern-Lake_Lucerne-Stadt_Luzern_%28ship%29-04ASD.jpg"
+    },
+    "interlaken-valley": {
+      "artist": "Chensiyuan",
+      "license": "CC BY-SA 4.0",
+      "source": "https://commons.wikimedia.org/wiki/File%3A1_lauterbrunnen_valley_wengen_2022.jpg"
+    },
+    "swiss-jungfrau": {
+      "artist": "Murray Foubister",
+      "license": "CC BY-SA 2.0",
+      "source": "https://commons.wikimedia.org/wiki/File%3AEiger-Monch-Jungfrau-2.jpg_%2810955783763%29.jpg"
+    },
+    "swiss-first": {
+      "artist": "Bob Tan",
+      "license": "CC BY-SA 4.0",
+      "source": "https://commons.wikimedia.org/wiki/File%3AGrindelwald_as_seen_from_the_First_cable_car_station_100622.jpg"
+    },
+    "swiss-oeschinen": {
+      "artist": "JoachimKohler-HB",
+      "license": "CC BY-SA 4.0",
+      "source": "https://commons.wikimedia.org/wiki/File%3ADer_Oeschinensee_bei_Kandersteg_BE_%282015%29.jpg"
+    },
+    "paris-eiffel": {
+      "artist": "Getfunky Paris",
+      "license": "CC BY 2.0",
+      "source": "https://commons.wikimedia.org/wiki/File%3AEiffel_Tower_and_Pont_Alexandre_III_at_night.jpg"
+    }
+  },
+
   /* ---------- EMERGENCY ---------- */
   emergency: {
     universal: {
@@ -39,6 +120,7 @@ const TRIP = {
   /* ---------- STAYS ---------- */
   stays: [
     {
+      img: "rome-colosseum",
       id: "rome", city: "Rome", country: "Italy",
       name: "Airbnb apartment", conf: "HM32T5Z5CD",
       addr: "Via dei Cappellari 4, 00186 Roma",
@@ -50,6 +132,7 @@ const TRIP = {
       notes: "Cappellari sits inside a ZTL restricted lane — expect a short walk from wherever the car can stop. Door code is in the Airbnb app; save it offline.",
     },
     {
+      img: "venice-canal",
       id: "venice", city: "Venice", country: "Italy",
       name: "Duodo Palace Hotel", conf: "920524140 · PIN 8716",
       addr: "Calle Minelli 1887–1888, San Marco, 30124 Venezia",
@@ -61,6 +144,7 @@ const TRIP = {
       notes: "The room is settled at the desk, not prepaid — the card only guarantees it, and there is a city tax on departure. Room and Wi-Fi only, no breakfast. Free cancellation until 13:00 on 19 Sep. Ask about private dock access for the water-taxi arrival.",
     },
     {
+      img: "como-lake",
       id: "como", city: "Lake Como", country: "Italy",
       name: "Airbnb apartment — Griante", conf: "HMAZ8FCH2H",
       addr: "Via Regina 25, 22011 Griante CO",
@@ -72,6 +156,7 @@ const TRIP = {
       notes: "Self check-in by lockbox — get the code from the Airbnb app and save it offline BEFORE you leave Venice. The boat dock at Tremezzo is a ten-minute walk south along the shore.",
     },
     {
+      img: "interlaken-valley",
       id: "interlaken", city: "Interlaken", country: "Switzerland",
       name: "Airbnb apartment", conf: "HMRZA2CJCW",
       addr: "Höheweg 2, 3800 Interlaken",
@@ -83,6 +168,7 @@ const TRIP = {
       notes: "On the main street, about 10 minutes' walk from Interlaken Ost. Longest stay of the trip.",
     },
     {
+      img: "paris-eiffel",
       id: "paris", city: "Paris", country: "France",
       name: "Hotel de Londres Eiffel", conf: "KBN7HF",
       addr: "1 Rue Augereau, 75007 Paris",

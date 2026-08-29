@@ -84,9 +84,24 @@
   .card.pad-sm{padding:15px 17px}
   .card:last-child{margin-bottom:0}
 
+  /* Hero. Solid ink by default; add .photo + a --bg-img and the photograph
+     carries the colour, with a scrim so white type stays legible over it. */
   .hero{background:var(--ink);color:#fff;border-radius:var(--r-lg);padding:22px;
-    margin-bottom:14px}
-  .hero .label{color:rgba(255,255,255,.55)}
+    margin-bottom:14px;position:relative;overflow:hidden;isolation:isolate}
+  .hero.photo{background:var(--accent,var(--ink));min-height:238px;
+    display:flex;flex-direction:column;justify-content:flex-end;padding:20px}
+  .hero.photo::before{content:"";position:absolute;inset:0;z-index:-2;
+    background-image:var(--bg-img);background-size:cover;background-position:center}
+  /* Scrim: almost nothing over the top two-thirds so the photograph keeps its
+     colour, deepening to the city's accent only where the type sits. */
+  .hero.photo::after{content:"";position:absolute;inset:0;z-index:-1;
+    background:linear-gradient(178deg,
+      rgba(0,0,0,0) 0%,
+      rgba(0,0,0,.10) 38%,
+      color-mix(in srgb, var(--accent,#212529) 40%, rgba(0,0,0,.55)) 76%,
+      color-mix(in srgb, var(--accent,#212529) 52%, rgba(0,0,0,.80)) 100%)}
+  .hero .label{color:rgba(255,255,255,.72)}
+  .hero.photo h1,.hero.photo p{text-shadow:0 1px 12px rgba(0,0,0,.35)}
   .hero h1{font-size:27px;font-weight:700;letter-spacing:-.028em;line-height:1.16;
     margin:9px 0 6px}
   .hero p{font-size:14px;color:rgba(255,255,255,.7);margin:0}
@@ -134,8 +149,20 @@
   .acc>summary::-webkit-details-marker{display:none}
   .acc .thumb{flex:0 0 54px;height:54px;border-radius:var(--r-sm);background:var(--ink);
     color:#fff;display:grid;place-items:center;font-size:19px;font-weight:700;
-    letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-  .acc .thumb.soft{background:var(--sunk);color:var(--ink)}
+    letter-spacing:-.02em;font-variant-numeric:tabular-nums;position:relative;
+    overflow:hidden;isolation:isolate}
+  .acc .thumb.soft{background:var(--sunk);color:var(--accent,var(--ink))}
+  /* Without this an icon inside an accordion thumb renders as a filled blob. */
+  .acc .thumb svg{width:21px;height:21px;stroke:currentColor;fill:none;
+    stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;display:block}
+  /* Photo thumbnail: the day number sits on the picture, tinted by the city. */
+  .acc .thumb.pic{background-image:var(--bg-img);background-size:cover;
+    background-position:center;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+  /* Darken behind the numeral only, so the picture stays vivid at the edges. */
+  .acc .thumb.pic::before{content:"";position:absolute;inset:0;z-index:-1;
+    background:
+      radial-gradient(circle at 50% 52%, rgba(0,0,0,.62) 0%, rgba(0,0,0,.10) 74%),
+      color-mix(in srgb, var(--accent,#212529) 14%, transparent)}
   .acc .txt{flex:1;min-width:0}
   .acc .txt .label{display:block;margin-bottom:2px}
   .acc .txt b{display:block;font-size:15.5px;font-weight:600;letter-spacing:-.015em;
@@ -191,6 +218,33 @@
   .note.alert{background:var(--alert-bg);color:var(--alert);font-weight:500}
   .note .label{display:block;margin-bottom:6px}
   .note.alert .label{color:var(--alert);opacity:.7}
+
+  /* ---------- city colour accents ---------- */
+  .dot{display:inline-block;width:9px;height:9px;border-radius:999px;
+    background:var(--accent,var(--ink));margin-right:8px;vertical-align:middle;
+    position:relative;top:-1px}
+  .chip .dot{width:7px;height:7px;margin-right:7px}
+  .chip[aria-pressed="true"] .dot{background:#fff}
+  .sect h2 .dot{width:10px;height:10px}
+  /* A tinted rule under a city's section, so the colour reads without shouting. */
+  .accent-rule{height:3px;border-radius:2px;background:var(--accent,var(--ink));
+    width:34px;margin:-4px 0 14px}
+  .tl .t{color:var(--accent,var(--faint))}
+  .kv .k{color:var(--accent,var(--faint));opacity:.85}
+
+  /* photo banner used on stay cards */
+  .banner{height:150px;border-radius:var(--r-md);background-image:var(--bg-img);
+    background-size:cover;background-position:center;margin:-4px 0 14px;
+    position:relative;overflow:hidden}
+  .banner::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg,transparent 45%,
+      color-mix(in srgb, var(--accent,#212529) 55%, rgba(0,0,0,.6)) 100%)}
+
+  /* ---------- credits ---------- */
+  .credit{font-size:12px;color:var(--faint);line-height:1.5;padding:9px 0;
+    border-top:1px solid var(--line)}
+  .credit:first-child{border-top:0;padding-top:0}
+  .credit a{text-decoration:underline;text-underline-offset:2px}
 
   /* ---------- checklist ---------- */
   .check{list-style:none;margin:0;padding:0}
@@ -272,7 +326,8 @@
     train:   '<rect x="5" y="3.6" width="14" height="13" rx="3.4"/><path d="M5 11h14M8.5 20.4 6.6 16.6M15.5 20.4l1.9-3.8"/><circle cx="8.8" cy="13.8" r=".9"/><circle cx="15.2" cy="13.8" r=".9"/>',
     car:     '<path d="M4 16.4v2.2h2.6v-2.2M17.4 16.4v2.2H20v-2.2"/><path d="M3.6 16.4v-4l1.9-4.6A2 2 0 0 1 7.4 6.6h9.2a2 2 0 0 1 1.9 1.2l1.9 4.6v4z"/><path d="M3.6 12.4h16.8"/><circle cx="7.4" cy="14.4" r=".9"/><circle cx="16.6" cy="14.4" r=".9"/>',
     star:    '<path d="M12 3.8l2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8z"/>',
-    fork:    '<path d="M6.5 3v6.5a2.5 2.5 0 0 0 5 0V3M9 9.5V21"/><path d="M17 21V3c-2 .8-2.8 3-2.8 5.6 0 1.8.9 2.8 2.8 3"/>'
+    fork:    '<path d="M6.5 3v6.5a2.5 2.5 0 0 0 5 0V3M9 9.5V21"/><path d="M17 21V3c-2 .8-2.8 3-2.8 5.6 0 1.8.9 2.8 2.8 3"/>',
+    camera:  '<path d="M3.5 8.6a2 2 0 0 1 2-2h1.9l1.3-2.1h6.6l1.3 2.1h1.9a2 2 0 0 1 2 2v8.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.8" r="3.4"/>'
   };
   function svg(name, cls){
     return '<svg viewBox="0 0 24 24"' + (cls ? ' class="' + cls + '"' : '') + '>' +
@@ -306,6 +361,43 @@
   }
 
   /* ---------- shared blocks ---------- */
+  /* ---------- colour + photography ---------- */
+
+  /* Which of the five bases a day belongs to. Travel days key to where they
+     start, which is why "Rome → Venice" reads as Rome. */
+  function cityKey(day){
+    var c = day.city;
+    if (c.indexOf("Salt Lake") === 0) return "Home";
+    if (c.indexOf("Rome") === 0) return "Rome";
+    if (c.indexOf("Venice") === 0) return "Venice";
+    if (c.indexOf("Lake Como") === 0) return "Lake Como";
+    if (c.indexOf("Interlaken") === 0) return "Interlaken";
+    if (c.indexOf("Paris") === 0) return "Paris";
+    return "Home";
+  }
+  /* Tolerate a data.js that predates the palette. A service worker can serve a
+     mixed set of files across a version bump, and a missing map must degrade to
+     the mono design rather than throw and leave a blank screen. */
+  function cityColor(name){
+    var c = TRIP.cities && TRIP.cities[name];
+    return c ? c.color : "#212529";
+  }
+  /* Inline custom properties: --accent tints the scrim and the accents,
+     --bg-img points at the photograph. */
+  function skin(cityName, imgKey){
+    var s = '--accent:' + cityColor(cityName) + ';';
+    if (imgKey) s += "--bg-img:url('img/" + imgKey + ".jpg');";
+    return s;
+  }
+  function skinSq(cityName, imgKey){
+    var s = '--accent:' + cityColor(cityName) + ';';
+    if (imgKey) s += "--bg-img:url('img/" + imgKey + "-sq.jpg');";
+    return s;
+  }
+  function dot(cityName){
+    return '<span class="dot" style="--accent:' + cityColor(cityName) + '"></span>';
+  }
+
   function pageHead(title, sub){
     return '<div style="margin-bottom:4px"><h1 class="greet">' + esc(title) + '</h1>' +
            (sub ? '<p class="greet-sub">' + esc(sub) + '</p>' : '') + '</div>';
@@ -356,8 +448,10 @@
 
   /* The Day-N accordion card, matching the tour-schedule pattern. */
   function dayAcc(day, open){
-    return '<details class="acc"' + (open ? ' open' : '') + '>' +
-      '<summary><div class="thumb' + (day.kind === "open" ? " soft" : "") + '">' +
+    var city = cityKey(day);
+    return '<details class="acc"' + (open ? ' open' : '') +
+      ' style="' + skin(city, null) + '">' +
+      '<summary><div class="thumb pic" style="' + skinSq(city, day.img) + '">' +
       day.n + '</div>' +
       '<div class="txt"><span class="label">' + esc(day.date) + '</span>' +
       '<b>' + esc(day.title) + '</b><em>' + esc(day.city) + '</em></div>' +
@@ -381,7 +475,8 @@
       var out = daysBetween(today(), d(TRIP.meta.start));
       if (out > 0){
         h += pageHead(greeting() + ", Brandon", TRIP.meta.travellers);
-        h += '<div class="hero" style="margin-top:18px">' +
+        h += '<div class="hero photo" style="margin-top:18px;' +
+             skin("Rome", "rome-colosseum") + '">' +
              '<span class="label">Days until you fly</span>' +
              '<div class="count">' + out + '</div>' +
              '<p>Departing ' + esc(TRIP.days[0].date) + ' &middot; Rome first</p>' +
@@ -406,7 +501,8 @@
 
     var day = TRIP.days[idx];
     h += pageHead(greeting() + ", Brandon", "Day " + day.n + " of 23 · " + day.city);
-    h += '<div class="hero" style="margin-top:18px">' +
+    h += '<div class="hero photo" style="margin-top:18px;' +
+         skin(cityKey(day), day.img) + '">' +
          '<span class="label">Today &middot; ' + esc(day.date) + '</span>' +
          '<h1>' + esc(day.title) + '</h1>' +
          '<p>' + esc(day.city) + '</p>' +
@@ -452,24 +548,13 @@
   /* Five bases as a compact strip on the pre-trip home. */
   function routeStrip(){
     var h = '<div class="card">';
-    TRIP.stays.forEach(function(s, i){
-      h += '<div class="kv"><div class="k">' + esc(s.inDate) + ' &rarr; ' +
-           esc(s.outDate) + '</div><div class="v"><b>' + esc(s.city) + '</b> &middot; ' +
+    TRIP.stays.forEach(function(s){
+      h += '<div class="kv" style="' + skin(s.city, null) + '">' +
+           '<div class="k">' + esc(s.inDate) + ' &rarr; ' + esc(s.outDate) + '</div>' +
+           '<div class="v">' + dot(s.city) + '<b>' + esc(s.city) + '</b> &middot; ' +
            s.nights + ' nights</div></div>';
     });
     return h + '</div>';
-  }
-
-  /* City filter chips on the Days view. */
-  function cityKey(day){
-    var c = day.city;
-    if (c.indexOf("Salt Lake") === 0) return "Home";
-    if (c.indexOf("Paris") === 0 && c.indexOf("home") !== -1) return "Home";
-    if (c.indexOf("Rome") === 0) return "Rome";
-    if (c.indexOf("Venice") === 0) return "Venice";
-    if (c.indexOf("Lake Como") === 0) return "Lake Como";
-    if (c.indexOf("Interlaken") === 0) return "Interlaken";
-    return "Paris";
   }
 
   views.days = function(filter){
@@ -481,7 +566,8 @@
     h += '<div class="chips" style="margin-top:16px">';
     cities.forEach(function(c){
       h += '<button class="chip" aria-pressed="' + (c === active) +
-           '" data-go="#/days/' + encodeURIComponent(c) + '">' + esc(c) + '</button>';
+           '" data-go="#/days/' + encodeURIComponent(c) + '">' +
+           (c === "All" ? "" : dot(c)) + esc(c) + '</button>';
     });
     h += '</div>';
 
@@ -508,7 +594,12 @@
        two don't say the same thing twice. */
     var h = detailHead("#/days", day.city, day.date);
 
-    h += '<div class="hero"><span class="label">Day ' + day.n + ' of 23</span>' +
+    /* Everything below inherits this city's accent — timeline times, field
+       labels and rules all pick it up from --accent. */
+    h += '<div style="' + skin(cityKey(day), null) + '">';
+
+    h += '<div class="hero photo" style="' + skin(cityKey(day), day.img) + '">' +
+         '<span class="label">Day ' + day.n + ' of 23</span>' +
          '<h1>' + esc(day.title) + '</h1>' +
          '<p>' + esc(day.date) + ' &middot; ' + esc(day.city) + '</p>' +
          (day.high != null ? '<p style="margin-top:10px">High ' + day.high +
@@ -564,6 +655,7 @@
     if (i < TRIP.days.length - 1) h += '<button class="btn" data-go="#/day/' +
                     TRIP.days[i+1].n + '">Day ' + TRIP.days[i+1].n + svg("chevR") + '</button>';
     h += '</div>';
+    h += '</div>';   /* close the city-accent wrapper */
     return h;
   };
 
@@ -654,7 +746,9 @@
   views.stays = function(){
     var h = pageHead("Stays", "Five bases, 21 nights");
     TRIP.stays.forEach(function(s){
-      h += sect(s.city, null, null);
+      h += '<div style="' + skin(s.city, null) + '">';
+      h += '<div class="sect"><h2>' + dot(s.city) + esc(s.city) + '</h2></div>';
+      h += '<div class="banner" style="' + skin(s.city, s.img) + '"></div>';
       h += '<div class="card">';
       h += '<h3 style="font-size:19px;font-weight:700;letter-spacing:-.02em;margin:0 0 4px">' +
            esc(s.name) + '</h3>';
@@ -680,6 +774,7 @@
            encodeURIComponent(s.addr) + '">' + svg("pin") + 'Open in Maps</a>' +
            (s.link ? '<a class="btn ghost" target="_blank" rel="noopener" href="' +
              esc(s.link) + '">Booking</a>' : '') + '</div>';
+      h += '</div>';   /* close the city-accent wrapper */
     });
     return h;
   };
@@ -708,6 +803,23 @@
            (x.detail ? '<p class="lead">' + esc(x.detail) + '</p>' : '') +
            '</div></details>';
     });
+
+    /* CC BY and CC BY-SA both require attribution, so this stays visible. */
+    if (TRIP.credits){
+    h += sect("Photo credits", null, null);
+    h += '<details class="acc"><summary>' +
+         '<div class="thumb soft">' + svg("camera") + '</div>' +
+         '<div class="txt"><b>Photography</b><em>Wikimedia Commons &middot; ' +
+         Object.keys(TRIP.credits).length + ' images</em></div>' +
+         '<div class="chev">' + svg("chevD") + '</div></summary><div class="inner">';
+    Object.keys(TRIP.credits).forEach(function(k){
+      var c = TRIP.credits[k];
+      h += '<div class="credit">' + esc(k) + ' &mdash; ' + esc(c.artist) +
+           ', ' + esc(c.license) + ' &middot; <a href="' + esc(c.source) +
+           '" target="_blank" rel="noopener">source</a></div>';
+    });
+    h += '</div></details>';
+    }
     return h;
   };
 

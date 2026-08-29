@@ -2,6 +2,7 @@
 
 TRIP.days = [
   {
+    img: "slc",
     n: 1, iso: "2026-09-17", date: "Thu 17 Sep", city: "Salt Lake City", country: "USA",
     kind: "travel", title: "Fly out",
     summary: "Overnight to Paris, then on to Rome tomorrow. 14h 55m door to door with one stop.",
@@ -15,6 +16,7 @@ TRIP.days = [
     checklist: ["Passports", "Both phones fully charged", "Chargers + EU adapters", "Ticket barcodes saved offline", "Meds and anything you need in the cabin"],
   },
   {
+    img: "rome-pantheon",
     n: 2, iso: "2026-09-18", date: "Fri 18 Sep", city: "Rome", country: "Italy",
     kind: "travel", title: "Land in Rome, settle in",
     summary: "Arrive 2:25 PM. Nothing booked after that — keep it that way after an overnight flight.",
@@ -29,12 +31,14 @@ TRIP.days = [
     notes: ["Nothing booked tonight. That is deliberate."],
   },
   {
+    img: "rome-trevi",
     n: 3, iso: "2026-09-19", date: "Sat 19 Sep", city: "Rome", country: "Italy",
     kind: "open", title: "Open",
     summary: "Nothing booked. Rain is a real possibility — 64%.",
     high: 80, low: 64, rain: 0.64,
   },
   {
+    img: "rome-colosseum",
     n: 4, iso: "2026-09-20", date: "Sun 20 Sep", city: "Rome", country: "Italy",
     kind: "plan", title: "Colosseum — standard entry",
     summary: "Standard timed entry: Colosseum + Roman Forum + Palatine.",
@@ -47,11 +51,13 @@ TRIP.days = [
     ],
   },
   {
+    img: "rome-pantheon",
     n: 5, iso: "2026-09-21", date: "Mon 21 Sep", city: "Rome", country: "Italy",
     kind: "open", title: "Open", summary: "Nothing booked. Last full day in Rome.",
     high: 79, low: 62, rain: 0.36,
   },
   {
+    img: "venice-canal",
     n: 6, iso: "2026-09-22", date: "Tue 22 Sep", city: "Rome → Venice", country: "Italy",
     kind: "travel", title: "Rome → Venice",
     summary: "Half travel day, ~5 hours door to door. The train is booked and seated; the water leg is not.",
@@ -66,6 +72,7 @@ TRIP.days = [
     checklist: ["Ticket barcodes downloaded offline", "Apartment key returned / lockbox reset", "Chargers, adapters, passports", "Nothing left in the safe"],
   },
   {
+    img: "venice-gondola",
     n: 7, iso: "2026-09-23", date: "Wed 23 Sep", city: "Venice", country: "Italy",
     kind: "plan", title: "Dinner — Al Vecio Forno, 7:30 PM",
     summary: "Party of 2, under 'Payne'. Daytime open.",
@@ -77,6 +84,7 @@ TRIP.days = [
     ],
   },
   {
+    img: "venice-canal",
     n: 8, iso: "2026-09-24", date: "Thu 24 Sep", city: "Venice", country: "Italy",
     kind: "plan", title: "Cooking class — pasta & tiramisu, 4:00 PM",
     summary: "Three hours, 2 adults, in English. You eat what you cook with wine, limoncello and coffee — treat it as dinner.",
@@ -91,6 +99,7 @@ TRIP.days = [
     ],
   },
   {
+    img: "como-lake",
     n: 9, iso: "2026-09-25", date: "Fri 25 Sep", city: "Venice → Lake Como", country: "Italy",
     kind: "travel", title: "Venice → Lake Como",
     summary: "Two trains on one booking, then a car up the west shore. ~5 hours door to door.",
@@ -105,12 +114,14 @@ TRIP.days = [
     checklist: ["Settle any hotel extras at Duodo Palace", "Lockbox code saved offline", "Vaporetto tickets bought the night before", "Regional-leg PDFs on the phone"],
   },
   {
+    img: "como-lake",
     n: 10, iso: "2026-09-26", date: "Sat 26 Sep", city: "Lake Como", country: "Italy",
     kind: "open", title: "Open",
     summary: "Nothing booked. Worth walking down to Tremezzo to find tomorrow's boat dock while it is light.",
     high: 68, low: 58, rain: 0.55,
   },
   {
+    img: "como-lake",
     n: 11, iso: "2026-09-27", date: "Sun 27 Sep", city: "Lake Como", country: "Italy",
     kind: "plan", title: "Boat rental, 11:00 AM – 3:00 PM",
     summary: "Motorboat 'Bellagio', four hours, from Tremezzo.",
@@ -122,6 +133,7 @@ TRIP.days = [
     notes: ["Pack tonight. Tomorrow is the longest day of the trip and the car comes at 07:00."],
   },
   {
+    img: "swiss-lucerne",
     n: 12, iso: "2026-09-28", date: "Mon 28 Sep", city: "Lake Como → Interlaken", country: "Italy → Switzerland",
     kind: "travel", title: "THE LONG DAY — four legs, ~10 hours",
     summary: "Car into Switzerland, then the Gotthard Panorama Express: scenic train, lake steamer, panoramic train. Everything keys off the 07:00 car.",
@@ -141,27 +153,32 @@ TRIP.days = [
     checklist: ["Alarm set for 06:00", "Bags packed the night before", "Passports ON YOU, not in the transferred bag", "Meds, chargers, snacks in the day bag", "Lockbox code reset / key returned"],
   },
   {
+    img: "interlaken-valley",
     n: 13, iso: "2026-09-29", date: "Tue 29 Sep", city: "Interlaken", country: "Switzerland",
     kind: "open", title: "Open — weather picks",
     summary: "First of four open days. Check the webcams the night before and decide over breakfast.",
     high: 66, low: 51, rain: 0.36, excursionDay: true,
   },
   {
+    img: "swiss-first",
     n: 14, iso: "2026-09-30", date: "Wed 30 Sep", city: "Interlaken", country: "Switzerland",
     kind: "open", title: "Open — weather picks", summary: "Second of four open days.",
     high: 66, low: 52, rain: 0.55, excursionDay: true,
   },
   {
+    img: "swiss-jungfrau",
     n: 15, iso: "2026-10-01", date: "Thu 1 Oct", city: "Interlaken", country: "Switzerland",
     kind: "open", title: "Open — weather picks", summary: "Third of four open days.",
     high: 64, low: 52, rain: 0.64, excursionDay: true,
   },
   {
+    img: "swiss-oeschinen",
     n: 16, iso: "2026-10-02", date: "Fri 2 Oct", city: "Interlaken", country: "Switzerland",
     kind: "open", title: "Open — weather picks", summary: "Last open day in Switzerland.",
     high: 65, low: 51, rain: 0.64, excursionDay: true,
   },
   {
+    img: "paris-eiffel",
     n: 17, iso: "2026-10-03", date: "Sat 3 Oct", city: "Interlaken → Paris", country: "Switzerland → France",
     kind: "travel", title: "Interlaken → Paris",
     summary: "Two separate tickets. The buffer at Basel is the thing to protect.",
@@ -178,16 +195,19 @@ TRIP.days = [
     checklist: ["Spend or keep leftover francs — euros will not work here", "Flat cleaned, code reset, keys returned", "TGV ticket saved offline", "Swiss Pass expires 4 Oct 5:00 AM — today is the last use"],
   },
   {
+    img: "paris-eiffel",
     n: 18, iso: "2026-10-04", date: "Sun 4 Oct", city: "Paris", country: "France",
     kind: "open", title: "Open", summary: "Nothing booked. Also today: you move to the Eiffel-view room on the 6th floor.",
     high: 64, low: 47, rain: 0.27,
   },
   {
+    img: "paris-eiffel",
     n: 19, iso: "2026-10-05", date: "Mon 5 Oct", city: "Paris", country: "France",
     kind: "open", title: "Open", summary: "Nothing booked.",
     high: 64, low: 50, rain: 0.36,
   },
   {
+    img: "paris-eiffel",
     n: 20, iso: "2026-10-06", date: "Tue 6 Oct", city: "Paris", country: "France",
     kind: "plan", title: "Disneyland Paris",
     summary: "Both parks, one day. Premier Access makes that realistic. Out the door by 7:45 AM.",
@@ -203,6 +223,7 @@ TRIP.days = [
     notes: ["Both phones fully charged — the app is your ticket all day."],
   },
   {
+    img: "paris-eiffel",
     n: 21, iso: "2026-10-07", date: "Wed 7 Oct", city: "Paris", country: "France",
     kind: "plan", title: "Dinner — Café de l'Homme, 8:00 PM",
     summary: "Party of 2, indoor, standard seating. Daytime still open.",
@@ -214,6 +235,7 @@ TRIP.days = [
     ],
   },
   {
+    img: "paris-eiffel",
     n: 22, iso: "2026-10-08", date: "Thu 8 Oct", city: "Paris", country: "France",
     kind: "plan", title: "Last full day — and book the airport taxi",
     summary: "Open daytime, but one job today.",
@@ -222,6 +244,7 @@ TRIP.days = [
     checklist: ["Taxi ordered with reception for 6:15–6:30 AM", "Hotel bill settled", "Bags under 23 kg each", "No liquids over 100 ml in carry-on", "VAT refund forms, if any"],
   },
   {
+    img: "paris-eiffel",
     n: 23, iso: "2026-10-09", date: "Fri 9 Oct", city: "Paris → home", country: "France → USA",
     kind: "travel", title: "Fly home",
     summary: "Nonstop. Wheels down in Salt Lake the same afternoon.",

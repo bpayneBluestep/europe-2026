@@ -67,8 +67,18 @@ Then follow **Updating** below.
 ## Design
 
 Instrument Sans on `#212529` / `#f5f6f7` / `#ffffff`, white cards on a light-grey
-field, a floating dark nav pill, and accordion day cards. Deliberately light-only —
-the palette is the design, and a dark variant would fight it.
+field, a floating dark nav pill, and accordion day cards. Deliberately light-only.
+
+Colour comes from the **photography**, not from painted UI. Each of the five bases
+has one accent pulled from its own photograph (`TRIP.cities` in `data.js`), applied
+to field labels, timeline times, filter-chip dots and the gradient scrim over each
+hero image. The chrome stays monochrome so the pictures carry the trip.
+
+Photos live in `img/`, two derivatives each: `<key>.jpg` at 1200x800 for heroes and
+banners, `<key>-sq.jpg` at 300x300 for day thumbnails. All 13 are from Wikimedia
+Commons under CC0 / CC BY / CC BY-SA — **the credits list in the Open tab is a
+licence requirement, don't remove it.** Attribution data is in `img/credits.json`
+and mirrored into `TRIP.credits`.
 
 The font is **self-hosted** in `fonts/` (both Latin subsets, ~41KB) rather than
 pulled from Google Fonts, because a cross-origin font request is the one thing that
@@ -82,6 +92,7 @@ data.js       tickets, stays, open items, accounts, emergency numbers, excursion
 days.js       the 23 days, with timelines for the five travel days
 sw.js         offline cache. CACHE_VERSION is the thing you have to remember to bump
 fonts/        Instrument Sans, self-hosted so it renders offline
+img/          trip photography + credits.json (attribution is required)
 manifest.webmanifest
 tickets/      QR images — see above
 ```
