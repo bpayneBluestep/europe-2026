@@ -145,12 +145,31 @@ directly to the endpoint without the app being open. Build it once:
 1. Shortcuts app → **+** → rename it *Add to Europe trip*
 2. Info (ⓘ) → turn on **Show in Share Sheet**, then set **Share Sheet Types** to
    **URLs** only
-3. Add action **Get Contents of URL**
+3. Add action **Ask for Input** — type **Text**, prompt `Name it?`
+4. Add action **List** — items, one per line: `Rome`, `Venice`, `Lake Como`,
+   `Interlaken`, `Paris`, `Anywhere`
+5. Add action **Choose from List** — prompt `Which city?`
+6. Add action **Get Contents of URL**
    - URL: `https://beh.bluestep.net/b/tripdata`
    - **Show More** → Method **POST**, Request Body **JSON**
    - Field 1 — Text, key `url`, value = the **Shortcut Input** variable
-   - Field 2 — Text, key `by`, value = `Brandon` (or `Tatiana` on her phone)
-4. Optional: add **Show Notification** after it so you get confirmation.
+   - Field 2 — Text, key `title`, value = the **Provided Input** variable
+   - Field 3 — Text, key `city`, value = the **Chosen Item** variable
+   - Field 4 — Text, key `by`, value = `Brandon` (or `Tatiana` on her phone)
+7. Optional: add **Show Notification** after it so you get confirmation.
+
+Order matters — the three prompting actions must sit **above** Get Contents of URL,
+or their variables do not exist yet when it runs.
+
+`title` and `city` are both optional. Leave the name prompt blank and the endpoint
+derives one; pick `Anywhere` and the item stores an empty city, which the app
+renders as *Anywhere*. A city string the app does not recognise degrades to the
+same thing rather than breaking, so a typo is harmless.
+
+Why the city prompt is worth the extra tap: TikTok's share button hands out a
+short link (`tiktok.com/t/ZP8v…`) with no `@handle` and no caption in it, so the
+endpoint has nothing to derive a title or a place from. Every share would
+otherwise land as *TikTok link*.
 
 Then in TikTok: Share → scroll the bottom row → *Add to Europe trip*. It appears
 in the app's Want-to-do list on both phones at the next refresh.
