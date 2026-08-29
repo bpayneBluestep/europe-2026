@@ -111,6 +111,38 @@ Requests are sent with `Content-Type: text/plain` on purpose — it keeps the br
 from firing a CORS preflight. The endpoint must return
 `Access-Control-Allow-Origin` for `https://bpaynebluestep.github.io`.
 
+## Sharing straight from TikTok
+
+**iPhone: use a Shortcut.** The Web Share Target API — the thing that puts a web
+app in a native share sheet — is Chrome/Android only; Safari has never shipped it,
+so the PWA cannot appear in TikTok's share sheet. A Shortcut can, and it posts
+directly to the endpoint without the app being open. Build it once:
+
+1. Shortcuts app → **+** → rename it *Add to Europe trip*
+2. **i** (info) → turn on **Show in Share Sheet**
+3. Under that, set **Share Sheet Types** to **URLs** only
+4. Add action **Get Contents of URL**
+   - URL: `https://beh.bluestep.net/b/tripdata`
+   - Method: **POST**
+   - Request Body: **JSON**
+   - One field, key `action`, type Text, value `add`
+   - One field, key `item`, type **Dictionary**, containing key `url`, type Text,
+     value = the **Shortcut Input** variable
+5. Optional: add **Show Notification** after it so you get confirmation.
+
+Then in TikTok: Share → scroll the bottom row → *Add to Europe trip*. It appears
+in the app's Want-to-do list on both phones at the next refresh.
+
+The endpoint accepts a bare URL — no id, no title. It mints an id, derives a
+title (`TikTok — @handle`, `Map pin`, the hostname), and dedupes on the URL so
+sharing the same video twice does not make two rows. Send a `text` key as well
+and that becomes the title instead, which is what the caption is good for.
+
+**Android/Chrome** gets the real thing: `share_target` in the manifest routes the
+system share sheet to `index.html?url=…&text=…`, which `consumeShare()` turns into
+an item and then strips from the URL so a reload cannot double-add. That handler
+also makes a plain link work as a bookmarklet on any platform.
+
 ## Structure
 
 ```

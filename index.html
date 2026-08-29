@@ -1094,7 +1094,40 @@
     }
   });
 
+  /* A share handed to us by the OS. Android/Chrome routes the system share
+     sheet here via the manifest's share_target; iOS has no such API, so on an
+     iPhone the equivalent is a Shortcut posting straight to the endpoint.
+     Either way the same URL shape works, so it doubles as a bookmarklet. */
+  function consumeShare(){
+    var q = new URLSearchParams(location.search);
+    var url = (q.get("url") || "").trim();
+    var text = (q.get("text") || "").trim();
+    var title = (q.get("title") || "").trim();
+    if (!url && !text && !title) return false;
+
+    /* Android often puts the link inside `text` rather than `url`. */
+    if (!url){
+      var m = text.match(/https?:\/\/\S+/);
+      if (m){ url = m[0]; text = text.replace(m[0], "").trim(); }
+    }
+    if (!url && !title && !text) return false;
+
+    Store.add({
+      title: title || text || "Shared link",
+      url: url, city: "", note: title && text && title !== text ? text : "",
+      done: false,
+    });
+
+    /* Drop the query string so a reload cannot add the same thing twice. */
+    try {
+      history.replaceState(null, "", location.pathname + "#/wish");
+    } catch (e) { location.hash = "#/wish"; }
+    location.hash = "#/wish";
+    return true;
+  }
+
   window.addEventListener("hashchange", route);
+  consumeShare();
   route();
 
   /* Pull the shared list once at launch, and again whenever the app comes back
