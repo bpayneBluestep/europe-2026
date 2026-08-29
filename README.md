@@ -143,19 +143,22 @@ so the PWA cannot appear in TikTok's share sheet. A Shortcut can, and it posts
 directly to the endpoint without the app being open. Build it once:
 
 1. Shortcuts app → **+** → rename it *Add to Europe trip*
-2. **i** (info) → turn on **Show in Share Sheet**
-3. Under that, set **Share Sheet Types** to **URLs** only
-4. Add action **Get Contents of URL**
+2. Info (ⓘ) → turn on **Show in Share Sheet**, then set **Share Sheet Types** to
+   **URLs** only
+3. Add action **Get Contents of URL**
    - URL: `https://beh.bluestep.net/b/tripdata`
-   - Method: **POST**
-   - Request Body: **JSON**
-   - One field, key `action`, type Text, value `add`
-   - One field, key `item`, type **Dictionary**, containing key `url`, type Text,
-     value = the **Shortcut Input** variable
-5. Optional: add **Show Notification** after it so you get confirmation.
+   - **Show More** → Method **POST**, Request Body **JSON**
+   - Field 1 — Text, key `url`, value = the **Shortcut Input** variable
+   - Field 2 — Text, key `by`, value = `Brandon` (or `Tatiana` on her phone)
+4. Optional: add **Show Notification** after it so you get confirmation.
 
 Then in TikTok: Share → scroll the bottom row → *Add to Europe trip*. It appears
 in the app's Want-to-do list on both phones at the next refresh.
+
+The body is deliberately **flat** — no `action`, no nested `item` — because a
+dictionary inside a dictionary is the step people get wrong in the Shortcuts
+editor. A bare `url` or `title` implies "add". The app's own `{action, item}`
+shape still works unchanged.
 
 The endpoint accepts a bare URL — no id, no title. It mints an id, derives a
 title (`TikTok — @handle`, `Map pin`, the hostname), and dedupes on the URL so
