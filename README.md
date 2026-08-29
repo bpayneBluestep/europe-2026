@@ -137,11 +137,13 @@ it to that phone's owner. `by` and `createdBy` are both accepted.
 
 ## What a day says it is
 
-Travel and plan days carry a real title — the route, or the thing that is
-booked. Open days used to be titled *Open* or *Open — weather picks*, which said
-nothing the date and city had not already said, so they now take their headline
-from what is actually on: *2 ideas saved*, or *Nothing booked*. On an open day's
-own page the city becomes the headline for the same reason.
+**Only travel days have a title**, because only there does the title say
+something the date and the city do not — it is the route (*Rome → Venice*).
+Every other day is headed by its city alone. Titles like *Open*, *Open — weather
+picks* and *Land in Rome, settle in* are gone; what is planned lives inside the
+card you open, not in a label trying to summarise it. Nothing was deleted from
+`days.js` — summaries, notes and timelines all still render, so day 4 still
+reads as the Colosseum day the moment you open it.
 
 Opening a day card in the list shows the whole of that day without leaving it —
 the summary, anything critical, the timeline, tickets, the before-you-go

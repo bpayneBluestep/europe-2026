@@ -593,16 +593,17 @@
 
   /* What to call a day.
 
-     Travel and plan days have a title worth reading — the route, or the thing
-     that is actually booked. Open days used to say "Open" or "Open — weather
-     picks", which told you nothing the date and city had not already said. They
-     now take their headline from what is on: the ideas either of you saved for
-     that day, or nothing. */
+     Only travel days get a title, because only on a travel day does the title
+     say something the date and the city do not — it is the route. Everywhere
+     else the city IS the headline, and what is planned lives in the card you
+     open rather than in a label that tries to summarise it. */
   function dayHeadline(day){
-    if (day.kind !== "open" && day.title) return day.title;
-    var n = ideasFor(day).length;
-    if (n) return n === 1 ? "1 idea saved" : n + " ideas saved";
-    return "Nothing booked";
+    return day.kind === "travel" && day.title ? day.title : "";
+  }
+
+  /* The headline, or the city when there is none. */
+  function dayLead(day){
+    return dayHeadline(day) || day.city;
   }
 
   /* Everything that is on for a day, in one block — used inside the accordion
@@ -644,10 +645,11 @@
       '<summary><div class="thumb pic" style="' + skinSq(city, day.img) + '">' +
       day.n + '</div>' +
       '<div class="txt"><span class="label">' + esc(day.date) + '</span>' +
-      '<b>' + esc(dayHeadline(day)) + '</b>' +
-      /* On a travel day the headline IS the route, so repeating it as the
-         city underneath just says the same thing twice. */
-      (dayHeadline(day) === day.city ? '' : '<em>' + esc(day.city) + '</em>') +
+      '<b>' + esc(dayLead(day)) + '</b>' +
+      /* The city only appears underneath when the headline is a route, and
+         only when it is not the same words again. */
+      (dayHeadline(day) && dayHeadline(day) !== day.city
+        ? '<em>' + esc(day.city) + '</em>' : '') +
       '</div>' +
       '<div class="chev">' + svg("chevD") + '</div></summary>' +
       '<div class="inner">' + dayInner(day) + '</div></details>';
@@ -707,8 +709,8 @@
     h += '<div class="hero photo" style="margin-top:18px;' +
          skin(cityKey(day), day.img) + '">' +
          '<span class="label">Today &middot; ' + esc(day.date) + '</span>' +
-         '<h1>' + esc(day.kind === "open" ? day.city : day.title) + '</h1>' +
-         '<p>' + esc(day.kind === "open" ? dayHeadline(day) : day.city) + '</p>' +
+         '<h1>' + esc(dayLead(day)) + '</h1>' +
+         (dayHeadline(day) ? '<p>' + esc(day.city) + '</p>' : '') +
          '<button class="cta" data-go="#/day/' + day.n + '">' +
          '<span>Open the full day</span><i>' + svg("arrowR") + '</i></button></div>';
 
@@ -747,8 +749,8 @@
            '<div class="thumb' + (nx.kind === "open" ? "" : " dark") + '"' +
            ' style="font-size:19px;font-weight:700;color:' +
            (nx.kind === "open" ? "var(--ink)" : "#fff") + '">' + nx.n + '</div>' +
-           '<div class="txt"><b>' + esc(dayHeadline(nx)) + '</b><em>' + esc(nx.date) +
-           ' &middot; ' + esc(nx.city) + '</em></div>' +
+           '<div class="txt"><b>' + esc(dayLead(nx)) + '</b><em>' + esc(nx.date) +
+           (dayHeadline(nx) ? ' &middot; ' + esc(nx.city) : '') + '</em></div>' +
            '<div class="go">' + svg("chevR") + '</div></button>';
     }
     return h;
@@ -801,19 +803,17 @@
 
     /* Header carries the where/when; the hero below carries the what, so the
        two don't say the same thing twice. */
-    var h = detailHead("#/days", day.city, day.date);
+    var h = detailHead("#/days", dayLead(day), day.date);
 
     /* Everything below inherits this city's accent — timeline times, field
        labels and rules all pick it up from --accent. */
     h += '<div style="' + skin(cityKey(day), null) + '">';
 
-    /* On an open day the city is the headline — there is no booking to name,
-       and repeating "Open" under the date said nothing. */
-    var openDay = day.kind === "open";
     h += '<div class="hero photo" style="' + skin(cityKey(day), day.img) + '">' +
          '<span class="label">Day ' + day.n + ' of 23</span>' +
-         '<h1>' + esc(openDay ? day.city : day.title) + '</h1>' +
-         '<p>' + esc(day.date) + (openDay ? '' : ' \u00b7 ' + esc(day.city)) + '</p>' +
+         '<h1>' + esc(dayLead(day)) + '</h1>' +
+         '<p>' + esc(day.date) +
+         (dayHeadline(day) ? ' &middot; ' + esc(day.city) : '') + '</p>' +
          (day.high != null ? '<p style="margin-top:10px">High ' + day.high +
            '&deg; &middot; Low ' + day.low + '&deg; &middot; Rain ' +
            Math.round(day.rain * 100) + '%</p>' : '') + '</div>';
