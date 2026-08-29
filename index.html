@@ -240,6 +240,50 @@
     background:linear-gradient(180deg,transparent 45%,
       color-mix(in srgb, var(--accent,#212529) 55%, rgba(0,0,0,.6)) 100%)}
 
+  /* ---------- wishlist ---------- */
+  .wl-form{background:var(--card);border-radius:var(--r-lg);padding:16px;
+    margin-bottom:14px;box-shadow:var(--shadow)}
+  .wl-form input,.wl-form select,.wl-form textarea{width:100%;font:inherit;
+    font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);
+    border-radius:12px;padding:12px 14px;margin-bottom:9px;-webkit-appearance:none}
+  .wl-form textarea{min-height:64px;resize:vertical}
+  .wl-form input:focus,.wl-form select:focus,.wl-form textarea:focus{
+    outline:2px solid var(--accent,var(--ink));outline-offset:-1px;
+    background:var(--card)}
+  .wl-form label{display:block;font-size:11.5px;font-weight:600;letter-spacing:.04em;
+    color:var(--faint);text-transform:uppercase;margin:0 0 5px 2px}
+
+  .wl{display:flex;gap:13px;align-items:flex-start;background:var(--card);
+    border-radius:var(--r-lg);padding:15px;margin-bottom:10px;box-shadow:var(--shadow)}
+  .wl.done{opacity:.5}
+  .wl .tick{flex:0 0 24px;height:24px;border-radius:8px;border:1.7px solid #d5d8dc;
+    background:none;cursor:pointer;display:grid;place-items:center;padding:0;
+    margin-top:1px}
+  .wl.done .tick{background:var(--accent,var(--ink));border-color:var(--accent,var(--ink))}
+  .wl .tick svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2.6;
+    stroke-linecap:round;stroke-linejoin:round;opacity:0}
+  .wl.done .tick svg{opacity:1}
+  .wl .body{flex:1;min-width:0}
+  .wl .body b{display:block;font-size:15.5px;font-weight:600;letter-spacing:-.015em;
+    line-height:1.32}
+  .wl.done .body b{text-decoration:line-through}
+  .wl .body .meta{font-size:12.5px;color:var(--faint);margin-top:4px}
+  .wl .body .note{background:none;padding:0;margin:6px 0 0;font-size:14px;
+    color:var(--dim)}
+  .wl .body a.src{display:inline-flex;align-items:center;gap:5px;margin-top:8px;
+    font-size:13px;font-weight:600;color:var(--accent,var(--ink));
+    text-decoration:underline;text-underline-offset:3px;word-break:break-all}
+  .wl .body a.src svg{width:15px;height:15px;stroke:currentColor;fill:none;
+    stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:0 0 15px}
+  .wl .kill{flex:0 0 30px;height:30px;border-radius:999px;border:0;background:none;
+    color:var(--faint);cursor:pointer;display:grid;place-items:center;padding:0}
+  .wl .kill svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.9;
+    stroke-linecap:round;stroke-linejoin:round}
+
+  .sync{font-size:12.5px;color:var(--faint);text-align:center;padding:14px 0 0}
+  .sync b{color:var(--ink);font-weight:600}
+  .empty{text-align:center;padding:34px 20px;color:var(--faint);font-size:14.5px}
+
   /* ---------- credits ---------- */
   .credit{font-size:12px;color:var(--faint);line-height:1.5;padding:9px 0;
     border-top:1px solid var(--line)}
@@ -280,7 +324,7 @@
     padding:7px;box-shadow:0 6px 24px rgba(33,37,41,.22);
   }
   nav button{
-    appearance:none;border:0;background:none;width:50px;height:50px;border-radius:999px;
+    appearance:none;border:0;background:none;width:46px;height:46px;border-radius:999px;
     display:grid;place-items:center;cursor:pointer;color:rgba(255,255,255,.62);padding:0;
     transition:background .16s ease,color .16s ease;
   }
@@ -302,6 +346,7 @@
 
 <script src="data.js"></script>
 <script src="days.js"></script>
+<script src="store.js"></script>
 <script>
 (function(){
   "use strict";
@@ -327,7 +372,12 @@
     car:     '<path d="M4 16.4v2.2h2.6v-2.2M17.4 16.4v2.2H20v-2.2"/><path d="M3.6 16.4v-4l1.9-4.6A2 2 0 0 1 7.4 6.6h9.2a2 2 0 0 1 1.9 1.2l1.9 4.6v4z"/><path d="M3.6 12.4h16.8"/><circle cx="7.4" cy="14.4" r=".9"/><circle cx="16.6" cy="14.4" r=".9"/>',
     star:    '<path d="M12 3.8l2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8z"/>',
     fork:    '<path d="M6.5 3v6.5a2.5 2.5 0 0 0 5 0V3M9 9.5V21"/><path d="M17 21V3c-2 .8-2.8 3-2.8 5.6 0 1.8.9 2.8 2.8 3"/>',
-    camera:  '<path d="M3.5 8.6a2 2 0 0 1 2-2h1.9l1.3-2.1h6.6l1.3 2.1h1.9a2 2 0 0 1 2 2v8.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.8" r="3.4"/>'
+    camera:  '<path d="M3.5 8.6a2 2 0 0 1 2-2h1.9l1.3-2.1h6.6l1.3 2.1h1.9a2 2 0 0 1 2 2v8.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.8" r="3.4"/>',
+    heart:   '<path d="M12 20s-7.4-4.6-7.4-9.6A4.2 4.2 0 0 1 12 7.6a4.2 4.2 0 0 1 7.4 2.8c0 5-7.4 9.6-7.4 9.6z"/>',
+    check:   '<path d="M4.5 12.5 9.5 17.5 19.5 6.5"/>',
+    trash:   '<path d="M4.5 6.6h15M9.6 6.6V4.8h4.8v1.8M6.6 6.6l.9 12.2a1.7 1.7 0 0 0 1.7 1.6h5.6a1.7 1.7 0 0 0 1.7-1.6l.9-12.2"/>',
+    link:    '<path d="M10.2 13.8a3.6 3.6 0 0 0 5.4.4l2.6-2.6a3.6 3.6 0 0 0-5.1-5.1l-1.5 1.5"/><path d="M13.8 10.2a3.6 3.6 0 0 0-5.4-.4l-2.6 2.6a3.6 3.6 0 0 0 5.1 5.1l1.5-1.5"/>',
+    plus:    '<path d="M12 5.2v13.6M5.2 12h13.6"/>'
   };
   function svg(name, cls){
     return '<svg viewBox="0 0 24 24"' + (cls ? ' class="' + cls + '"' : '') + '>' +
@@ -823,6 +873,87 @@
     return h;
   };
 
+  /* ---------- wishlist ---------- */
+
+  /* Pull a usable label out of a pasted link so a bare TikTok URL still reads
+     as something in the list. */
+  function linkLabel(url){
+    try {
+      var h = new URL(url).hostname.replace(/^www\./, "");
+      if (h.indexOf("tiktok") !== -1)    return "TikTok";
+      if (h.indexOf("instagram") !== -1) return "Instagram";
+      if (h.indexOf("youtu") !== -1)     return "YouTube";
+      if (h.indexOf("maps.") === 0 || h.indexOf("google") !== -1) return "Maps";
+      return h;
+    } catch (e) { return "Link"; }
+  }
+
+  function wishRow(it){
+    var city = it.city && TRIP.cities[it.city] ? it.city : null;
+    var accent = city ? cityColor(city) : "#212529";
+    var h = '<div class="wl' + (it.done ? " done" : "") +
+            '" style="--accent:' + accent + '">';
+    h += '<button class="tick" data-wl-toggle="' + esc(it.id) +
+         '" aria-label="Mark done">' + svg("check") + '</button>';
+    h += '<div class="body"><b>' + esc(it.title) + '</b>';
+    h += '<div class="meta">' + (city ? dot(city) + esc(city) : "Anywhere") +
+         (it.day ? ' &middot; day ' + esc(it.day) : "") + '</div>';
+    if (it.note) h += '<p class="note">' + esc(it.note) + '</p>';
+    if (it.url) h += '<a class="src" href="' + esc(it.url) + '" target="_blank" ' +
+                     'rel="noopener">' + svg("link") + esc(linkLabel(it.url)) + '</a>';
+    h += '</div>';
+    h += '<button class="kill" data-wl-del="' + esc(it.id) +
+         '" aria-label="Delete">' + svg("trash") + '</button>';
+    return h + '</div>';
+  }
+
+  views.wish = function(){
+    var list = Store.items();
+    var st = Store.status();
+
+    var h = pageHead("Want to do", "Anything either of you spots — it does not have to be scheduled");
+
+    h += '<div class="wl-form" style="margin-top:18px">' +
+      '<label for="wlTitle">What is it</label>' +
+      '<input id="wlTitle" type="text" placeholder="Trevi Fountain at dawn" ' +
+        'autocomplete="off" enterkeyhint="done">' +
+      '<label for="wlUrl">Link — paste a TikTok, Reel or map pin</label>' +
+      '<input id="wlUrl" type="url" placeholder="https://" autocomplete="off" ' +
+        'inputmode="url" enterkeyhint="done">' +
+      '<label for="wlCity">Where</label>' +
+      '<select id="wlCity">' +
+        '<option value="">Anywhere / not sure</option>' +
+        Object.keys(TRIP.cities).map(function(c){
+          return '<option value="' + esc(c) + '">' + esc(c) + '</option>';
+        }).join("") +
+      '</select>' +
+      '<label for="wlNote">Note</label>' +
+      '<textarea id="wlNote" placeholder="Optional — why, or what to know"></textarea>' +
+      '<button class="btn-wide" id="wlAdd" style="margin-top:4px">Add it</button>' +
+      '</div>';
+
+    var open = list.filter(function(x){ return !x.done; });
+    var done = list.filter(function(x){ return x.done; });
+
+    if (!list.length){
+      h += '<div class="card"><div class="empty">Nothing on the list yet.<br>' +
+           'Add the first thing either of you wants to see.</div></div>';
+    }
+
+    if (open.length){
+      h += sect("On the list", null, null);
+      open.forEach(function(it){ h += wishRow(it); });
+    }
+    if (done.length){
+      h += sect("Done", null, null);
+      done.forEach(function(it){ h += wishRow(it); });
+    }
+
+    h += '<div class="sync">Saved <b>' + esc(st.mode) + '</b>' +
+         (st.pending ? ' &middot; ' + st.pending + ' waiting to sync' : '') + '</div>';
+    return h;
+  };
+
   views.sos = function(){
     var em = TRIP.emergency;
     var h = detailHead("#/today", "Emergency", "Tap any number to call");
@@ -875,6 +1006,7 @@
     { id:"today",   icon:"home",   label:"Today" },
     { id:"days",    icon:"cal",    label:"Days" },
     { id:"tickets", icon:"ticket", label:"Tickets" },
+    { id:"wish",    icon:"heart",  label:"Want to do" },
     { id:"stays",   icon:"bed",    label:"Stays" },
     { id:"open",    icon:"checks", label:"Open" },
   ];
@@ -907,17 +1039,75 @@
     window.scrollTo(0, 0);
   }
 
-  /* One delegated handler for every internal navigation. Anchors that carry
-     data-go are internal too, so stop them following their href. */
+  /* One delegated handler for navigation and for the wishlist controls, since
+     both live in markup that gets replaced wholesale on every render. */
   document.addEventListener("click", function(e){
+    var add = e.target.closest("#wlAdd");
+    if (add){
+      e.preventDefault();
+      var title = el("wlTitle").value.trim();
+      if (!title){ el("wlTitle").focus(); return; }
+      Store.add({
+        title: title,
+        url:   el("wlUrl").value.trim(),
+        city:  el("wlCity").value,
+        note:  el("wlNote").value.trim(),
+        done:  false,
+      });
+      route();
+      return;
+    }
+
+    var tog = e.target.closest("[data-wl-toggle]");
+    if (tog){
+      e.preventDefault();
+      var id = tog.getAttribute("data-wl-toggle");
+      var cur = Store.items().filter(function(x){ return x.id === id; })[0];
+      if (cur) Store.update(id, { done: !cur.done });
+      route();
+      return;
+    }
+
+    var del = e.target.closest("[data-wl-del]");
+    if (del){
+      e.preventDefault();
+      Store.remove(del.getAttribute("data-wl-del"));
+      route();
+      return;
+    }
+
+    /* Anchors that carry data-go are internal too, so stop them following
+       their href. */
     var target = e.target.closest("[data-go]");
     if (!target) return;
     e.preventDefault();
     location.hash = target.getAttribute("data-go");
   });
 
+  /* Enter in either text field adds the item. */
+  document.addEventListener("keydown", function(e){
+    if (e.key !== "Enter") return;
+    if (e.target.id === "wlTitle" || e.target.id === "wlUrl"){
+      e.preventDefault();
+      var b = el("wlAdd");
+      if (b) b.click();
+    }
+  });
+
   window.addEventListener("hashchange", route);
   route();
+
+  /* Pull the shared list once at launch, and again whenever the app comes back
+     to the foreground — that is when the other phone's additions arrive. */
+  function sync(){
+    Store.refresh().then(function(){
+      if ((location.hash || "").indexOf("#/wish") === 0) route();
+    });
+  }
+  sync();
+  document.addEventListener("visibilitychange", function(){
+    if (!document.hidden) sync();
+  });
 
   var sos = document.createElement("button");
   sos.className = "sos";

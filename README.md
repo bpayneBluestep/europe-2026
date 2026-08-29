@@ -27,7 +27,8 @@ Do steps 1–4 on **both** phones.
 | **Days** | All 23 days. Red dot = travel day, blue = something booked, grey = open. |
 | **Tickets** | Every PNR, seat, ticket ID, change code and confirmation, grouped by type. |
 | **Stays** | The five properties — addresses, check-in times, host details, Maps links. |
-| **Open** | Everything still to sort, and the four Swiss excursion options. |
+| **Want to do** | Shared wishlist. Add anything with an optional link (paste a TikTok), tag a city, tick it off. |
+| **Open** | Everything still to sort, the four Swiss excursion options, and photo credits. |
 | **SOS** | Floating red button, reachable from any screen. Tap-to-call emergency numbers. |
 
 ## Adding the ticket QR codes
@@ -84,12 +85,39 @@ The font is **self-hosted** in `fonts/` (both Latin subsets, ~41KB) rather than
 pulled from Google Fonts, because a cross-origin font request is the one thing that
 would fail in airplane mode.
 
+## The wishlist and its backend
+
+`store.js` is the only thing that touches storage. It has two backends behind one
+interface:
+
+- **localStorage** — per device. This is what runs today.
+- **A BlueStep endpoint** — shared between both phones. Set `API.url` (and
+  optionally `API.key`) at the top of `store.js` to switch it on.
+
+Writes always land in localStorage first and are pushed to the server after, so
+adding something on a train with no signal works and syncs when the signal returns.
+Failed writes go into a queue that is flushed on the next successful refresh.
+
+The endpoint contract, all on one URL:
+
+```
+GET   ->  { items: [ { id, title, url, city, note, done, createdAt } ] }
+POST  { action: "add",    item: {...} }
+POST  { action: "update", id, item: {...} }
+POST  { action: "delete", id }
+```
+
+Requests are sent with `Content-Type: text/plain` on purpose — it keeps the browser
+from firing a CORS preflight. The endpoint must return
+`Access-Control-Allow-Origin` for `https://bpaynebluestep.github.io`.
+
 ## Structure
 
 ```
 index.html    the whole app — styles, views, router, service-worker registration
 data.js       tickets, stays, open items, accounts, emergency numbers, excursions
 days.js       the 23 days, with timelines for the five travel days
+store.js      wishlist storage — localStorage now, BlueStep endpoint when configured
 sw.js         offline cache. CACHE_VERSION is the thing you have to remember to bump
 fonts/        Instrument Sans, self-hosted so it renders offline
 img/          trip photography + credits.json (attribution is required)
