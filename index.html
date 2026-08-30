@@ -268,6 +268,12 @@
 
   /* Full-width, thumb-sized call to action rather than a small underlined
      link — a 15px link is a miss target on a phone. */
+  /* The two links sit on one row when both exist: the content link takes the
+     space, the map link is a fixed, narrower companion. */
+  .links{display:flex;gap:8px;margin-top:12px}
+  .links > *{margin-top:0}
+  .links .src{flex:1;min-width:0}
+  .links .map{flex:0 0 108px}
   .wl .body a.src,.wm a.src{display:flex;align-items:center;justify-content:center;gap:8px;
     margin-top:12px;min-height:48px;padding:0 18px;border-radius:13px;
     background:var(--accent,var(--ink));color:#fff;font-size:15px;font-weight:600;
@@ -305,6 +311,18 @@
   /* Small label separating the parts of an accordion. */
   .mini-h{font-size:11.5px;font-weight:600;letter-spacing:.04em;color:var(--faint);
     text-transform:uppercase;margin:18px 0 2px}
+
+  /* The map link is the quieter of the two — outlined, not filled, so the
+     thing you actually want to watch stays the loud one. */
+  .wl .body a.map,.wm a.map{display:flex;align-items:center;justify-content:center;
+    gap:6px;margin-top:12px;min-height:48px;padding:0 12px;border-radius:13px;
+    background:transparent;color:var(--accent,var(--ink));font-size:15px;
+    font-weight:600;letter-spacing:-.01em;text-decoration:none;
+    border:1.6px solid color-mix(in srgb, var(--accent,var(--ink)) 40%, transparent)}
+  .wl .body a.map:active,.wm a.map:active{
+    background:color-mix(in srgb, var(--accent,var(--ink)) 10%, transparent)}
+  .wl .body a.map svg,.wm a.map svg{width:16px;height:16px;stroke:currentColor;
+    fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 16px}
 
   .wl .acts{position:absolute;top:11px;right:11px;display:flex;gap:2px}
   .wl .acts button{width:32px;height:32px;border-radius:999px;border:0;
@@ -1098,6 +1116,24 @@
     } catch (e) { return "Open link"; }
   }
 
+  /* The two links, as buttons. An item can carry the video or page it was
+     spotted in AND a map link for where the place actually is — you see a
+     TikTok of a viewpoint and want both. Side by side when there are two, full
+     width when there is one. */
+  function linkButtons(it){
+    var a = "", b = "";
+    if (it.url) {
+      a = '<a class="src" href="' + escA(it.url) + '" target="_blank" ' +
+          'rel="noopener">' + svg("link") + esc(linkCta(it.url)) + '</a>';
+    }
+    if (it.map) {
+      b = '<a class="map" href="' + escA(it.map) + '" target="_blank" ' +
+          'rel="noopener">' + svg("pin") + (a ? "Map" : "Open in Maps") + '</a>';
+    }
+    if (a && b) return '<div class="links">' + a + b + '</div>';
+    return a || b;
+  }
+
   /* ---------- suggesting a day ---------- */
 
   /* Which days a thing could plausibly happen on. A city narrows it to that
@@ -1152,9 +1188,13 @@
     h += '<label for="' + p + 'Title">What is it</label>' +
       '<input id="' + p + 'Title" type="text" value="' + escA(v.title || "") + '" ' +
         'placeholder="Trevi Fountain at dawn" autocomplete="off" enterkeyhint="done">';
-    h += '<label for="' + p + 'Url">Link — paste a TikTok, Reel or map pin</label>' +
+    h += '<label for="' + p + 'Url">Link — TikTok, Reel, or any site</label>' +
       '<input id="' + p + 'Url" type="url" value="' + escA(v.url || "") + '" ' +
         'placeholder="https://" autocomplete="off" inputmode="url" enterkeyhint="done">';
+    h += '<label for="' + p + 'Map">Map link — where it is</label>' +
+      '<input id="' + p + 'Map" type="url" value="' + escA(v.map || "") + '" ' +
+        'placeholder="https://maps.google.com/…" autocomplete="off" ' +
+        'inputmode="url" enterkeyhint="done">';
     h += '<label for="' + p + 'City">Where</label>' +
       '<select id="' + p + 'City" data-city-sel="' + p + 'Day">' +
         '<option value="">Other — not tied to a place</option>' +
@@ -1206,8 +1246,7 @@
          (!lok && it.day && dayHint(it.day) ? ' &middot; ' + dayHint(it.day) : "") +
          '</div>';
     if (it.note) h += '<p class="note">' + esc(it.note) + '</p>';
-    if (it.url) h += '<a class="src" href="' + escA(it.url) + '" target="_blank" ' +
-                     'rel="noopener">' + svg("link") + esc(linkCta(it.url)) + '</a>';
+    h += linkButtons(it);
     h += '</div>';
     return h + '</div>';
   }
@@ -1223,8 +1262,7 @@
     h += '<b>' + esc(it.title) + '</b>';
     h += '<div class="meta">' + byline(it.createdBy) + '</div>';
     if (it.note) h += '<p class="note">' + esc(it.note) + '</p>';
-    if (it.url) h += '<a class="src" href="' + escA(it.url) + '" target="_blank" ' +
-                     'rel="noopener">' + svg("link") + esc(linkCta(it.url)) + '</a>';
+    h += linkButtons(it);
     return h + '</div>';
   }
 
@@ -1447,6 +1485,7 @@
       Store.add({
         title: title,
         url:   el("wlUrl").value.trim(),
+        map:   el("wlMap").value.trim(),
         city:  el("wlCity").value,
         day:   el("wlDay").value,
         note:  el("wlNote").value.trim(),
@@ -1481,6 +1520,7 @@
       Store.update(save.getAttribute("data-id"), {
         title: t,
         url:   el("edUrl").value.trim(),
+        map:   el("edMap").value.trim(),
         city:  el("edCity").value,
         day:   el("edDay").value,
         note:  el("edNote").value.trim(),
@@ -1538,7 +1578,8 @@
 
     Store.add({
       title: title || text || "Shared link",
-      url: url, city: "", note: title && text && title !== text ? text : "",
+      url: url, map: "", city: "",
+      note: title && text && title !== text ? text : "",
       done: false,
     });
 

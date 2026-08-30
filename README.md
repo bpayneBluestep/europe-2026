@@ -199,9 +199,25 @@ is stored as `item.day` — just the day number as a string.
 list, so items have no done state and nothing gets struck through. The `done`
 field still exists in the endpoint's whitelist and is simply never written.
 
-The link is a full-width button reading *Watch on TikTok*, *Open in Maps* and so
-on — 48px tall, tinted with the city's accent. It was a 13px underlined link,
-which is a miss target on a moving train.
+## Two links per item
+
+An item carries **two** independent links:
+
+- `url` — the video or page it was spotted in (TikTok, a Reel, any site)
+- `map` — a separate map link for where the place actually is
+
+You see a TikTok of a viewpoint and want both, and a map link cannot be derived
+from a TikTok URL, so one field could not do it. Either may be empty.
+
+They render as buttons 48px tall, tinted with the city's accent. With both, they
+share a row: the content link takes the space and is filled (*Watch on TikTok*),
+the map link is a narrower outlined companion (*Map*). With one, it goes full
+width — *Open in Maps*, or *Watch on TikTok*. These were a 13px underlined link
+once, which is a miss target on a moving train.
+
+The 26 items seeded from the tourist list had their Google Maps URL in `url`
+because that was the only field; a migration moved those to `map`, leaving `url`
+free. Items shared from TikTok kept theirs in `url`.
 
 The add form starts collapsed behind an **Add something** button, because the
 list is what you open the tab to read.
