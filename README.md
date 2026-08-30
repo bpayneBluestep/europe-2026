@@ -160,6 +160,14 @@ A seventh tab plotting everything on the list plus the five stays. Items carry
 - **Item pins** take the city accent. Locked-in items get a ring and a lock glyph.
 - **Stays** are a larger pin with a home icon — where you sleep, not somewhere
   to go.
+- **Transit** — 13 stations, airports and piers the itinerary actually routes
+  through — are slate-grey squares with a train, plane or boat glyph, toggled by
+  the *Stations & airports* chip. They live in `TRIP.transit` in `data.js`, not
+  the shared wishlist: nobody wants to “do” Milano Centrale. A `city` of `""`
+  (Milano Centrale, Lugano, Flüelen, Luzern, Basel) means it only shows under
+  **All**, because it sits too far from any one base to belong on that city's
+  map — Basel is not Interlaken. Salt Lake is deliberately absent; a pin in
+  Utah would blow out the bounds of every other view.
 - **City chips** filter the map and the list together.
 - **Distances** are measured from you when the phone will say (*Show where I am*),
   and from that city's stay otherwise. A stay measured from itself would always

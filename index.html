@@ -365,6 +365,11 @@
   .mk.lok::after{content:"";position:absolute;inset:-5px;border-radius:999px;
     border:2px solid var(--mk,#212529)}
   .mk-wrap{position:relative;display:grid;place-items:center}
+  /* Transit is scaffolding, not a destination — slate grey and square-ish so
+     it never reads as somewhere you chose to go. */
+  .mk.tr{background:#5a6572;border-radius:9px;width:24px;height:24px}
+  .mk.tr svg{width:13px;height:13px}
+
   /* Your own position: a pulsing dot, deliberately unlike a place marker. */
   .mk.me{background:#1a73e8;width:18px;height:18px}
 
@@ -378,6 +383,11 @@
 
   .mapbar{display:flex;gap:8px;align-items:center;margin-top:12px}
   .mapbar .btn-wide{margin:0}
+  /* The transit toggle carries an icon, so it needs a size like any other. */
+  .chip svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round;margin-right:2px;
+    vertical-align:-2px}
+
   .maplist{margin-top:16px}
   .maprow{display:flex;align-items:center;gap:12px;background:var(--card);
     border-radius:var(--r-lg);padding:13px 15px;margin-bottom:8px;
@@ -518,6 +528,7 @@
     camera:  '<path d="M3.5 8.6a2 2 0 0 1 2-2h1.9l1.3-2.1h6.6l1.3 2.1h1.9a2 2 0 0 1 2 2v8.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.8" r="3.4"/>',
     heart:   '<path d="M12 20s-7.4-4.6-7.4-9.6A4.2 4.2 0 0 1 12 7.6a4.2 4.2 0 0 1 7.4 2.8c0 5-7.4 9.6-7.4 9.6z"/>',
     check:   '<path d="M4.5 12.5 9.5 17.5 19.5 6.5"/>',
+    boat:    '<path d="M3.6 16.4h16.8l-1.9 3.2a2 2 0 0 1-1.7 1H7.2a2 2 0 0 1-1.7-1z"/><path d="M5.6 16.4V9.2l6.4-2.6 6.4 2.6v7.2M12 6.6V3.4"/>',
     lock:    '<rect x="4.6" y="10.4" width="14.8" height="9.6" rx="2.6"/><path d="M8.2 10.4V7.6a3.8 3.8 0 0 1 7.6 0v2.8"/>',
     pencil:  '<path d="M4 20h4.2L19 9.2a2.1 2.1 0 0 0 0-3l-1.2-1.2a2.1 2.1 0 0 0-3 0L4 15.8z"/><path d="M13.6 6.4 17.6 10.4"/>',
     trash:   '<path d="M4.5 6.6h15M9.6 6.6V4.8h4.8v1.8M6.6 6.6l.9 12.2a1.7 1.7 0 0 0 1.7 1.6h5.6a1.7 1.7 0 0 0 1.7-1.6l.9-12.2"/>',
@@ -1403,6 +1414,7 @@
 
   var MAP = null, MAP_LAYER = null, MAP_ME = null, MAP_WATCH = null;
   var mapCity = "All";
+  var showTransit = true;
   var myPos = null;      /* {lat, lng} once geolocation answers */
 
   /* Great-circle distance in km. */
@@ -1445,7 +1457,20 @@
       pts.push({ kind: "stay", st: st, lat: st.lat, lng: st.lng,
                  city: st.city, title: st.name });
     });
+    if (showTransit && TRIP.transit){
+      TRIP.transit.forEach(function(tp){
+        /* A transit point with no city sits too far from any one base to
+           belong on that city's map — Basel is not Interlaken. */
+        if (mapCity !== "All" && tp.city !== mapCity) return;
+        pts.push({ kind: "transit", tp: tp, lat: tp.lat, lng: tp.lng,
+                   city: tp.city, title: tp.name });
+      });
+    }
     return pts;
+  }
+
+  function transitIcon(kind){
+    return kind === "air" ? "plane" : kind === "boat" ? "boat" : "train";
   }
 
   function markerHtml(p){
@@ -1453,6 +1478,10 @@
     if (p.kind === "stay"){
       return '<div class="mk-wrap"><div class="mk big" style="--mk:' + col +
              '">' + svg("home") + '</div></div>';
+    }
+    if (p.kind === "transit"){
+      return '<div class="mk-wrap"><div class="mk tr">' +
+             svg(transitIcon(p.tp.kind)) + '</div></div>';
     }
     var lok = isLocked(p.it);
     return '<div class="mk-wrap"><div class="mk' + (lok ? " lok" : "") +
@@ -1466,6 +1495,19 @@
            '<div class="pm">Where you sleep &middot; ' + esc(p.st.city) + '</div>' +
            '<div class="pm">' + esc(p.st.addr) + '</div>';
       h += '<a href="#/stays" data-go="#/stays">Open Stays &rarr;</a>';
+      return h;
+    }
+    if (p.kind === "transit"){
+      var tp = p.tp;
+      h += '<b>' + esc(tp.name) + '</b>' +
+           '<div class="pm">' +
+           (tp.kind === "air" ? "Airport" : tp.kind === "boat" ? "Pier" : "Station") +
+           (tp.city ? ' &middot; ' + esc(tp.city) : '') + '</div>' +
+           '<div class="pm">' + esc(tp.when) + '</div>';
+      var ot = originFor(tp.city);
+      if (ot) h += '<div class="pm">' +
+                   prettyDist(distKm(ot, { lat: tp.lat, lng: tp.lng })) +
+                   (myPos ? " from you" : " from your place") + '</div>';
       return h;
     }
     var it = p.it;
@@ -1546,6 +1588,10 @@
     });
     h += '</div>';
 
+    h += '<div class="chips" style="margin-top:8px">' +
+      '<button class="chip" aria-pressed="' + showTransit + '" data-maptransit="1">' +
+      svg("train") + ' Stations &amp; airports</button></div>';
+
     h += '<div id="mapwrap"><div id="map"></div></div>';
 
     h += '<div class="mapbar">' +
@@ -1573,12 +1619,16 @@
       h += sect(myPos ? "Nearest to you" : "By distance from your place", null, null);
       h += '<div class="maplist">';
       withDist.forEach(function(p, i){
-        var col = p.city && TRIP.cities[p.city] ? cityColor(p.city) : "#212529";
+        var col = p.kind === "transit" ? "#5a6572"
+                : (p.city && TRIP.cities[p.city] ? cityColor(p.city) : "#212529");
         h += '<button class="maprow" data-mapgo="' + i + '" style="--accent:' + col + '">' +
           '<span class="pip"></span>' +
           '<span class="txt"><b>' + esc(p.title) + '</b><em>' +
-          (p.kind === "stay" ? "Where you sleep &middot; " : "") +
-          esc(p.city || "Other") + '</em></span>' +
+          (p.kind === "stay" ? "Where you sleep &middot; " :
+           p.kind === "transit"
+             ? (p.tp.kind === "air" ? "Airport" : p.tp.kind === "boat" ? "Pier" : "Station") + " &middot; "
+             : "") +
+          esc(p.city || (p.kind === "transit" ? "En route" : "Other")) + '</em></span>' +
           '<span class="dist">' +
           (p.km == null ? '<span style="color:var(--faint)">&mdash;</span>'
                         : prettyDist(p.km)) + '</span></button>';
@@ -1739,6 +1789,14 @@
     if (mc){
       e.preventDefault();
       mapCity = mc.getAttribute("data-mapcity");
+      rerender();
+      return;
+    }
+
+    var mt = e.target.closest("[data-maptransit]");
+    if (mt){
+      e.preventDefault();
+      showTransit = !showTransit;
       rerender();
       return;
     }

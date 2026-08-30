@@ -126,6 +126,54 @@ const TRIP = {
   },
 
   /* ---------- STAYS ---------- */
+
+  /* Transit waypoints — the stations, airports and piers the itinerary
+     actually routes through. Static here rather than in the shared
+     wishlist: nobody wants to "do" Milano Centrale. A `city` of "" means
+     it only shows under the All filter, because it sits far enough from
+     any one base that including it would blow out that city's map. */
+  transit: [
+    { id: "fco", kind: "air", name: "Rome Fiumicino (FCO)",
+      city: "Rome", lat: 41.815391, lng: 12.226485,
+      when: "Day 2 \u00b7 land 2:25 PM, Terminal 1. Regulated flat-fare taxi to anywhere inside the Aurelian Walls." },
+    { id: "termini", kind: "rail", name: "Roma Termini",
+      city: "Rome", lat: 41.900582, lng: 12.502527,
+      when: "Day 6 \u00b7 Frecciarossa 9416 to Venice, 10:35. Gated platforms \u2014 have the barcode ready." },
+    { id: "slucia", kind: "rail", name: "Venezia Santa Lucia",
+      city: "Venice", lat: 45.441075, lng: 12.321032,
+      when: "Day 6 arrive 2:34 PM \u00b7 Day 9 depart 10:48 AM. NOT Mestre \u2014 Mestre is the stop before, on the mainland." },
+    { id: "comosg", kind: "rail", name: "Como San Giovanni",
+      city: "Lake Como", lat: 45.809083, lng: 9.07273,
+      when: "Day 9 \u00b7 arrive 2:23 PM. No train serves the west shore \u2014 taxi ~40 min up to Griante." },
+    { id: "iost", kind: "rail", name: "Interlaken Ost",
+      city: "Interlaken", lat: 46.690448, lng: 7.868996,
+      when: "Day 12 arrive \u00b7 Day 17 depart. About 10 minutes' walk from the apartment on H\u00f6heweg." },
+    { id: "cdg", kind: "air", name: "Paris Charles de Gaulle",
+      city: "Paris", lat: 49.00689, lng: 2.57108,
+      when: "Day 1\u20132 \u00b7 land 9:30 AM Terminal 2E, depart 12:15 PM from 2F. Passport control here. Day 23 \u00b7 fly home 10:25 AM." },
+    { id: "lyon", kind: "rail", name: "Paris Gare de Lyon",
+      city: "Paris", lat: 48.843663, lng: 2.374487,
+      when: "Day 17 \u00b7 arrive 3:38 PM from Basel." },
+    { id: "chessy", kind: "rail", name: "Marne-la-Vall\u00e9e \u2014 Chessy",
+      city: "Paris", lat: 48.869913, lng: 2.782173,
+      when: "Day 20 \u00b7 the Disneyland stop. RER A east, terminus \u2014 you cannot overshoot it." },
+    { id: "milano", kind: "rail", name: "Milano Centrale",
+      city: "", lat: 45.485879, lng: 9.204262,
+      when: "Day 9 \u00b7 28-minute transfer, 1:15 \u2192 1:43 PM. Gated for the high-speed platforms; the regional ones are not." },
+    { id: "lugano", kind: "rail", name: "Lugano",
+      city: "", lat: 46.005499, lng: 8.946849,
+      when: "Day 12 \u00b7 Gotthard Panorama Express departs 9:18. Drop bags at the departure track by 09:08." },
+    { id: "fluelen", kind: "boat", name: "Fl\u00fcelen",
+      city: "", lat: 46.901663, lng: 8.624236,
+      when: "Day 12 \u00b7 train arrives 11:35, steamer leaves 12:00." },
+    { id: "luzern", kind: "boat", name: "Luzern \u2014 Bahnhofquai Pier 1",
+      city: "", lat: 47.051384, lng: 8.311182,
+      when: "Day 12 \u00b7 steamer docks 2:47 PM. Collect the transferred bags here." },
+    { id: "basel", kind: "rail", name: "Basel SBB",
+      city: "", lat: 47.547623, lng: 7.589642,
+      when: "Day 17 \u00b7 TGV Lyria 9218 to Paris, 12:34. Separate ticket from the Swiss leg \u2014 protect the buffer." },
+  ],
+
   stays: [
     {
       img: "rome-colosseum",
