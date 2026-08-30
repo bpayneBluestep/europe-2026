@@ -276,6 +276,26 @@
   .wl .body a.src svg,.wm a.src svg{width:17px;height:17px;stroke:#fff;fill:none;
     stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 17px}
 
+  /* Locked in: a booked thing, not a suggestion. Reads as settled — the accent
+     runs down the edge and the card sits on the accent's own tint. */
+  .wl.lok{border-left:3px solid var(--accent,var(--ink));
+    background:color-mix(in srgb, var(--accent,var(--ink)) 5%, var(--card))}
+  .locktag{display:inline-flex;align-items:center;gap:4px;font-size:11px;
+    font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--accent,var(--ink));margin-bottom:5px}
+  .locktag svg{width:12px;height:12px;stroke:currentColor;fill:none;
+    stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+  /* The lock toggle in the edit form. */
+  .lockrow{display:flex;align-items:center;gap:10px;margin:2px 0 12px;
+    padding:11px 13px;border-radius:12px;background:var(--bg);
+    border:1px solid var(--line)}
+  .lockrow input{width:20px;height:20px;flex:0 0 20px;accent-color:var(--ink);
+    margin:0}
+  .lockrow span{font-size:14px;color:var(--ink)}
+  .lockrow em{display:block;font-style:normal;font-size:12px;color:var(--faint);
+    margin-top:2px}
+
   /* Compact suggestion inside a day accordion. */
   .wm{margin-top:10px}
   .wm b{display:block;font-size:15px;font-weight:600;letter-spacing:-.015em}
@@ -427,6 +447,7 @@
     camera:  '<path d="M3.5 8.6a2 2 0 0 1 2-2h1.9l1.3-2.1h6.6l1.3 2.1h1.9a2 2 0 0 1 2 2v8.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.8" r="3.4"/>',
     heart:   '<path d="M12 20s-7.4-4.6-7.4-9.6A4.2 4.2 0 0 1 12 7.6a4.2 4.2 0 0 1 7.4 2.8c0 5-7.4 9.6-7.4 9.6z"/>',
     check:   '<path d="M4.5 12.5 9.5 17.5 19.5 6.5"/>',
+    lock:    '<rect x="4.6" y="10.4" width="14.8" height="9.6" rx="2.6"/><path d="M8.2 10.4V7.6a3.8 3.8 0 0 1 7.6 0v2.8"/>',
     pencil:  '<path d="M4 20h4.2L19 9.2a2.1 2.1 0 0 0 0-3l-1.2-1.2a2.1 2.1 0 0 0-3 0L4 15.8z"/><path d="M13.6 6.4 17.6 10.4"/>',
     trash:   '<path d="M4.5 6.6h15M9.6 6.6V4.8h4.8v1.8M6.6 6.6l.9 12.2a1.7 1.7 0 0 0 1.7 1.6h5.6a1.7 1.7 0 0 0 1.7-1.6l.9-12.2"/>',
     link:    '<path d="M10.2 13.8a3.6 3.6 0 0 0 5.4.4l2.6-2.6a3.6 3.6 0 0 0-5.1-5.1l-1.5 1.5"/><path d="M13.8 10.2a3.6 3.6 0 0 0-5.4-.4l-2.6 2.6a3.6 3.6 0 0 0 5.1 5.1l1.5-1.5"/>',
@@ -627,6 +648,12 @@
       h += '</ul>';
     }
 
+    var booked = lockedFor(day);
+    if (booked.length){
+      h += '<div class="mini-h">Locked in</div>';
+      booked.forEach(function(it){ h += wishMini(it); });
+    }
+
     var ideas = ideasFor(day);
     if (ideas.length){
       h += '<div class="mini-h">Suggested for this day</div>';
@@ -721,6 +748,12 @@
       h += '<div class="card">' + timelineBlock(day) + '</div>';
     } else if (day.summary){
       h += '<div class="card"><p class="lead">' + esc(day.summary) + '</p></div>';
+    }
+
+    var todayBooked = lockedFor(day);
+    if (todayBooked.length){
+      h += sect("Locked in today", null, null);
+      todayBooked.forEach(function(it){ h += wishRow(it); });
     }
 
     var todayIdeas = ideasFor(day);
@@ -826,8 +859,14 @@
       h += '<div class="card">' + timelineBlock(day) + '</div>';
     }
 
-    /* Anything either of you suggested for this day. A suggestion, not a
-       booking — it sits below the actual moves for that reason. */
+    /* Booked first, then merely wanted. The split is the whole point: one of
+       these has a time and a confirmation number, the other does not. */
+    var booked = lockedFor(day);
+    if (booked.length){
+      h += sect("Locked in", null, null);
+      booked.forEach(function(it){ h += wishRow(it); });
+    }
+
     var ideas = ideasFor(day);
     if (ideas.length){
       h += sect("Ideas for this day", "All ideas", "#/wish");
@@ -1088,6 +1127,12 @@
     return d ? 'Day ' + d.n + ' &middot; ' + esc(d.date) : "";
   }
 
+  /* Locked in = booked for a specific day, as opposed to merely suggested for
+     it. A lock without a day is meaningless, so both are required. */
+  function isLocked(it){
+    return it.locked === true && !!it.day;
+  }
+
   /* Which item, if any, is currently open for editing. Cleared on navigation
      so a half-finished edit cannot survive a route change. */
   var editingId = null;
@@ -1120,6 +1165,12 @@
       '</select>';
     h += '<label for="' + p + 'Day">Suggest a day</label>' +
       '<select id="' + p + 'Day">' + dayOptions(city, v.day) + '</select>';
+    /* Locking without a day is meaningless, so the checkbox says so rather
+       than silently doing nothing. */
+    h += '<div class="lockrow"><input type="checkbox" id="' + p + 'Lock"' +
+      (v.locked ? " checked" : "") + '>' +
+      '<span>Lock it in<em>It is booked, not just an idea. Needs a day.</em></span>' +
+      '</div>';
     h += '<label for="' + p + 'Note">Note</label>' +
       '<textarea id="' + p + 'Note" placeholder="Optional — why, or what to know">' +
       esc(v.note || "") + '</textarea>';
@@ -1138,16 +1189,22 @@
 
     var city = it.city && TRIP.cities[it.city] ? it.city : null;
     var accent = city ? cityColor(city) : "#212529";
-    var h = '<div class="wl" style="--accent:' + accent + '">';
+    var lok = isLocked(it);
+    var h = '<div class="wl' + (lok ? " lok" : "") +
+            '" style="--accent:' + accent + '">';
     h += '<div class="acts">' +
       '<button data-wl-edit="' + escA(it.id) + '" aria-label="Edit">' +
         svg("pencil") + '</button>' +
       '<button data-wl-del="' + escA(it.id) + '" aria-label="Delete">' +
         svg("trash") + '</button></div>';
-    h += '<div class="body"><b>' + esc(it.title) + '</b>';
+    h += '<div class="body">';
+    if (lok) h += '<div class="locktag">' + svg("lock") + 'Locked in &middot; ' +
+                  dayHint(it.day) + '</div>';
+    h += '<b>' + esc(it.title) + '</b>';
     h += '<div class="meta">' + byline(it.createdBy) + ' &middot; ' +
          (city ? dot(city) + esc(city) : "Other") +
-         (it.day && dayHint(it.day) ? ' &middot; ' + dayHint(it.day) : "") + '</div>';
+         (!lok && it.day && dayHint(it.day) ? ' &middot; ' + dayHint(it.day) : "") +
+         '</div>';
     if (it.note) h += '<p class="note">' + esc(it.note) + '</p>';
     if (it.url) h += '<a class="src" href="' + escA(it.url) + '" target="_blank" ' +
                      'rel="noopener">' + svg("link") + esc(linkCta(it.url)) + '</a>';
@@ -1162,6 +1219,7 @@
     var city = it.city && TRIP.cities[it.city] ? it.city : null;
     var accent = city ? cityColor(city) : "#212529";
     var h = '<div class="wm" style="--accent:' + accent + '">';
+    if (isLocked(it)) h += '<div class="locktag">' + svg("lock") + 'Locked in</div>';
     h += '<b>' + esc(it.title) + '</b>';
     h += '<div class="meta">' + byline(it.createdBy) + '</div>';
     if (it.note) h += '<p class="note">' + esc(it.note) + '</p>';
@@ -1170,11 +1228,16 @@
     return h + '</div>';
   }
 
-  /* Things suggested for one day, shown on that day's page. */
-  function ideasFor(day){
+  /* Everything pinned to one day, split by whether it is booked. */
+  function forDay(day){
     return Store.items().filter(function(x){
       return String(x.day || "") === String(day.n);
     });
+  }
+  function lockedFor(day){ return forDay(day).filter(isLocked); }
+  /* Suggestions only — the locked ones are listed separately above them. */
+  function ideasFor(day){
+    return forDay(day).filter(function(x){ return !isLocked(x); });
   }
 
   views.wish = function(filter){
@@ -1217,8 +1280,21 @@
                        : 'Nothing on the list yet.<br>Add the first thing either of you wants to see.') +
            '</div></div>';
     } else {
-      h += sect("On the list", null, null);
-      list.forEach(function(it){ h += wishRow(it); });
+      /* Booked things float to the top and sort by day — that list is a
+         schedule, so date order is the only order that makes sense. */
+      var booked = list.filter(isLocked).sort(function(a, b){
+        return (+a.day || 0) - (+b.day || 0);
+      });
+      var rest = list.filter(function(x){ return !isLocked(x); });
+
+      if (booked.length){
+        h += sect("Locked in", null, null);
+        booked.forEach(function(it){ h += wishRow(it); });
+      }
+      if (rest.length){
+        h += sect(booked.length ? "Ideas" : "On the list", null, null);
+        rest.forEach(function(it){ h += wishRow(it); });
+      }
     }
 
     h += '<div class="sync">Saved <b>' + esc(st.mode) + '</b>' +
@@ -1374,6 +1450,7 @@
         city:  el("wlCity").value,
         day:   el("wlDay").value,
         note:  el("wlNote").value.trim(),
+        locked: el("wlLock").checked && !!el("wlDay").value,
       });
       addOpen = false;
       route();
@@ -1407,6 +1484,7 @@
         city:  el("edCity").value,
         day:   el("edDay").value,
         note:  el("edNote").value.trim(),
+        locked: el("edLock").checked && !!el("edDay").value,
       });
       editingId = null;
       rerender();

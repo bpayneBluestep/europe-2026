@@ -2,7 +2,7 @@
    Bump CACHE_VERSION whenever you change any file. That is what makes both
    phones pick up the new version; without it they keep serving the old cache. */
 
-const CACHE_VERSION = "europe-2026-v14";
+const CACHE_VERSION = "europe-2026-v15";
 
 /* The app shell. These must all fetch successfully or the install is retried. */
 const CORE = [

@@ -152,6 +152,31 @@ read-only there: the edit and delete controls re-render the page, which would
 snap the accordion shut mid-action, so editing happens on the day page or the
 Want-to-do tab.
 
+## Locked in
+
+A wishlist item with `locked: true` **and** a `day` is *locked in*: booked for
+that day, not merely suggested for it. Both are required — the checkbox in the
+form ignores itself if no day is picked, because a lock with no day means
+nothing.
+
+Locked items read as settled rather than aspirational: a lock tag with the day
+and date, the city accent running down the left edge, and the card tinted with
+that accent. They sort to the top of Want-to-do in day order (that list is a
+schedule, so date order is the only order that makes sense), and they get their
+own **Locked in** section above **Ideas** on the day page, in the day accordion,
+and on Today.
+
+**The six booked activities live here now, not in `days.js`.** The Colosseum,
+both dinners, the cooking class, the Lake Como boat and Disneyland used to be
+hard-coded onto their days as a `title` plus notes. They are locked-in wishlist
+items instead, carrying their own times, addresses and confirmation numbers. The
+day keeps only what is about the *day*: the timeline of how you get there, a
+`critical` warning, and the before-you-go checklist.
+
+`locked` is whitelisted server-side in the endpoint's `clean()`. Unlike
+`createdBy` it is **not** carried forward on update — it is caller state, so an
+update that omits it means "no longer locked".
+
 ## Editing, and suggesting a day
 
 Every row has a pencil and a bin in its top-right corner. The pencil turns that
