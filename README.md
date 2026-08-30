@@ -152,6 +152,40 @@ read-only there: the edit and delete controls re-render the page, which would
 snap the accordion shut mid-action, so editing happens on the day page or the
 Want-to-do tab.
 
+## The map
+
+A seventh tab plotting everything on the list plus the five stays. Items carry
+`lat`/`lng`; stays carry them in `data.js`.
+
+- **Item pins** take the city accent. Locked-in items get a ring and a lock glyph.
+- **Stays** are a larger pin with a home icon — where you sleep, not somewhere
+  to go.
+- **City chips** filter the map and the list together.
+- **Distances** are measured from you when the phone will say (*Show where I am*),
+  and from that city's stay otherwise. A stay measured from itself would always
+  read "0 m", so it shows a dash instead.
+- **The list under the map** is sorted nearest-first and is the offline answer:
+  tapping a row flies the map to it and opens its popup.
+
+**Coordinates are resolved once, never at render time**, because the app has to
+draw this with the radio off. They were geocoded with Nominatim (OSM) and written
+to each item; 29 of 30 resolved. Anything without coordinates is not plotted, and
+the view says how many.
+
+**Leaflet is self-hosted in `vendor/`, not loaded from a CDN** — a CDN script
+tag is a blank map offline. Markers are CSS `divIcon`s rather than Leaflet's
+default PNGs, so there is no image to 404 either.
+
+**Tiles are the one part that needs a signal.** They come from OpenStreetMap and
+are cached in a separate `europe-2026-tiles` cache that survives a
+`CACHE_VERSION` bump, capped at 3000 tiles. Pan around the five cities before
+you fly and that basemap is yours offline; a tile never loaded falls back to a
+transparent pixel rather than a broken-image icon. Pins, distances and the list
+work regardless.
+
+Bundling a full offline basemap was not an option — five cities at usable zoom
+is hundreds of megabytes, well past what belongs in a GitHub Pages PWA.
+
 ## Locked in
 
 A wishlist item with `locked: true` **and** a `day` is *locked in*: booked for

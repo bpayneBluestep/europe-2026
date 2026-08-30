@@ -2,7 +2,11 @@
    Bump CACHE_VERSION whenever you change any file. That is what makes both
    phones pick up the new version; without it they keep serving the old cache. */
 
-const CACHE_VERSION = "europe-2026-v16";
+const CACHE_VERSION = "europe-2026-v17";
+/* Map tiles live in their own cache so a version bump does not throw away
+   the basemap you deliberately pre-loaded before leaving. */
+const TILE_CACHE = "europe-2026-tiles";
+const TILE_CAP = 3000;   /* roughly 60-100MB of 256px PNGs */
 
 /* The app shell. These must all fetch successfully or the install is retried. */
 const CORE = [
@@ -11,6 +15,8 @@ const CORE = [
   "./data.js",
   "./days.js",
   "./store.js",
+  "./vendor/leaflet.js",
+  "./vendor/leaflet.css",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png",
@@ -82,17 +88,57 @@ self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
     await Promise.all(
-      keys.filter((k) => k !== CACHE_VERSION).map((k) => caches.delete(k))
+      keys.filter((k) => k !== CACHE_VERSION && k !== TILE_CACHE)
+          .map((k) => caches.delete(k))
     );
     await self.clients.claim();
   })());
 });
+
+/* Trim the tile cache when it gets too big. Oldest-first is not available, so
+   this drops from the front of the key list, which is insertion order. */
+async function putTile(cache, req, res) {
+  await cache.put(req, res);
+  const keys = await cache.keys();
+  if (keys.length > TILE_CAP) {
+    await Promise.all(keys.slice(0, keys.length - TILE_CAP)
+      .map((k) => cache.delete(k)));
+  }
+}
 
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
 
   const url = new URL(req.url);
+
+  /* Map tiles: cache-first, and keep whatever we fetch. Panning around the five
+     cities while you still have signal is what fills this; offline you then get
+     a real basemap instead of grey. Capped so it cannot grow without limit. */
+  if (/^https?:\/\/[abc]?\.?tile\.openstreetmap\.org\//.test(req.url)) {
+    event.respondWith((async () => {
+      const cache = await caches.open(TILE_CACHE);
+      const hit = await cache.match(req);
+      if (hit) return hit;
+      try {
+        const fresh = await fetch(req);
+        if (fresh && fresh.ok) {
+          event.waitUntil(putTile(cache, req, fresh.clone()));
+        }
+        return fresh;
+      } catch (e) {
+        /* Offline and this tile was never loaded — a transparent 1px keeps
+           Leaflet from drawing a broken-image icon over the map. */
+        return new Response(
+          Uint8Array.from(atob(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk" +
+            "YPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="), (c) => c.charCodeAt(0)),
+          { headers: { "Content-Type": "image/png" } });
+      }
+    })());
+    return;
+  }
+
   if (url.origin !== self.location.origin) return;   /* Wallet links etc. go straight out */
 
   /* Cache-first: this app is meant to work with the radio off, and nothing in

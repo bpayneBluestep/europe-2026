@@ -129,7 +129,7 @@ const TRIP = {
   stays: [
     {
       img: "rome-colosseum",
-      id: "rome", city: "Rome", country: "Italy",
+      id: "rome", lat: 41.895806, lng: 12.4714, city: "Rome", country: "Italy",
       name: "Airbnb apartment", conf: "HM32T5Z5CD",
       addr: "Via dei Cappellari 4, 00186 Roma",
       inDate: "Fri 18 Sep", inTime: "3:00 PM",
@@ -141,7 +141,7 @@ const TRIP = {
     },
     {
       img: "venice-canal",
-      id: "venice", city: "Venice", country: "Italy",
+      id: "venice", lat: 45.434348, lng: 12.333963, city: "Venice", country: "Italy",
       name: "Duodo Palace Hotel", conf: "920524140 · PIN 8716",
       addr: "Calle Minelli 1887–1888, San Marco, 30124 Venezia",
       inDate: "Tue 22 Sep", inTime: "3:00 PM",
@@ -153,7 +153,7 @@ const TRIP = {
     },
     {
       img: "como-lake",
-      id: "como", city: "Lake Como", country: "Italy",
+      id: "como", lat: 45.99528, lng: 9.23554, city: "Lake Como", country: "Italy",
       name: "Airbnb apartment — Griante", conf: "HMAZ8FCH2H",
       addr: "Via Regina 25, 22011 Griante CO",
       inDate: "Fri 25 Sep", inTime: "3:00 PM (self lockbox)",
@@ -165,7 +165,7 @@ const TRIP = {
     },
     {
       img: "interlaken-valley",
-      id: "interlaken", city: "Interlaken", country: "Switzerland",
+      id: "interlaken", lat: 46.684924, lng: 7.854739, city: "Interlaken", country: "Switzerland",
       name: "Airbnb apartment", conf: "HMRZA2CJCW",
       addr: "Höheweg 2, 3800 Interlaken",
       inDate: "Mon 28 Sep", inTime: "4:00 PM",
@@ -177,7 +177,7 @@ const TRIP = {
     },
     {
       img: "paris-eiffel",
-      id: "paris", city: "Paris", country: "France",
+      id: "paris", lat: 48.857936, lng: 2.301647, city: "Paris", country: "France",
       name: "Hotel de Londres Eiffel", conf: "KBN7HF",
       addr: "1 Rue Augereau, 75007 Paris",
       inDate: "Sat 3 Oct", inTime: "3:00 PM",

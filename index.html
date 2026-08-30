@@ -6,6 +6,8 @@
 <title>Europe 2026</title>
 <meta name="description" content="Offline trip companion — Rome, Venice, Lake Como, Interlaken, Paris.">
 <link rel="manifest" href="manifest.webmanifest">
+<!-- Self-hosted, not a CDN: the map has to come up with no network. -->
+<link rel="stylesheet" href="vendor/leaflet.css">
 <meta name="theme-color" content="#f5f6f7">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -338,9 +340,58 @@
     background:var(--ink);color:#fff}
   .wl-form .row button.ghost{background:var(--bg);color:var(--dim);
     border:1px solid var(--line)}
-  #wlOpen{display:flex;align-items:center;justify-content:center;gap:8px}
-  #wlOpen svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2.2;
+  /* Any icon inside a wide button needs a size, or the raw SVG expands to fill
+     the button and swallows the label. */
+  #wlOpen,#mapLocate{display:flex;align-items:center;justify-content:center;gap:8px}
+  #wlOpen svg,#mapLocate svg{width:17px;height:17px;stroke:currentColor;fill:none;
+    stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 17px}
+
+  /* ---------- map ---------- */
+  /* The map fills the screen under the header. Leaflet needs a pixel height on
+     its container or it renders 0px tall and looks broken. */
+  #mapwrap{position:relative;border-radius:var(--r-lg);overflow:hidden;
+    box-shadow:var(--shadow);background:var(--card);margin-top:14px}
+  #map{height:62vh;min-height:340px;width:100%;background:#e8e6e1}
+  .leaflet-container{font:inherit;background:#e8e6e1}
+
+  /* Markers are CSS, not images — no PNG to 404 when offline, and the city
+     accent can drive the colour. */
+  .mk{width:26px;height:26px;border-radius:999px;border:2.5px solid #fff;
+    box-shadow:0 2px 6px rgba(33,37,41,.4);display:grid;place-items:center;
+    background:var(--mk,#212529)}
+  .mk.big{width:32px;height:32px}
+  .mk svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2.4;
     stroke-linecap:round;stroke-linejoin:round}
+  .mk.lok::after{content:"";position:absolute;inset:-5px;border-radius:999px;
+    border:2px solid var(--mk,#212529)}
+  .mk-wrap{position:relative;display:grid;place-items:center}
+  /* Your own position: a pulsing dot, deliberately unlike a place marker. */
+  .mk.me{background:#1a73e8;width:18px;height:18px}
+
+  .leaflet-popup-content-wrapper{border-radius:14px;box-shadow:var(--shadow)}
+  .leaflet-popup-content{margin:12px 14px;font-size:14px;line-height:1.4}
+  .leaflet-popup-content b{display:block;font-size:15px;font-weight:600;
+    letter-spacing:-.015em;margin-bottom:2px}
+  .leaflet-popup-content .pm{color:var(--faint);font-size:12.5px}
+  .leaflet-popup-content a{display:inline-block;margin-top:8px;font-weight:600;
+    color:var(--ink);font-size:13.5px}
+
+  .mapbar{display:flex;gap:8px;align-items:center;margin-top:12px}
+  .mapbar .btn-wide{margin:0}
+  .maplist{margin-top:16px}
+  .maprow{display:flex;align-items:center;gap:12px;background:var(--card);
+    border-radius:var(--r-lg);padding:13px 15px;margin-bottom:8px;
+    box-shadow:var(--shadow);width:100%;border:0;text-align:left;cursor:pointer;
+    font:inherit;color:var(--ink)}
+  .maprow .pip{flex:0 0 12px;height:12px;border-radius:999px;
+    background:var(--accent,var(--ink))}
+  .maprow .txt{flex:1;min-width:0}
+  .maprow .txt b{display:block;font-size:14.5px;font-weight:600;
+    letter-spacing:-.015em;white-space:nowrap;overflow:hidden;
+    text-overflow:ellipsis}
+  .maprow .txt em{font-style:normal;font-size:12.5px;color:var(--faint)}
+  .maprow .dist{flex:0 0 auto;font-size:13px;font-weight:600;color:var(--dim);
+    font-variant-numeric:tabular-nums}
 
   /* ---------- who ---------- */
   /* Initial in a circle. Filled vs outlined rather than two colours, because
@@ -409,8 +460,9 @@
     pointer-events:auto;display:flex;gap:4px;background:var(--ink);border-radius:999px;
     padding:7px;box-shadow:0 6px 24px rgba(33,37,41,.22);
   }
+  nav .pill{gap:3px}
   nav button{
-    appearance:none;border:0;background:none;width:46px;height:46px;border-radius:999px;
+    appearance:none;border:0;background:none;width:44px;height:44px;border-radius:999px;
     display:grid;place-items:center;cursor:pointer;color:rgba(255,255,255,.62);padding:0;
     transition:background .16s ease,color .16s ease;
   }
@@ -430,6 +482,7 @@
 <main id="app"></main>
 <nav><div class="pill" id="tabs"></div></nav>
 
+<script src="vendor/leaflet.js"></script>
 <script src="data.js"></script>
 <script src="days.js"></script>
 <script src="store.js"></script>
@@ -1341,6 +1394,216 @@
     return h;
   };
 
+  /* ---------- map ----------
+     Everything on the list that has coordinates, plus the five stays, drawn on
+     one map. Coordinates are stored on the item (geocoded once when it was
+     created) so the markers draw with no network; only the tile images need a
+     connection, and the service worker keeps the ones you have already looked
+     at. */
+
+  var MAP = null, MAP_LAYER = null, MAP_ME = null, MAP_WATCH = null;
+  var mapCity = "All";
+  var myPos = null;      /* {lat, lng} once geolocation answers */
+
+  /* Great-circle distance in km. */
+  function distKm(a, b){
+    var R = 6371, toR = Math.PI / 180;
+    var dLat = (b.lat - a.lat) * toR, dLng = (b.lng - a.lng) * toR;
+    var la1 = a.lat * toR, la2 = b.lat * toR;
+    var x = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.sin(dLng / 2) * Math.sin(dLng / 2) * Math.cos(la1) * Math.cos(la2);
+    return 2 * R * Math.asin(Math.sqrt(x));
+  }
+  function prettyDist(km){
+    if (km == null) return "";
+    if (km < 1) return Math.round(km * 1000) + " m";
+    if (km < 10) return km.toFixed(1) + " km";
+    return Math.round(km) + " km";
+  }
+
+  /* What the distances are measured from: you, if the phone will say, else the
+     place you are sleeping in that city. */
+  function originFor(city){
+    if (myPos) return myPos;
+    var st = null;
+    TRIP.stays.forEach(function(x){ if (x.city === city && x.lat) st = x; });
+    if (st) return { lat: st.lat, lng: st.lng };
+    return null;
+  }
+
+  function mapPoints(){
+    var pts = [];
+    Store.items().forEach(function(it){
+      if (typeof it.lat !== "number" || typeof it.lng !== "number") return;
+      if (mapCity !== "All" && (it.city || "") !== mapCity) return;
+      pts.push({ kind: "item", it: it, lat: it.lat, lng: it.lng,
+                 city: it.city || "", title: it.title });
+    });
+    TRIP.stays.forEach(function(st){
+      if (!st.lat) return;
+      if (mapCity !== "All" && st.city !== mapCity) return;
+      pts.push({ kind: "stay", st: st, lat: st.lat, lng: st.lng,
+                 city: st.city, title: st.name });
+    });
+    return pts;
+  }
+
+  function markerHtml(p){
+    var col = p.city && TRIP.cities[p.city] ? cityColor(p.city) : "#212529";
+    if (p.kind === "stay"){
+      return '<div class="mk-wrap"><div class="mk big" style="--mk:' + col +
+             '">' + svg("home") + '</div></div>';
+    }
+    var lok = isLocked(p.it);
+    return '<div class="mk-wrap"><div class="mk' + (lok ? " lok" : "") +
+           '" style="--mk:' + col + '">' + (lok ? svg("lock") : "") + '</div></div>';
+  }
+
+  function popupHtml(p){
+    var h = "";
+    if (p.kind === "stay"){
+      h += '<b>' + esc(p.st.name) + '</b>' +
+           '<div class="pm">Where you sleep &middot; ' + esc(p.st.city) + '</div>' +
+           '<div class="pm">' + esc(p.st.addr) + '</div>';
+      h += '<a href="#/stays" data-go="#/stays">Open Stays &rarr;</a>';
+      return h;
+    }
+    var it = p.it;
+    h += '<b>' + esc(it.title) + '</b><div class="pm">' +
+         (isLocked(it) ? "Locked in &middot; " + dayHint(it.day) + " &middot; " : "") +
+         esc(it.city || "Other") + '</div>';
+    var o = originFor(it.city);
+    if (o) h += '<div class="pm">' + prettyDist(distKm(o, { lat: it.lat, lng: it.lng })) +
+                (myPos ? " from you" : " from your place") + '</div>';
+    if (it.map) h += '<a href="' + escA(it.map) + '" target="_blank" rel="noopener">Open in Maps &rarr;</a>';
+    else if (it.url) h += '<a href="' + escA(it.url) + '" target="_blank" rel="noopener">Open the link &rarr;</a>';
+    return h;
+  }
+
+  function drawMap(){
+    if (!window.L || !el("map")) return;
+    if (!MAP){
+      MAP = L.map("map", { zoomControl: true, attributionControl: true });
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19, crossOrigin: true,
+        attribution: '&copy; OpenStreetMap',
+      }).addTo(MAP);
+      MAP.setView([46.5, 8.5], 5);
+    }
+    if (MAP_LAYER) MAP_LAYER.remove();
+    MAP_LAYER = L.layerGroup().addTo(MAP);
+
+    var pts = mapPoints(), bounds = [];
+    pts.forEach(function(p){
+      var m = L.marker([p.lat, p.lng], {
+        icon: L.divIcon({ html: markerHtml(p), className: "",
+                          iconSize: [30, 30], iconAnchor: [15, 15] }),
+        title: p.title,
+      });
+      m.bindPopup(popupHtml(p));
+      m.addTo(MAP_LAYER);
+      bounds.push([p.lat, p.lng]);
+    });
+    if (myPos){
+      L.marker([myPos.lat, myPos.lng], {
+        icon: L.divIcon({ html: '<div class="mk-wrap"><div class="mk me"></div></div>',
+                          className: "", iconSize: [22, 22], iconAnchor: [11, 11] }),
+        title: "You",
+      }).addTo(MAP_LAYER).bindPopup("<b>You are here</b>");
+      bounds.push([myPos.lat, myPos.lng]);
+    }
+    if (bounds.length){
+      MAP.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+    }
+    /* Leaflet measures its container on creation; inside a freshly-written
+       innerHTML that measurement is stale, so force it after layout. */
+    setTimeout(function(){ if (MAP) MAP.invalidateSize(); }, 60);
+  }
+
+  function locateMe(){
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(function(pos){
+      myPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      if ((location.hash || "").indexOf("#/map") === 0) rerender();
+    }, function(){ /* refused or unavailable — fall back to the stay */ },
+    { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 });
+  }
+
+  views.map = function(){
+    var pick = whoBlock();
+    if (pick) return pick;
+
+    var h = pageHead("Map", "Everything on the list, and where you sleep");
+
+    var cities = ["All"].concat(Object.keys(TRIP.cities).filter(function(c){
+      return c !== "Home";
+    }));
+    h += '<div class="chips" style="margin-top:16px">';
+    cities.forEach(function(c){
+      h += '<button class="chip" aria-pressed="' + (c === mapCity) +
+           '" data-mapcity="' + escA(c) + '">' +
+           (c === "All" ? "" : dot(c)) + esc(c) + '</button>';
+    });
+    h += '</div>';
+
+    h += '<div id="mapwrap"><div id="map"></div></div>';
+
+    h += '<div class="mapbar">' +
+      '<button class="btn-wide" id="mapLocate">' + svg("pin") +
+      (myPos ? " Recentre on you" : " Show where I am") + '</button></div>';
+
+    /* The list under the map is the offline answer: with no tiles you still
+       get every place, sorted by how far away it is. */
+    var pts = mapPoints();
+    var withDist = pts.map(function(p){
+      /* A stay measured from itself is always "0 m", which is noise. Give it a
+         distance only when it is measured from where you actually are. */
+      var o = (p.kind === "stay" && !myPos) ? null : originFor(p.city);
+      p.km = o ? distKm(o, { lat: p.lat, lng: p.lng }) : null;
+      return p;
+    }).sort(function(a, b){
+      if (a.km == null) return 1;
+      if (b.km == null) return -1;
+      return a.km - b.km;
+    });
+
+    if (!withDist.length){
+      h += '<div class="card"><div class="empty">Nothing here yet.</div></div>';
+    } else {
+      h += sect(myPos ? "Nearest to you" : "By distance from your place", null, null);
+      h += '<div class="maplist">';
+      withDist.forEach(function(p, i){
+        var col = p.city && TRIP.cities[p.city] ? cityColor(p.city) : "#212529";
+        h += '<button class="maprow" data-mapgo="' + i + '" style="--accent:' + col + '">' +
+          '<span class="pip"></span>' +
+          '<span class="txt"><b>' + esc(p.title) + '</b><em>' +
+          (p.kind === "stay" ? "Where you sleep &middot; " : "") +
+          esc(p.city || "Other") + '</em></span>' +
+          '<span class="dist">' +
+          (p.km == null ? '<span style="color:var(--faint)">&mdash;</span>'
+                        : prettyDist(p.km)) + '</span></button>';
+      });
+      h += '</div>';
+    }
+
+    var noCoords = Store.items().filter(function(it){
+      return typeof it.lat !== "number";
+    }).length;
+    if (noCoords) h += '<p class="lead" style="font-size:13px;margin-top:12px">' +
+      noCoords + (noCoords === 1 ? ' item has' : ' items have') +
+      ' no location yet, so ' + (noCoords === 1 ? 'it is' : 'they are') +
+      ' not on the map.</p>';
+
+    h += '<p class="lead" style="font-size:12.5px;margin-top:14px">' +
+      'Map tiles need a signal. The pins, distances and this list all work ' +
+      'offline &mdash; and tiles you have already looked at stay cached.</p>';
+
+    MAP_PTS = withDist;
+    return h;
+  };
+
+  var MAP_PTS = [];
+
   views.sos = function(){
     var em = TRIP.emergency;
     var h = detailHead("#/today", "Emergency", "Tap any number to call");
@@ -1395,6 +1658,7 @@
     { id:"tickets", icon:"ticket", label:"Tickets" },
     { id:"wish",    icon:"heart",  label:"Want to do" },
     { id:"stays",   icon:"bed",    label:"Stays" },
+    { id:"map",     icon:"pin",    label:"Map" },
     { id:"open",    icon:"checks", label:"Open" },
   ];
 
@@ -1418,12 +1682,16 @@
     if (view === "day"){ html = views.day(arg); tab = "days"; }
     else if (view === "days"){ html = views.days(arg); }
     else if (view === "wish"){ html = views.wish(arg); }
+    else if (view === "map"){ html = views.map(); }
     else if (view === "ticket"){ html = views.ticket(arg); tab = "tickets"; }
     else if (views[view]){ html = views[view](); }
     else { html = views.today(); tab = "today"; }
 
     el("app").innerHTML = html;
     renderTabs(tab);
+    /* The map must be built after its container is in the document, and the
+       old instance is dead once innerHTML was replaced. */
+    if (view === "map"){ MAP = null; drawMap(); }
     window.scrollTo(0, 0);
   }
 
@@ -1464,6 +1732,38 @@
       var at = names.indexOf(Store.who());
       Store.setWho(names[(at + 1) % names.length]);
       route();
+      return;
+    }
+
+    var mc = e.target.closest("[data-mapcity]");
+    if (mc){
+      e.preventDefault();
+      mapCity = mc.getAttribute("data-mapcity");
+      rerender();
+      return;
+    }
+
+    var mrow = e.target.closest("[data-mapgo]");
+    if (mrow){
+      e.preventDefault();
+      var p = MAP_PTS[+mrow.getAttribute("data-mapgo")];
+      if (p && MAP){
+        MAP.setView([p.lat, p.lng], 16, { animate: true });
+        el("mapwrap").scrollIntoView({ behavior: "smooth", block: "center" });
+        MAP_LAYER.eachLayer(function(l){
+          var ll = l.getLatLng && l.getLatLng();
+          if (ll && Math.abs(ll.lat - p.lat) < 1e-9 && Math.abs(ll.lng - p.lng) < 1e-9) {
+            l.openPopup();
+          }
+        });
+      }
+      return;
+    }
+
+    var loc = e.target.closest("#mapLocate");
+    if (loc){
+      e.preventDefault();
+      locateMe();
       return;
     }
 
