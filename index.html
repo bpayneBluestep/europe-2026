@@ -378,8 +378,9 @@
   .leaflet-popup-content b{display:block;font-size:15px;font-weight:600;
     letter-spacing:-.015em;margin-bottom:2px}
   .leaflet-popup-content .pm{color:var(--faint);font-size:12.5px}
-  .leaflet-popup-content a{display:inline-block;margin-top:8px;font-weight:600;
+  .leaflet-popup-content a{display:block;margin-top:8px;font-weight:600;
     color:var(--ink);font-size:13.5px}
+  .leaflet-popup-content a+a{margin-top:4px}
 
   .mapbar{display:flex;gap:8px;align-items:center;margin-top:12px}
   .mapbar .btn-wide{margin:0}
@@ -1517,8 +1518,11 @@
     var o = originFor(it.city);
     if (o) h += '<div class="pm">' + prettyDist(distKm(o, { lat: it.lat, lng: it.lng })) +
                 (myPos ? " from you" : " from your place") + '</div>';
+    /* Both links when the item has both: the pin is where it is, the video is
+       why it made the list. Same order as the list cards — video first, map second. */
+    if (it.url) h += '<a href="' + escA(it.url) + '" target="_blank" rel="noopener">' +
+                     esc(linkCta(it.url)) + ' &rarr;</a>';
     if (it.map) h += '<a href="' + escA(it.map) + '" target="_blank" rel="noopener">Open in Maps &rarr;</a>';
-    else if (it.url) h += '<a href="' + escA(it.url) + '" target="_blank" rel="noopener">Open the link &rarr;</a>';
     return h;
   }
 
