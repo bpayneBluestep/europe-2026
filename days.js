@@ -38,17 +38,23 @@ TRIP.days = [
     high: 80, low: 64, rain: 0.64,
   },
   {
-    img: "rome-colosseum",
+    img: "rome-pantheon",
     n: 4, iso: "2026-09-20", date: "Sun 20 Sep", city: "Rome", country: "Italy",
     kind: "open",
-    summary: "The Colosseum is locked in for today — details are on the item.",
+    summary: "Nothing booked.",
     high: 79, low: 62, rain: 0.36,
   },
   {
-    img: "rome-pantheon",
+    img: "rome-colosseum",
     n: 5, iso: "2026-09-21", date: "Mon 21 Sep", city: "Rome", country: "Italy",
-    kind: "open", summary: "Nothing booked. Last full day in Rome.",
+    kind: "open",
+    summary: "The Colosseum is locked in for 3:15 PM — arena floor, Forum and Palatine. The day up to then is open, and it is the last full day in Rome.",
     high: 79, low: 62, rain: 0.36,
+    timeline: [
+      { t: "2:45 PM", what: "Head to the gate", detail: "Entry is timed for 3:15 PM. Reservation OCO4783615 — the ticket PDF is in paynefamily522@gmail.com. Download it offline before you go." },
+      { t: "3:15 PM", what: "Colosseum · Full Experience / Arena", detail: "Arena floor + Roman Forum + Palatine, 2 × €24.00. Tickets are name-bound: bring passports, because ID is checked and a mismatch means no entry and no refund." },
+    ],
+    notes: ["Bring passports — the Colosseum checks ID against the name on each ticket."],
   },
   {
     img: "venice-canal",

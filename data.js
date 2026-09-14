@@ -372,6 +372,17 @@ const TRIP = {
       account: "paynefamily522@gmail.com",
     },
     {
+      id: "colosseum", group: "Activities", title: "Colosseum · Mon 21 Sep",
+      provider: "Parco archeologico del Colosseo", ref: "OCO4783615",
+      lines: [
+        ["What", "Full Experience / Arena — arena floor, Roman Forum and Palatine · 2 × €24.00 full price · €48.00 paid"],
+        ["When", "3:15 PM timed entry — the slot is the slot, so be at the gate by 2:45"],
+        ["Booked at", "ticketing.colosseo.it — the park's own ticket office"],
+      ],
+      notes: "Tickets are name-bound and ID is checked at the entrance — bring passports, and confirm both names are on the tickets before you fly. A name can only be corrected up to midnight on the seventh day before the visit. The PDF was emailed; download it for offline access.",
+      account: "paynefamily522@gmail.com",
+    },
+    {
       id: "cooking", group: "Activities", title: "Venice cooking class · Thu 24 Sep",
       provider: "GetYourGuide", ref: "GYGN6BYFG5ZX · PIN q2f4T@wD",
       lines: [
@@ -409,7 +420,6 @@ const TRIP = {
 
   /* ---------- OPEN ITEMS ---------- */
   open: [
-    { what: "Colosseum standard tickets", when: "keep checking", why: "coopculture.it — timed entry for 20 Sep. The 30-day guided-tour window came and went. Returns reappear, so check more than once." },
     { what: "Como → Griante car", when: "before Venice", why: "Either reply to Jenny with the 25 Sep arrival (train lands Como S. Giovanni 14:23), or just take the rank outside the station. Nothing downstream depends on it — check-in is self-service at 3pm." },
     { what: "Cooking class cancellation window", when: "23 Sep, 4:00 PM", why: "Last moment to cancel it." },
     { what: "Disney cancellation window", when: "3 Oct", why: "Last day it can be cancelled." },
