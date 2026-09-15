@@ -372,6 +372,18 @@ const TRIP = {
       account: "paynefamily522@gmail.com",
     },
     {
+      id: "vatican", group: "Activities", title: "Vatican Museums · Sat 19 Sep",
+      provider: "Viator — operated by Golden Rome Tours", ref: "1447441127 · confirmation 1829495283",
+      lines: [
+        ["What", "Vatican Museums & Sistine Chapel, skip-the-line admission · 2 adults · €190.00 paid"],
+        ["When", "12:30 entry"],
+        ["Operator", "Golden Rome Tours · Via Germanico 28, Roma · +39 380 264 4344 · goldenrometours@gmail.com"],
+      ],
+      warn: "All sales are final — 100% cancellation penalty. Open the voucher well before the day and find the meeting point: this is a reseller's allocation, so you may be collecting the ticket from a rep rather than entering directly.",
+      notes: "Bought through Viator because the Vatican's own ticket office (tickets.museivaticani.va) was sold out for every day in Rome — the Museums close on Sundays, and both 19 and 21 September showed nothing bookable. Mobile ticket, so save it offline. Dress code is enforced: shoulders and knees covered.",
+      account: "paynefamily522@gmail.com",
+    },
+    {
       id: "colosseum", group: "Activities", title: "Colosseum · Mon 21 Sep",
       provider: "Parco archeologico del Colosseo", ref: "OCO4783615",
       lines: [

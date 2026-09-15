@@ -34,8 +34,16 @@ TRIP.days = [
     img: "rome-trevi",
     n: 3, iso: "2026-09-19", date: "Sat 19 Sep", city: "Rome", country: "Italy",
     kind: "open",
-    summary: "Nothing booked. Rain is a real possibility — 64%.",
+    summary: "The Vatican Museums and the Sistine Chapel at 12:30. The rest of the day is open, and rain is a real possibility — 64%.",
     high: 80, low: 64, rain: 0.64,
+    timeline: [
+      { t: "~11:45 AM", what: "Head for the Vatican", detail: "Entry is 12:30. Check the Viator voucher the night before for the meeting point — this is a reseller ticket, so you may be collecting it from a rep at Golden Rome Tours (Via Germanico 28) rather than walking straight in." },
+      { t: "12:30 PM", what: "Vatican Museums & Sistine Chapel", detail: "Skip-the-line admission, 2 adults, €190.00 paid. Viator ref 1447441127 · supplier confirmation 1829495283 · Golden Rome Tours +39 380 264 4344. Mobile ticket — save it offline." },
+    ],
+    notes: [
+      "Dress code is enforced: shoulders and knees covered, or you are turned away at the door.",
+      "The booking is non-refundable — all sales final.",
+    ],
   },
   {
     img: "rome-pantheon",
