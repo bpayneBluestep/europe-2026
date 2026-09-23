@@ -295,14 +295,30 @@
     stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 
   /* The lock toggle in the edit form. */
-  .lockrow{display:flex;align-items:center;gap:10px;margin:2px 0 12px;
-    padding:11px 13px;border-radius:12px;background:var(--bg);
-    border:1px solid var(--line)}
-  .lockrow input{width:20px;height:20px;flex:0 0 20px;accent-color:var(--ink);
-    margin:0}
+  /* A <label>, so the whole row is the tap target — not a 20px square. The
+     .wl-form label rule above would restyle it, so every property it sets is
+     reset here. */
+  .wl-form label.lockrow,.lockrow{display:flex;align-items:center;gap:10px;
+    margin:2px 0 12px;padding:11px 13px;border-radius:12px;background:var(--bg);
+    border:1px solid var(--line);font-size:14px;font-weight:400;letter-spacing:0;
+    text-transform:none;color:var(--ink);cursor:pointer;user-select:none;
+    -webkit-user-select:none}
+  /* The shared .wl-form input rule strips the native appearance from every
+     input in the form — including this checkbox, which then toggles but never
+     draws its tick. Put the native control back. */
+  .wl-form .lockrow input,.lockrow input{-webkit-appearance:checkbox;appearance:auto;
+    width:22px;height:22px;flex:0 0 22px;accent-color:var(--ink);margin:0;
+    padding:0;background:none;border:0;border-radius:0}
   .lockrow span{font-size:14px;color:var(--ink)}
   .lockrow em{display:block;font-style:normal;font-size:12px;color:var(--faint);
     margin-top:2px}
+  .lockrow.need{border-color:#c0392b;background:#fdf3f2}
+  .lockrow.need em{color:#c0392b;font-weight:600}
+  .wl-form select.need{border-color:#c0392b}
+  .sect.sub{margin:18px 0 8px}
+  .sect.sub h2{font-size:14px;font-weight:600;color:var(--dim);display:flex;
+    align-items:center;gap:7px}
+  .wl .meta .dist{color:var(--dim)}
 
   /* Compact suggestion inside a day accordion. */
   .wm{margin-top:10px}
@@ -1315,10 +1331,11 @@
       '<select id="' + p + 'Day">' + dayOptions(city, v.day) + '</select>';
     /* Locking without a day is meaningless, so the checkbox says so rather
        than silently doing nothing. */
-    h += '<div class="lockrow"><input type="checkbox" id="' + p + 'Lock"' +
+    h += '<label class="lockrow" for="' + p + 'Lock" id="' + p + 'LockRow">' +
+      '<input type="checkbox" id="' + p + 'Lock" data-lock-for="' + p + 'Day"' +
       (v.locked ? " checked" : "") + '>' +
-      '<span>Lock it in<em>It is booked, not just an idea. Needs a day.</em></span>' +
-      '</div>';
+      '<span>Lock it in<em id="' + p + 'LockHint">It is booked, not just an idea. Needs a day.</em></span>' +
+      '</label>';
     h += '<label for="' + p + 'Note">Note</label>' +
       '<textarea id="' + p + 'Note" placeholder="Optional — why, or what to know">' +
       esc(v.note || "") + '</textarea>';
@@ -1332,7 +1349,7 @@
     return h + '</div>';
   }
 
-  function wishRow(it){
+  function wishRow(it, extra){
     if (it.id === editingId) return wishForm(it);
 
     var city = it.city && TRIP.cities[it.city] ? it.city : null;
@@ -1352,11 +1369,53 @@
     h += '<div class="meta">' + byline(it.createdBy) + ' &middot; ' +
          (city ? dot(city) + esc(city) : "Other") +
          (!lok && it.day && dayHint(it.day) ? ' &middot; ' + dayHint(it.day) : "") +
+         (extra ? ' &middot; <span class="dist">' + extra + '</span>' : "") +
          '</div>';
     if (it.note) h += '<p class="note">' + esc(it.note) + '</p>';
     h += linkButtons(it);
     h += '</div>';
     return h + '</div>';
+  }
+
+  /* ---------- ordering the list ----------
+     "Newest" is what you open the tab to see: what the other phone just added.
+     "By city" is how you plan: everything for Rome together, in trip order.
+     "Nearest" is for standing on a street corner deciding. The choice is a
+     per-device convenience, so it lives in localStorage and nothing breaks
+     when that is unavailable. */
+  var LS_SORT = "europe2026.wishsort.v1";
+  var wishSort = "new";
+  try { wishSort = localStorage.getItem(LS_SORT) || "new"; } catch (e) {}
+  if (["new", "city", "near"].indexOf(wishSort) === -1) wishSort = "new";
+  function setWishSort(v){
+    wishSort = v;
+    try { localStorage.setItem(LS_SORT, v); } catch (e) {}
+  }
+
+  function createdMs(it){
+    var t = Date.parse(String(it.createdAt || "").replace(/\[.*$/, ""));
+    return isFinite(t) ? t : 0;
+  }
+  function byNewest(a, b){ return createdMs(b) - createdMs(a); }
+
+  /* Distance from an origin, or null when either side has no coordinates. */
+  function kmFrom(origin, it){
+    var c = coordsOf(it);
+    return (origin && c) ? distKm(origin, c) : null;
+  }
+  function byDistance(origin){
+    return function(a, b){
+      var da = kmFrom(origin, a), db = kmFrom(origin, b);
+      if (da == null && db == null) return byNewest(a, b);
+      if (da == null) return 1;      /* unknown locations sink to the bottom */
+      if (db == null) return -1;
+      return da - db;
+    };
+  }
+
+  /* Cities in trip order, then Other. */
+  function cityOrder(){
+    return Object.keys(TRIP.cities).filter(function(c){ return c !== "Home"; });
   }
 
   /* A read-only version of a row, for the day accordion. No edit or delete:
@@ -1439,7 +1498,48 @@
       }
       if (rest.length){
         h += sect(booked.length ? "Ideas" : "On the list", null, null);
-        rest.forEach(function(it){ h += wishRow(it); });
+
+        if (rest.length > 1){
+          h += '<div class="chips" style="margin-top:2px">';
+          [["new", "Newest"], ["city", "By city"], ["near", "Nearest"]].forEach(function(o){
+            h += '<button class="chip" aria-pressed="' + (o[0] === wishSort) +
+                 '" data-wishsort="' + o[0] + '">' + o[1] + '</button>';
+          });
+          h += '</div>';
+        }
+
+        if (wishSort === "city"){
+          var groups = cityOrder().concat([""]);
+          groups.forEach(function(c){
+            var inCity = rest.filter(function(x){ return (x.city || "") === c; });
+            if (!inCity.length) return;
+            var o = originFor(c);
+            inCity.sort(o ? byDistance(o) : byNewest);
+            h += '<div class="sect sub"><h2>' + (c ? dot(c) + esc(c) : "Other") +
+                 '</h2></div>';
+            inCity.forEach(function(it){
+              var km = o && !myPos ? kmFrom(o, it) : null;
+              h += wishRow(it, km != null ? prettyDist(km) + " from your place" : "");
+            });
+          });
+        } else if (wishSort === "near"){
+          if (!myPos){
+            locateMe();
+            h += '<p class="lead" style="font-size:13px">Finding where you are&hellip; ' +
+                 'until the phone says, this is newest first.</p>';
+            rest.sort(byNewest);
+            rest.forEach(function(it){ h += wishRow(it); });
+          } else {
+            rest.sort(byDistance(myPos));
+            rest.forEach(function(it){
+              var km = kmFrom(myPos, it);
+              h += wishRow(it, km != null ? prettyDist(km) + " away" : "no location");
+            });
+          }
+        } else {
+          rest.sort(byNewest);
+          rest.forEach(function(it){ h += wishRow(it); });
+        }
       }
     }
 
@@ -1615,7 +1715,9 @@
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(function(pos){
       myPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-      if ((location.hash || "").indexOf("#/map") === 0) rerender();
+      var at = location.hash || "";
+      if (at.indexOf("#/map") === 0 ||
+          (at.indexOf("#/wish") === 0 && wishSort === "near" && !editingId && !addOpen)) rerender();
     }, function(){ /* refused or unavailable — fall back to the stay */ },
     { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 });
   }
@@ -1805,7 +1907,36 @@
   /* Changing the city rewrites the day picker beside it, so the days offered
      are only that city's. Done in place rather than by re-rendering, because a
      re-render would throw away whatever is half-typed in the other fields. */
+  /* A lock with no day means nothing, so say so the moment the box is
+     ticked, and point at the day picker — rather than dropping the tick
+     silently on save, which reads as "the button does not work". */
+  function lockNeedsDay(prefix, on){
+    var row = el(prefix + "LockRow"), hint = el(prefix + "LockHint"), day = el(prefix + "Day");
+    if (row) row.classList.toggle("need", on);
+    if (day) day.classList.toggle("need", on);
+    if (hint) hint.textContent = on ? "Pick a day above first — a booking has a date."
+                                    : "It is booked, not just an idea. Needs a day.";
+  }
+  /* True when the form can be saved as locked; flags the day picker otherwise. */
+  function lockOk(prefix){
+    var lock = el(prefix + "Lock"), day = el(prefix + "Day");
+    if (!lock || !lock.checked || (day && day.value)) { lockNeedsDay(prefix, false); return true; }
+    lockNeedsDay(prefix, true);
+    if (day){ day.focus(); day.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    return false;
+  }
+
   document.addEventListener("change", function(e){
+    var lock = e.target.closest("[data-lock-for]");
+    if (lock){
+      var prefix = lock.id.replace(/Lock$/, "");
+      if (lock.checked) lockOk(prefix); else lockNeedsDay(prefix, false);
+      return;
+    }
+    if (e.target.id === "wlDay" || e.target.id === "edDay"){
+      if (e.target.value) lockNeedsDay(e.target.id.replace(/Day$/, ""), false);
+      return;
+    }
     var sel = e.target.closest("[data-city-sel]");
     if (!sel) return;
     var days = el(sel.getAttribute("data-city-sel"));
@@ -1874,6 +2005,14 @@
       return;
     }
 
+    var ws = e.target.closest("[data-wishsort]");
+    if (ws){
+      e.preventDefault();
+      setWishSort(ws.getAttribute("data-wishsort"));
+      rerender();
+      return;
+    }
+
     var opn = e.target.closest("#wlOpen");
     if (opn){
       e.preventDefault();
@@ -1889,6 +2028,7 @@
       e.preventDefault();
       var title = el("wlTitle").value.trim();
       if (!title){ el("wlTitle").focus(); return; }
+      if (!lockOk("wl")) return;
       Store.add(withCoords({
         title: title,
         url:   el("wlUrl").value.trim(),
@@ -1924,6 +2064,7 @@
       e.preventDefault();
       var t = el("edTitle").value.trim();
       if (!t){ el("edTitle").focus(); return; }
+      if (!lockOk("ed")) return;
       var edId = save.getAttribute("data-id");
       var prev = Store.items().filter(function(x){ return x.id === edId; })[0] || {};
       var patch = {
@@ -2021,7 +2162,10 @@
       /* Never redraw over a half-finished edit. Day pages list suggestions
          too, so they refresh on the same signal. */
       var at = location.hash || "";
-      if (!editingId && (at.indexOf("#/wish") === 0 || at.indexOf("#/day") === 0)) {
+      /* An open add form counts as a half-finished edit too: coming back from
+         Maps with a link to paste must not find the form wiped. */
+      if (!editingId && !addOpen &&
+          (at.indexOf("#/wish") === 0 || at.indexOf("#/day") === 0)) {
         rerender();
       }
     });

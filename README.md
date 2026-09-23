@@ -27,7 +27,7 @@ Do steps 1–4 on **both** phones.
 | **Days** | All 23 days. Red dot = travel day, blue = something booked, grey = open. |
 | **Tickets** | Every PNR, seat, ticket ID, change code and confirmation, grouped by type. |
 | **Stays** | The five properties — addresses, check-in times, host details, Maps links. |
-| **Want to do** | Shared wishlist. Add anything with an optional link (paste a TikTok), tag a city, suggest a day. Edit or delete any row. |
+| **Want to do** | Shared wishlist. Add anything with an optional link (paste a TikTok), tag a city, suggest a day. Edit or delete any row. Sort the ideas **Newest**, **By city** (trip order, nearest-to-your-stay within each) or **Nearest** (to you — asks for location). |
 | **Open** | Everything still to sort, the four Swiss excursion options, and photo credits. |
 | **SOS** | Floating red button, reachable from any screen. Tap-to-call emergency numbers. |
 
@@ -204,9 +204,15 @@ is hundreds of megabytes, well past what belongs in a GitHub Pages PWA.
 ## Locked in
 
 A wishlist item with `locked: true` **and** a `day` is *locked in*: booked for
-that day, not merely suggested for it. Both are required — the checkbox in the
-form ignores itself if no day is picked, because a lock with no day means
-nothing.
+that day, not merely suggested for it. Both are required. Tick the lock with no
+day picked and the row turns red and points at the day picker; Save refuses
+until a day is chosen, because a lock with no day means nothing — and silently
+dropping the tick (which is what used to happen) reads as a broken button.
+
+Two things about that checkbox worth keeping: the row is a `<label>`, so the
+whole strip is the tap target; and `.lockrow input` puts `appearance` back to
+the native checkbox, because the form's shared `-webkit-appearance:none` rule
+otherwise strips it — the box then toggles but never draws its tick on iOS.
 
 Locked items read as settled rather than aspirational: a lock tag with the day
 and date, the city accent running down the left edge, and the card tinted with
@@ -225,6 +231,26 @@ day keeps only what is about the *day*: the timeline of how you get there, a
 `locked` is whitelisted server-side in the endpoint's `clean()`. Unlike
 `createdBy` it is **not** carried forward on update — it is caller state, so an
 update that omits it means "no longer locked".
+
+## Ordering the list
+
+Three orders for the ideas (the *Locked in* section is always in day order —
+it is a schedule):
+
+- **Newest** — by `createdAt`, so what the other phone just added is on top.
+- **By city** — grouped in trip order (Rome, Venice, Lake Como, Interlaken,
+  Paris, then Other), and within a city nearest to that city's stay first,
+  with the distance on each row. This is the planning view.
+- **Nearest** — by distance from you, with the distance on each row. Picking
+  it asks the phone for location once; until it answers, the list is newest
+  first. Items with no coordinates sink to the bottom.
+
+The choice is a per-device convenience kept in `localStorage`. Distances use
+the same stored coordinates as the map, so they work with the radio off.
+
+A background sync (coming back to the app) no longer redraws the tab while the
+add form is open — you can go copy a link from Maps and come back to the form
+you left.
 
 ## Editing, and suggesting a day
 
