@@ -362,6 +362,22 @@ const TRIP = {
       account: "paynebrandon4@gmail.com",
     },
     {
+      id: "beach", group: "Activities", title: "Victoria Beach, Menaggio · Sat 26 Sep",
+      provider: "Spiagge.it", ref: "Booking 43786704",
+      lines: [
+        ["What", "Umbrella SC3-8 · 2 maxi beds · full day · in the name Brandon Payne"],
+        ["Where", "Victoria Beach, Menaggio (CO) — the lakefront beach club by the Grand Hotel Victoria, ~4 km north of Griante"],
+        ["Paid", "€87.05 in full (includes €2.06 weather insurance) · NOT refundable"],
+        ["Weather cover", "REVO Garanzia Bel Tempo · policy OX00074001-000083032 · 2 mm+ of rain between 9:00 and 15:00 = automatic refund of the beach fee, REVO emails within 5 days for an IBAN"],
+      ],
+      notes: "Check in at the beach reception desk with the QR code below — it is the ticket. Getting there: bus C10 along Via Regina (~10 min) or the ferry from Cadenabbia pier; walking is ~50 min. Questions for the beach itself go to info@victoriabeach.it; booking changes go to support@spiagge.it. The Spiagge.it service-fee receipt is in the confirmation email; the beach issues its own receipt on site.",
+      links: [
+        { label: "Map", url: "https://www.google.com/maps/search/?api=1&query=Victoria+Beach+Menaggio" },
+      ],
+      account: "paynefamily522@gmail.com",
+      images: ["tickets/victoria-beach-qr.png"],
+    },
+    {
       id: "boat", group: "Activities", title: "Lake Como boat rental · Sun 27 Sep",
       provider: "Nautic Planet", ref: "#2863",
       lines: [
@@ -432,7 +448,7 @@ const TRIP = {
 
   /* ---------- OPEN ITEMS ---------- */
   open: [
-    { what: "Como → Griante car", when: "before Venice", why: "Either reply to Jenny with the 25 Sep arrival (train lands Como S. Giovanni 14:23), or just take the rank outside the station. Nothing downstream depends on it — check-in is self-service at 3pm." },
+    { what: "Como → Griante car", when: "25 Sep, on arrival", why: "Lake Como Transfers declined this leg on 23 Sep, so it is the white-taxi rank outside Como S. Giovanni (train lands 14:23). Nothing downstream depends on it — check-in is self-service at 3pm." },
     { what: "Cooking class cancellation window", when: "23 Sep, 4:00 PM", why: "Last moment to cancel it." },
     { what: "Disney cancellation window", when: "3 Oct", why: "Last day it can be cancelled." },
     { what: "Paris → CDG taxi", when: "ask reception 8 Oct", why: "The one ground leg not to wing. Hailing in the 7th at 6:30 AM is unreliable and app rides cancel." },
@@ -442,7 +458,7 @@ const TRIP = {
     { what: "Door / lockbox codes", when: "before each arrival", why: "Rome, Como and Interlaken all need codes out of the Airbnb app, saved offline." },
     { what: "Host phone numbers", when: "anytime", why: "Daplace (Rome), Irina (Como), Griwa Rent (Interlaken)." },
     { what: "Al Vecio Forno address + phone", when: "before 23 Sep", why: "No written confirmation exists — you need to be able to call." },
-    { what: "11 unplanned days", when: "—", why: "Rome ×2, Venice ×1, Como ×1, Interlaken ×4, Paris ×3 have nothing booked in them." },
+    { what: "10 unplanned days", when: "—", why: "Rome ×2, Venice ×1, Interlaken ×4, Paris ×3 have nothing booked in them." },
   ],
 
   /* ---------- SWISS EXCURSION OPTIONS ---------- */

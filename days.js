@@ -109,7 +109,7 @@ TRIP.days = [
       { t: "9:30 AM", what: "Vaporetto to the station", detail: "Hotel → Venezia S. Lucia · ACTV Line 2 via Rialto · ~40 min. Leave about 1h 15m before the train. Buy tickets the night before." },
       { t: "10:48 AM", what: "Frecciarossa 9724", detail: "Venezia S. Lucia → Milano Centrale · arrives 1:15 PM · 2h 27m · PNR TK9PWN · Coach 5, seats 9B Brandon / 9A Tatiana." },
       { t: "1:43 PM", what: "Regionale 25520", detail: "Milano Centrale → Como San Giovanni · arrives 2:23 PM · 40 min · 2nd class, no seat assignment. 28-minute transfer, protected because it is a single booking. NOTE: these two regional tickets are NOT in Apple Wallet — carry the per-passenger PDFs or read the codes to the conductor." },
-      { t: "~2:40 PM", what: "Car up the shore", detail: "Como S. Giovanni → Via Regina 25, Griante · ~40 min. No train serves the west shore. Lake Como Transfers gave a quote but nothing is booked — the taxi rank outside the station always has one. Nothing downstream depends on it; check-in is self-service at 3pm." },
+      { t: "~2:40 PM", what: "Car up the shore", detail: "Como S. Giovanni → Via Regina 25, Griante · ~40 min. No train serves the west shore. NOTHING IS BOOKED for this leg — Lake Como Transfers declined it on 23 Sep (too late a reply), so take the white-taxi rank outside the station; expect roughly €80–100. Fallback if the rank is empty: bus C10 from the stop by the station towards Menaggio, get off at Griante/Cadenabbia, ~1h. Nothing downstream depends on it; check-in is self-service at 3pm." },
       { t: "3:00 PM", what: "Check in", detail: "Self check-in, lockbox. Have the code saved offline before you leave Venice." },
     ],
     checklist: ["Settle any hotel extras at Duodo Palace", "Lockbox code saved offline", "Vaporetto tickets bought the night before", "Regional-leg PDFs on the phone"],
@@ -118,8 +118,16 @@ TRIP.days = [
     img: "como-lake",
     n: 10, iso: "2026-09-26", date: "Sat 26 Sep", city: "Lake Como", country: "Italy",
     kind: "open",
-    summary: "Nothing booked. Worth walking down to Tremezzo to find tomorrow's boat dock while it is light.",
+    summary: "Beach day in Menaggio — umbrella and two sunbeds are booked at Victoria Beach, weather-insured. Walk down to Tremezzo afterwards to find tomorrow's boat dock while it is light.",
     high: 68, low: 58, rain: 0.55,
+    timeline: [
+      { t: "Morning", what: "Up the shore to Menaggio", detail: "Griante → Menaggio is ~4 km north. Bus C10 along Via Regina (~10 min, runs roughly hourly, buy on board or in a tabacchi) or the Navigazione Laghi ferry from the Cadenabbia pier (~10–15 min). Walking is ~50 min on a road with patchy sidewalk — fine one way, not with beach bags both ways." },
+      { t: "On arrival", what: "Victoria Beach — check in at reception", detail: "Umbrella SC3-8 with 2 maxi beds, in the name Brandon Payne. Show the QR code saved under Tickets (Spiagge.it booking 43786704). Paid in full, €87.05, not refundable. The beach club's own contact is info@victoriabeach.it." },
+    ],
+    notes: [
+      "Rain cover: REVO 'Garanzia Bel Tempo' policy OX00074001-000083032. If 2 mm or more falls between 9:00 and 15:00 the beach fee is refunded automatically — REVO emails within 5 days and asks for an IBAN. Nothing to claim, so if it rains, just do something else.",
+      "Tomorrow's boat leaves Tremezzo at 11:00, so on the way back look for the Nautic Planet dock — it is ~10 min south of the apartment along the shore.",
+    ],
   },
   {
     img: "como-lake",

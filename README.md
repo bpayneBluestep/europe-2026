@@ -33,7 +33,7 @@ Do steps 1–4 on **both** phones.
 
 ## The ticket images
 
-All twelve are saved in `tickets/` and cached offline by the service worker.
+All twelve, plus the Victoria Beach check-in QR, are saved in `tickets/` and cached offline by the service worker.
 Where each came from, in case any needs reprinting:
 
 | File | Source |
@@ -44,6 +44,7 @@ Where each came from, in case any needs reprinting:
 | `swisspass-brandon/tatiana.png` | shop.sbb.ch order 151490866009 → Tickets as a PDF |
 | `gpe-upgrade-brandon/tatiana.png` | `Confirmations/Gotthard Panorama Express.pdf` |
 | `tgv-brandon/tatiana.png` | shop.sbb.ch order 151490866652 → Tickets as a PDF |
+| `victoria-beach-qr.png` | Spiagge.it "Booking Summary Victoria Beach Menaggio" email, 23 Sep — the QR image in the header (`lnk.spiagge.it/…/qrcode.php`, booking 43786704) |
 
 Two things worth knowing if you go back to the source:
 
