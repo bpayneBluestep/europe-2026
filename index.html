@@ -49,20 +49,31 @@
   }
 
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  /* The document itself never scrolls. On iOS a position:fixed element rides
+     along with the page's rubber-band bounce and with the toolbar/keyboard
+     resizes, which is what made the nav pill drift. So the body is pinned to
+     the viewport and <main> is the one scroll container; the nav and SOS sit
+     outside it and have nothing to move with. */
+  html{height:100%;overflow:hidden}
   html,body{margin:0;padding:0}
   body{
+    position:fixed;top:0;right:0;bottom:0;left:0;width:100%;height:100%;overflow:hidden;
     background:var(--bg); color:var(--ink);
     font-family:'Instrument Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     font-size:15px; line-height:1.5; letter-spacing:-.005em;
-    padding-bottom:var(--nav-h);
-    -webkit-text-size-adjust:100%; overscroll-behavior-y:none;
+    -webkit-text-size-adjust:100%; overscroll-behavior:none;
   }
   a{color:inherit}
   ::-webkit-scrollbar{display:none}
 
   main{
-    max-width:560px; margin:0 auto;
-    padding:calc(18px + env(safe-area-inset-top)) 20px 28px;
+    position:absolute;top:0;right:0;bottom:0;left:0;
+    overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+    /* Centre the 560px column with padding rather than max-width, so the
+       scroller itself spans the screen and its edge is where the finger is. */
+    padding:calc(18px + env(safe-area-inset-top)) max(20px, calc(50% - 280px))
+            calc(28px + var(--nav-h));
   }
 
   /* ---------- type ---------- */
@@ -482,7 +493,13 @@
   nav{
     position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;justify-content:center;
     padding:0 20px calc(14px + env(safe-area-inset-bottom));pointer-events:none;
+    /* Its own compositor layer, so scrolling the list never repaints it. */
+    transform:translateZ(0);will-change:transform;
+    transition:transform .18s ease,opacity .18s ease;
   }
+  /* While the keyboard is up the pill would float mid-screen or sit on the
+     keyboard's edge; it slides away and comes back on blur. */
+  body.kb nav,body.kb .sos{transform:translateY(160%);opacity:0;pointer-events:none}
   nav .pill{
     pointer-events:auto;display:flex;gap:4px;background:var(--ink);border-radius:999px;
     padding:7px;box-shadow:0 6px 24px rgba(33,37,41,.22);
@@ -499,6 +516,7 @@
 
   /* SOS — always reachable, sits just above the nav pill */
   .sos{position:fixed;right:20px;bottom:calc(var(--nav-h) + 8px);z-index:39;
+    transform:translateZ(0);transition:transform .18s ease,opacity .18s ease;
     width:50px;height:50px;border-radius:999px;border:0;background:var(--card);
     color:var(--alert);font:inherit;font-size:11.5px;font-weight:700;letter-spacing:.05em;
     box-shadow:0 4px 18px rgba(33,37,41,.16);cursor:pointer}
@@ -1893,15 +1911,49 @@
     /* The map must be built after its container is in the document, and the
        old instance is dead once innerHTML was replaced. */
     if (view === "map"){ MAP = null; drawMap(); }
-    window.scrollTo(0, 0);
+    el("app").scrollTop = 0;
   }
 
   /* Re-draw in place. route() jumps to the top, which is right for navigation
      and wrong for editing the eleventh item on a long list. */
   function rerender(){
-    var y = window.scrollY;
+    var y = el("app").scrollTop;
     route();
-    window.scrollTo(0, y);
+    el("app").scrollTop = y;
+  }
+
+  /* ---------- keyboard ----------
+     Text entry hides the nav and SOS (see body.kb). Focus is the primary
+     signal; the visual viewport shrinking is the backstop for the cases where
+     iOS raises the keyboard without a focus event we saw, or keeps it up after
+     a blur. */
+  var kbFocus = false, kbShrunk = false;
+  function setKb(){
+    document.body.classList.toggle("kb", kbFocus || kbShrunk);
+  }
+  function isTextField(t){
+    if (!t || !t.tagName) return false;
+    var tag = t.tagName.toLowerCase();
+    if (tag === "textarea" || tag === "select") return true;
+    if (tag !== "input") return false;
+    var type = (t.getAttribute("type") || "text").toLowerCase();
+    return ["checkbox", "radio", "button", "submit", "range", "file"].indexOf(type) === -1;
+  }
+  document.addEventListener("focusin", function(e){
+    if (isTextField(e.target)){ kbFocus = true; setKb(); }
+  });
+  document.addEventListener("focusout", function(e){
+    if (isTextField(e.target)){
+      kbFocus = false;
+      /* Let a focus move field-to-field settle before showing the pill again. */
+      setTimeout(function(){ if (!isTextField(document.activeElement)) setKb(); }, 60);
+    }
+  });
+  if (window.visualViewport){
+    window.visualViewport.addEventListener("resize", function(){
+      kbShrunk = window.visualViewport.height < window.innerHeight * 0.72;
+      setKb();
+    });
   }
 
   /* Changing the city rewrites the day picker beside it, so the days offered

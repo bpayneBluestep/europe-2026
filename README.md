@@ -70,6 +70,15 @@ Two things worth knowing if you go back to the source:
 Instrument Sans on `#212529` / `#f5f6f7` / `#ffffff`, white cards on a light-grey
 field, a floating dark nav pill, and accordion day cards. Deliberately light-only.
 
+**The document never scrolls; `<main>` does.** `body` is pinned to the viewport
+and `main` is the one scroll container (`overflow-y:auto`, `overscroll-behavior:
+contain`). On iOS a `position:fixed` element rides along with the page's
+rubber-band bounce and with toolbar/keyboard resizes, which is what made the nav
+pill drift; with the body pinned there is nothing for it to move with. Two
+consequences: `route()`/`rerender()` scroll `#app`, not `window`, and the pill
+and SOS button slide away (`body.kb`) while a text field has focus or the visual
+viewport shrinks, so they never float mid-screen above the keyboard.
+
 Colour comes from the **photography**, not from painted UI. Each of the five bases
 has one accent pulled from its own photograph (`TRIP.cities` in `data.js`), applied
 to field labels, timeline times, filter-chip dots and the gradient scrim over each
