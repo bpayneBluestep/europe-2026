@@ -421,6 +421,21 @@ const TRIP = {
       notes: "Pasta and tiramisu with fine wine — you eat what you cook, with limoncello and coffee, so treat it as dinner. Tickets live in the GetYourGuide app; download before you fly. Tell them about allergies or food restrictions ahead of time. Free cancellation until 4:00 PM on 23 Sep.",
     },
     {
+      id: "lescale", group: "Dining", title: "L'Escale Trattoria & Wine Bar · Sat 26 Sep",
+      provider: "Grand Hotel Tremezzo", ref: "under 'Brandon'",
+      lines: [
+        ["When", "7:00 PM · 2 people"],
+        ["Where", "Via Statale 5401, 22016 Tremezzo — the Grand Hotel Tremezzo's lakefront trattoria, ~10–15 min walk south from the apartment"],
+        ["Phone", "+39 0344 42491"],
+      ],
+      warn: "Card-guaranteed. Free to cancel up to 24 hours before — so by 7:00 PM Fri 25 Sep. A no-show or a later cancellation is charged €160.",
+      notes: "Confirmation email says 'Reservation confirmed' with a CANCEL MY RESERVATION button — use that, not a phone call, if plans change before Friday evening. The boat dock for Sunday is a few minutes further along the shore.",
+      links: [
+        { label: "Map", url: "https://www.google.com/maps/search/?api=1&query=L%27Escale+Trattoria+Tremezzo" },
+      ],
+      account: "paynefamily522@gmail.com",
+    },
+    {
       id: "cafehomme", group: "Dining", title: "Café de l'Homme · Wed 7 Oct",
       provider: "OpenTable", ref: "in-app",
       lines: [
@@ -450,6 +465,7 @@ const TRIP = {
   open: [
     { what: "Como → Griante car", when: "25 Sep, on arrival", why: "Lake Como Transfers declined this leg on 23 Sep, so it is the white-taxi rank outside Como S. Giovanni (train lands 14:23). Nothing downstream depends on it — check-in is self-service at 3pm." },
     { what: "Cooking class cancellation window", when: "23 Sep, 4:00 PM", why: "Last moment to cancel it." },
+    { what: "L'Escale dinner cancellation window", when: "25 Sep, 7:00 PM", why: "Last moment to cancel without the €160 no-show charge." },
     { what: "Disney cancellation window", when: "3 Oct", why: "Last day it can be cancelled." },
     { what: "Paris → CDG taxi", when: "ask reception 8 Oct", why: "The one ground leg not to wing. Hailing in the 7th at 6:30 AM is unreliable and app rides cancel." },
     { what: "Swiss excursions", when: "29 Sep – 2 Oct", why: "Four open days, four things, nothing assigned to a date. Book a day ahead off the forecast." },

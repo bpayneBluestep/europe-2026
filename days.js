@@ -118,15 +118,16 @@ TRIP.days = [
     img: "como-lake",
     n: 10, iso: "2026-09-26", date: "Sat 26 Sep", city: "Lake Como", country: "Italy",
     kind: "open",
-    summary: "Beach day in Menaggio — umbrella and two sunbeds are booked at Victoria Beach, weather-insured. Walk down to Tremezzo afterwards to find tomorrow's boat dock while it is light.",
+    summary: "Beach day in Menaggio — umbrella and two sunbeds are booked at Victoria Beach, weather-insured. Dinner is locked in at L'Escale in Tremezzo at 7:00 PM, a short walk from the apartment.",
     high: 68, low: 58, rain: 0.55,
     timeline: [
       { t: "Morning", what: "Up the shore to Menaggio", detail: "Griante → Menaggio is ~4 km north. Bus C10 along Via Regina (~10 min, runs roughly hourly, buy on board or in a tabacchi) or the Navigazione Laghi ferry from the Cadenabbia pier (~10–15 min). Walking is ~50 min on a road with patchy sidewalk — fine one way, not with beach bags both ways." },
       { t: "On arrival", what: "Victoria Beach — check in at reception", detail: "Umbrella SC3-8 with 2 maxi beds, in the name Brandon Payne. Show the QR code saved under Tickets (Spiagge.it booking 43786704). Paid in full, €87.05, not refundable. The beach club's own contact is info@victoriabeach.it." },
+      { t: "7:00 PM", what: "Dinner — L'Escale Trattoria & Wine Bar", detail: "Via Statale 5401, Tremezzo — the Grand Hotel Tremezzo's lakefront trattoria, ~10–15 min walk south from Via Regina 25. Table for 2 under Brandon. Card-guaranteed: a no-show or a cancellation inside 24 hours is charged €160, so be there or cancel by 7:00 PM Friday. +39 0344 42491." },
     ],
     notes: [
       "Rain cover: REVO 'Garanzia Bel Tempo' policy OX00074001-000083032. If 2 mm or more falls between 9:00 and 15:00 the beach fee is refunded automatically — REVO emails within 5 days and asks for an IBAN. Nothing to claim, so if it rains, just do something else.",
-      "Tomorrow's boat leaves Tremezzo at 11:00, so on the way back look for the Nautic Planet dock — it is ~10 min south of the apartment along the shore.",
+      "Tomorrow's boat leaves Tremezzo at 11:00 and the dock is a few minutes past the restaurant — look for the Nautic Planet dock on the walk to or from dinner while it is still light.",
     ],
   },
   {
