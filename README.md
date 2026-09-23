@@ -176,9 +176,16 @@ A seventh tab plotting everything on the list plus the five stays. Items carry
   tapping a row flies the map to it and opens its popup.
 
 **Coordinates are resolved once, never at render time**, because the app has to
-draw this with the radio off. They were geocoded with Nominatim (OSM) and written
-to each item; 29 of 30 resolved. Anything without coordinates is not plotted, and
-the view says how many.
+draw this with the radio off. The seeded items were geocoded with Nominatim (OSM)
+and written to each item. Everything added since gets its pin from its **map
+link**: the app reads `lat,lng` straight out of a full Apple Maps
+(`coordinate=`, `ll=`) or Google Maps (`@lat,lng`, `q=`, `!3d…!4d…`) link the
+moment you save it, and the endpoint does the rest — an Apple Maps favorite
+shared from the phone is a short link (`maps.apple/p/…`) that only reveals its
+coordinates after a redirect a browser cannot read, so `/b/tripdata` follows
+that redirect once on the way in and stores the numbers. Items shared as a map
+link are filed under `map`, not `url`. Anything still without coordinates is not
+plotted, and the view says how many.
 
 **Leaflet is self-hosted in `vendor/`, not loaded from a CDN** — a CDN script
 tag is a blank map offline. Markers are CSS `divIcon`s rather than Leaflet's

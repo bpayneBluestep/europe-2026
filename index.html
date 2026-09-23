@@ -1167,6 +1167,49 @@
 
   /* ---------- wishlist ---------- */
 
+  /* Coordinates out of a map link, when the link carries them. Apple Maps
+     place links have `coordinate=lat,lng`, older ones `ll=`; Google has
+     `@lat,lng` in the path, `q=lat,lng`, or `!3dLAT!4dLNG` in the data blob;
+     `geo:` URIs put them first. Returns {lat, lng} or null. Apple's short
+     links (maps.apple/p/…) carry nothing until they redirect, so those are
+     resolved by the endpoint, not here. */
+  function coordsFromLink(url){
+    if (!url || typeof url !== "string") return null;
+    var pats = [
+      /[?&](?:coordinate|ll|sll|center|q|daddr|saddr)=(-?\d{1,2}(?:\.\d+)?),\s*(-?\d{1,3}(?:\.\d+)?)(?:[&,]|$)/,
+      /@(-?\d{1,2}\.\d+),(-?\d{1,3}\.\d+)/,
+      /!3d(-?\d{1,2}\.\d+)!4d(-?\d{1,3}\.\d+)/,
+      /^geo:(-?\d{1,2}(?:\.\d+)?),(-?\d{1,3}(?:\.\d+)?)/,
+    ];
+    for (var i = 0; i < pats.length; i++){
+      var m = url.match(pats[i]);
+      if (!m) continue;
+      var lat = parseFloat(m[1]), lng = parseFloat(m[2]);
+      if (isFinite(lat) && isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180 &&
+          !(lat === 0 && lng === 0)) return { lat: lat, lng: lng };
+    }
+    return null;
+  }
+
+  /* Where an item is: the stored coordinates when the endpoint has them,
+     else whatever its map link (or content link) says. Null when nothing does. */
+  function coordsOf(it){
+    if (!it) return null;
+    if (typeof it.lat === "number" && typeof it.lng === "number" &&
+        isFinite(it.lat) && isFinite(it.lng)) return { lat: it.lat, lng: it.lng };
+    return coordsFromLink(it.map) || coordsFromLink(it.url);
+  }
+
+  /* Stamp coordinates onto an item about to be saved, so the other phone and
+     the map get them without a round trip. Leaves the item alone when the
+     link has none — the endpoint will try the redirect. */
+  function withCoords(it){
+    var c = coordsFromLink(it.map) || coordsFromLink(it.url);
+    if (c){ it.lat = c.lat; it.lng = c.lng; }
+    else if (!(typeof it.lat === "number")) { it.lat = null; it.lng = null; }
+    return it;
+  }
+
   /* Pull a usable label out of a pasted link so a bare TikTok URL still reads
      as something in the list. Phrased as an action, because it is a button. */
   function linkCta(url){
@@ -1447,9 +1490,10 @@
   function mapPoints(){
     var pts = [];
     Store.items().forEach(function(it){
-      if (typeof it.lat !== "number" || typeof it.lng !== "number") return;
+      var c = coordsOf(it);
+      if (!c) return;
       if (mapCity !== "All" && (it.city || "") !== mapCity) return;
-      pts.push({ kind: "item", it: it, lat: it.lat, lng: it.lng,
+      pts.push({ kind: "item", it: it, lat: c.lat, lng: c.lng,
                  city: it.city || "", title: it.title });
     });
     TRIP.stays.forEach(function(st){
@@ -1516,7 +1560,8 @@
          (isLocked(it) ? "Locked in &middot; " + dayHint(it.day) + " &middot; " : "") +
          esc(it.city || "Other") + '</div>';
     var o = originFor(it.city);
-    if (o) h += '<div class="pm">' + prettyDist(distKm(o, { lat: it.lat, lng: it.lng })) +
+    var ic = coordsOf(it);
+    if (o && ic) h += '<div class="pm">' + prettyDist(distKm(o, ic)) +
                 (myPos ? " from you" : " from your place") + '</div>';
     /* Both links when the item has both: the pin is where it is, the video is
        why it made the list. Same order as the list cards — video first, map second. */
@@ -1641,7 +1686,7 @@
     }
 
     var noCoords = Store.items().filter(function(it){
-      return typeof it.lat !== "number";
+      return !coordsOf(it);
     }).length;
     if (noCoords) h += '<p class="lead" style="font-size:13px;margin-top:12px">' +
       noCoords + (noCoords === 1 ? ' item has' : ' items have') +
@@ -1844,7 +1889,7 @@
       e.preventDefault();
       var title = el("wlTitle").value.trim();
       if (!title){ el("wlTitle").focus(); return; }
-      Store.add({
+      Store.add(withCoords({
         title: title,
         url:   el("wlUrl").value.trim(),
         map:   el("wlMap").value.trim(),
@@ -1852,7 +1897,7 @@
         day:   el("wlDay").value,
         note:  el("wlNote").value.trim(),
         locked: el("wlLock").checked && !!el("wlDay").value,
-      });
+      }));
       addOpen = false;
       route();
       return;
@@ -1879,7 +1924,9 @@
       e.preventDefault();
       var t = el("edTitle").value.trim();
       if (!t){ el("edTitle").focus(); return; }
-      Store.update(save.getAttribute("data-id"), {
+      var edId = save.getAttribute("data-id");
+      var prev = Store.items().filter(function(x){ return x.id === edId; })[0] || {};
+      var patch = {
         title: t,
         url:   el("edUrl").value.trim(),
         map:   el("edMap").value.trim(),
@@ -1887,7 +1934,13 @@
         day:   el("edDay").value,
         note:  el("edNote").value.trim(),
         locked: el("edLock").checked && !!el("edDay").value,
-      });
+      };
+      /* A changed map link moves the pin; an unchanged one keeps whatever
+         coordinates the endpoint already resolved for it. */
+      var pc = coordsFromLink(patch.map) || coordsFromLink(patch.url);
+      if (pc){ patch.lat = pc.lat; patch.lng = pc.lng; }
+      else if (patch.map !== (prev.map || "")){ patch.lat = null; patch.lng = null; }
+      Store.update(edId, patch);
       editingId = null;
       rerender();
       return;
@@ -1938,12 +1991,14 @@
     }
     if (!url && !title && !text) return false;
 
-    Store.add({
-      title: title || text || "Shared link",
-      url: url, map: "", city: "",
+    /* A shared map link is a place, not a video — file it as the map link. */
+    var isMap = /maps\.apple|maps\.google|google\.[a-z.]+\/maps|goo\.gl\/maps|maps\.app\.goo\.gl|^geo:/i.test(url);
+    Store.add(withCoords({
+      title: title || text || (isMap ? "Map pin" : "Shared link"),
+      url: isMap ? "" : url, map: isMap ? url : "", city: "",
       note: title && text && title !== text ? text : "",
       done: false,
-    });
+    }));
 
     /* Drop the query string so a reload cannot add the same thing twice. */
     try {
