@@ -215,8 +215,16 @@ TRIP.days = [
   {
     img: "paris-eiffel",
     n: 18, iso: "2026-10-04", date: "Sun 4 Oct", city: "Paris", country: "France",
-    kind: "open", summary: "Nothing booked. Also today: you move to the Eiffel-view room on the 6th floor.",
+    kind: "open", summary: "Versailles is locked in — 15:00 entry at the Pavillon d'Orléans. Also today: you move to the Eiffel-view room on the 6th floor.",
     high: 64, low: 47, rain: 0.27,
+    critical: "Entry is timed: you get in within the half hour after 15:00, and more than an hour late can be refused. The door is the Pavillon d'Orléans, to the LEFT of Entrance A — not the main queue.",
+    timeline: [
+      { t: "Morning", what: "Room move", detail: "Night 1 was the Poets room; tonight is the Eiffel-view room on the 6th floor. Sort it at the desk before heading out." },
+      { t: "~1:45 PM", what: "RER C to Versailles", detail: "Champ de Mars–Tour Eiffel (~10 min walk from the hotel) → Versailles Château Rive Gauche, the terminus · ~35–40 min. Board a train showing VERSAILLES CHÂTEAU RIVE GAUCHE (the C5 branch). A t+ metro ticket is NOT valid this far — buy Paris ↔ Versailles RG at the machine, or tap a Navigo Easy." },
+      { t: "~2:40 PM", what: "Walk to the palace", detail: "Out of the station, right, then up Avenue de Paris to the Place d'Armes · ~10 min." },
+      { t: "3:00 PM", what: "Palace of Versailles", detail: "Passeport + VR « Lumière de la liberté », skip-the-line · order 201634419 · barcodes under Tickets (Brandon 1560598352, Tatiana 1189406814). Enter at the Pavillon d'Orléans, left of Entrance A." },
+      { t: "After", what: "Trianon & gardens", detail: "The Passeport covers the Trianon estate (to 6:30 PM) and the gardens (to 8:30 PM) — keep the barcode handy. The Trianon is a ~25 min walk across the park; the little train saves your feet." },
+    ],
   },
   {
     img: "paris-eiffel",

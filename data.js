@@ -363,6 +363,25 @@ const TRIP = {
       account: "paynebrandon4@gmail.com",
     },
     {
+      id: "versailles", group: "Activities", title: "Palace of Versailles · Sun 4 Oct",
+      provider: "Château de Versailles", ref: "Order 201634419",
+      lines: [
+        ["Ticket", "Passeport + VR « Lumière de la liberté » · skip-the-line · Tarif plein + VR · 2 × €42.00 = €84.00 paid"],
+        ["When", "Sun 4 Oct · 15:00 timed entry — you get in within the half hour after 15:00; more than 1 hour late can be refused"],
+        ["Entrance", "Pavillon d'Orléans — the VR room entrance, to the LEFT of Entrance A on the main courtyard. Map below."],
+        ["Barcodes", "Brandon 1560598352 · Tatiana 1189406814 — both bought under Brandon Payne"],
+        ["Hours today", "Palace to 6:30 PM · Trianon estate 12–6:30 PM · Gardens to 8:30 PM"],
+      ],
+      warn: "Not refundable or exchangeable. Show the barcode at every checkpoint and keep it until you leave — the Passeport also covers the Trianon estate, so you will need it again there.",
+      notes: "Getting there: RER C from Champ de Mars–Tour Eiffel to Versailles Château Rive Gauche (the terminus, ~35–40 min), then ~10 min walk up Avenue de Paris. Contact +33 1 30 83 78 00. The free Château de Versailles app has the audio tour and interactive map.",
+      links: [
+        { label: "Ticket PDF", url: "https://web.digitick.com/billet/display.php/07ec7be501dd92177b20cf7559a2e4065e900a67/0/201634419/102316045/digitick201634419t.pdf" },
+        { label: "Map", url: "https://www.google.com/maps/search/?api=1&query=Pavillon+d%27Orl%C3%A9ans+Ch%C3%A2teau+de+Versailles" },
+      ],
+      account: "paynefamily522@gmail.com",
+      images: ["tickets/versailles-brandon.png", "tickets/versailles-tatiana.png", "tickets/versailles-map.jpg"],
+    },
+    {
       id: "beach", group: "Activities", title: "Victoria Beach, Menaggio · Sat 26 Sep",
       provider: "Spiagge.it", ref: "Booking 43786704",
       lines: [

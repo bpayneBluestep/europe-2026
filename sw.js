@@ -2,7 +2,7 @@
    Bump CACHE_VERSION whenever you change any file. That is what makes both
    phones pick up the new version; without it they keep serving the old cache. */
 
-const CACHE_VERSION = "europe-2026-v27";
+const CACHE_VERSION = "europe-2026-v28";
 /* Map tiles live in their own cache so a version bump does not throw away
    the basemap you deliberately pre-loaded before leaving. */
 const TILE_CACHE = "europe-2026-tiles";
@@ -71,6 +71,9 @@ const EXTRAS = [
   "./tickets/tgv-brandon.png",
   "./tickets/tgv-tatiana.png",
   "./tickets/victoria-beach-qr.png",
+  "./tickets/versailles-brandon.png",
+  "./tickets/versailles-tatiana.png",
+  "./tickets/versailles-map.jpg",
 ];
 
 self.addEventListener("install", (event) => {
